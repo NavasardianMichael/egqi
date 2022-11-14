@@ -1,9 +1,25 @@
+import XLSX from "xlsx";
+
 function Input() {
 
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        const file = e.target.files?.[0] as File
         const reader = new FileReader()
 
-        reader.readAsArrayBuffer(e.target)
+
+        reader.onload = (e) => {
+            const data = e.target?.result
+            const workbook = XLSX.read(data, {
+                type: 'binary'
+            })
+           workbook.SheetNames.forEach(sheet => {
+            let rowObject = XLSX.utils.sheet_to_json(workbook.Sheets[sheet])
+            console.log(rowObject)
+           })
+
+        }
+
+        reader.readAsBinaryString(file)
     }
 
   return (
