@@ -25,15 +25,19 @@ export const processWorkbookData = (workbook: XLSX.WorkBook): T_Data => {
     
 
     // rows.forEach((row: any) => result.lists.countries.push(row.Country))
-    result.lists.indicators.forEach(() => {
-        // const rows = XLSX.utils.sheet_to_json(Sheets[indicator]);
+    result.lists.indicators.forEach((indicator) => {
+        const rows = XLSX.utils.sheet_to_json(Sheets[indicator]);
         
-        // rows.forEach((columns: any) => {
-        //     const { Country } = columns
-        //     columns.forEach((column: any) => {
-        //         result[Country][sheet][column] = 
-        //     })
-        // })
+        rows.forEach((columns: any) => {
+            const { Country } = columns
+            if(!Country) return
+            result.lists.years.forEach((year: any) => {
+                if(!columns[year]) return
+                if(!result.values[Country]) result.values[Country] = {}
+                if(!result.values[Country][indicator]) result.values[Country][indicator] = {}
+                result.values[Country][indicator][year] = columns[year]
+            })
+        })
     });
     return result
 }
