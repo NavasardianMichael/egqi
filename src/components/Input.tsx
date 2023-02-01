@@ -1,3 +1,4 @@
+import { processWorkbookData } from "helpers/functions/processors";
 import XLSX from "xlsx";
 
 function Input() {
@@ -10,10 +11,10 @@ function Input() {
       const workbook = XLSX.read(data, {
         type: "binary",
       });
-      workbook.SheetNames.forEach((sheet) => {
-        let rowObject = XLSX.utils.sheet_to_json(workbook.Sheets[sheet]);
-        console.log(rowObject);
-      });
+      
+      const processed = processWorkbookData(workbook)
+      console.log({processed});
+      
     };
 
     reader.readAsBinaryString(file);

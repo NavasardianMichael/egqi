@@ -1,5 +1,4 @@
 import Header from './components/Header';
-import "./app.css";
 import Input from './components/Input';
 
 function App() {
