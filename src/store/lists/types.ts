@@ -9,7 +9,7 @@ export type T_Indicator = {
 }
 
 export type T_Year = {
-    name: number
+    name: string
 }
 
 export type T_ListsState = {

@@ -6,8 +6,8 @@ export type T_Value = {
 }
 
 export type T_ValuesState = {
-    [key: T_Indicator['name']]: {
-        [key: T_Country['name']]: {
+    [key: T_Country['name']]: {
+        [key: T_Indicator['name']]: {
             [key: T_Year['name']]: T_Value['value']
         }
     }
