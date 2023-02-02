@@ -2,7 +2,7 @@ import { T_Country, T_Indicator, T_Year } from "store/lists/types"
 import { SET_VALUES } from "./actionTypes"
 
 export type T_Value = {
-    value: string
+    value: number
 }
 
 export type T_ValuesState = {
