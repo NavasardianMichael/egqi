@@ -34,7 +34,7 @@ function FileInput() {
         <input
           onChange={handleChange}
           className="form-control w-100"
-          style={{ maxWidth: "300px" }}
+          style={{ maxWidth: 250 }}
           type="file"
           id="formFile"
           accept=".xlsx, .xls, .csv"
