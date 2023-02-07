@@ -1,5 +1,5 @@
-import { T_ListsState } from "store/lists/types";
-import { T_SettingsState } from "store/settings/types";
+import { T_ListsState, T_Indicator } from "store/lists/types";
+import { T_SettingsState, T_IndicatorSettings } from "store/settings/types";
 import { T_Value, T_ValuesState } from "store/values/types";
 import XLSX from "xlsx";
 
@@ -10,7 +10,12 @@ type T_Data = {
 }
 
 export const processWorkbookData = (workbook: XLSX.WorkBook): T_Data => {
-    const { SheetNames: [ _, ...sheetNames ], Sheets } = workbook
+    const { SheetNames: [ settingSheetName ], Sheets } = workbook
+    const settingsSheet = XLSX.utils.sheet_to_json<T_IndicatorSettings>(Sheets.settings)
+    const indicatorAbbrNames: T_Indicator['name'][] = settingsSheet.map(indicator => indicator.abbr)
+    const indicatorFullNames: T_Indicator['name'][] = settingsSheet.map(indicator => indicator.name)
+    console.log({settingSheetName});
+    
     const result: T_Data = {
         lists: {
             countries: [],
@@ -23,19 +28,23 @@ export const processWorkbookData = (workbook: XLSX.WorkBook): T_Data => {
 
     processSettings(workbook)
     
-    const template = XLSX.utils.sheet_to_json(Sheets[sheetNames[0]])
+    const template = XLSX.utils.sheet_to_json(Sheets[indicatorAbbrNames[0]])
     
     template.forEach((row: any) => result.lists.countries.push(row.Country))
     
     
     const { Country, ...years } = template[0] as any
+    
     result.lists.years = Object.keys(years)
     
-    sheetNames.forEach((indicator) => {
-        const rows: any[] = XLSX.utils.sheet_to_json(Sheets[indicator]);
+    indicatorAbbrNames.forEach((indicatorAbbrName, i) => {
+        const indicatorFullName = indicatorFullNames[i]
+        const rows: any[] = XLSX.utils.sheet_to_json(Sheets[indicatorAbbrName]);
+        console.log(rows, result.lists.years[0]);
+        
         if(!rows[0][result.lists.years[0]]) return
 
-        result.lists.indicators.push(indicator)
+        result.lists.indicators.push()
         
         rows.forEach((columns: any) => {
             const { Country } = columns
@@ -43,11 +52,13 @@ export const processWorkbookData = (workbook: XLSX.WorkBook): T_Data => {
             result.lists.years.forEach((year: any) => {
                 if(!columns[year]) return
                 if(!result.values[Country]) result.values[Country] = {}
-                if(!result.values[Country][indicator]) result.values[Country][indicator] = {}
-                result.values[Country][indicator][year] = columns[year]
+                if(!result.values[Country][indicatorFullName]) result.values[Country][indicatorFullName] = {}
+                result.values[Country][indicatorFullName][year] = columns[year]
             })
         })
     });
+    console.log(processIndices(result));
+    
     return result
 }
 
@@ -116,6 +127,8 @@ const getPercentiledCriticalValues = (data: T_Data): { percentiledMin: number, p
     countries.forEach(country => {
         indicators.forEach(indicator => {
             years.forEach(year => {
+                console.log({values, country, indicator, year});
+                
                 allValues.push(+values[country][indicator][year])
             })
         })

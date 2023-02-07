@@ -2,6 +2,7 @@ import { T_Indicator } from "store/lists/types"
 import { SET_SETTINGS } from "./actionTypes"
 
 export type T_IndicatorSettings = {
+    abbr: string
     name: T_Indicator['name']
     percentile: number
     weight: number
