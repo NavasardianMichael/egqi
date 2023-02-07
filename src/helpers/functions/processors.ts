@@ -1,4 +1,4 @@
-import { T_ListsState, T_Indicator } from "store/lists/types";
+import { T_ListsState, T_Indicator, T_Year } from "store/lists/types";
 import { T_SettingsState, T_IndicatorSettings } from "store/settings/types";
 import { T_Value, T_ValuesState } from "store/values/types";
 import XLSX from "xlsx";
@@ -11,10 +11,9 @@ type T_Data = {
 
 export const processWorkbookData = (workbook: XLSX.WorkBook): T_Data => {
     const { SheetNames: [ settingSheetName ], Sheets } = workbook
-    const settingsSheet = XLSX.utils.sheet_to_json<T_IndicatorSettings>(Sheets.settings)
+    const settingsSheet = XLSX.utils.sheet_to_json<T_IndicatorSettings>(Sheets[settingSheetName])
     const indicatorAbbrNames: T_Indicator['name'][] = settingsSheet.map(indicator => indicator.abbr)
     const indicatorFullNames: T_Indicator['name'][] = settingsSheet.map(indicator => indicator.name)
-    console.log({settingSheetName});
     
     const result: T_Data = {
         lists: {
@@ -23,10 +22,8 @@ export const processWorkbookData = (workbook: XLSX.WorkBook): T_Data => {
             years: []
         },
         values: {},
-        settings: {}
+        settings: processSettings(settingsSheet)
     }
-
-    processSettings(workbook)
     
     const template = XLSX.utils.sheet_to_json(Sheets[indicatorAbbrNames[0]])
     
@@ -40,7 +37,6 @@ export const processWorkbookData = (workbook: XLSX.WorkBook): T_Data => {
     indicatorAbbrNames.forEach((indicatorAbbrName, i) => {
         const indicatorFullName = indicatorFullNames[i]
         const rows: any[] = XLSX.utils.sheet_to_json(Sheets[indicatorAbbrName]);
-        console.log(rows, result.lists.years[0]);
         
         if(!rows[0][result.lists.years[0]]) return
 
@@ -49,7 +45,7 @@ export const processWorkbookData = (workbook: XLSX.WorkBook): T_Data => {
         rows.forEach((columns: any) => {
             const { Country } = columns
             if(!Country) return
-            result.lists.years.forEach((year: any) => {
+            result.lists.years.forEach((year: T_Year['name']) => {
                 if(!columns[year]) return
                 if(!result.values[Country]) result.values[Country] = {}
                 if(!result.values[Country][indicatorFullName]) result.values[Country][indicatorFullName] = {}
@@ -57,18 +53,15 @@ export const processWorkbookData = (workbook: XLSX.WorkBook): T_Data => {
             })
         })
     });
-    console.log(processIndices(result));
     
     return result
 }
 
-const processSettings = (workbook: XLSX.WorkBook) => {
-    const { SheetNames, Sheets } = workbook
-    console.log({Sheets, SheetNames: SheetNames[0]}, Sheets[SheetNames[0]]);
-    
-    const settings = XLSX.utils.sheet_to_json(Sheets[SheetNames[0]])
-    console.log({settings});
-    
+const processSettings = (data: T_IndicatorSettings[]): T_SettingsState => {
+    return data.reduce((state: T_SettingsState, indicator: T_IndicatorSettings) => {
+        state[indicator.name as keyof T_SettingsState] = indicator
+        return state
+    }, {})
 }
 
 export const processIndices = (data: T_Data) => {
