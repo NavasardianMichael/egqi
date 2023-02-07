@@ -1,29 +1,37 @@
 import { T_ListsState } from "store/lists/types";
+import { T_SettingsState } from "store/settings/types";
 import { T_Value, T_ValuesState } from "store/values/types";
 import XLSX from "xlsx";
 
-type T_Data = { lists: T_ListsState, values: T_ValuesState }
+type T_Data = {
+    lists: T_ListsState, 
+    values: T_ValuesState
+    settings: T_SettingsState
+}
 
 export const processWorkbookData = (workbook: XLSX.WorkBook): T_Data => {
-    const { SheetNames, Sheets } = workbook
+    const { SheetNames: [ _, ...sheetNames ], Sheets } = workbook
     const result: T_Data = {
         lists: {
             countries: [],
             indicators: [],
             years: []
         },
-        values: {}
+        values: {},
+        settings: {}
     }
+
+    processSettings(workbook)
     
-    const templateSrc = XLSX.utils.sheet_to_json(Sheets[SheetNames[0]])
+    const template = XLSX.utils.sheet_to_json(Sheets[sheetNames[0]])
     
-    templateSrc.forEach((row: any) => result.lists.countries.push(row.Country))
+    template.forEach((row: any) => result.lists.countries.push(row.Country))
     
-    const { Country, ...years } = templateSrc[0] as any
     
+    const { Country, ...years } = template[0] as any
     result.lists.years = Object.keys(years)
     
-    SheetNames.forEach((indicator) => {
+    sheetNames.forEach((indicator) => {
         const rows: any[] = XLSX.utils.sheet_to_json(Sheets[indicator]);
         if(!rows[0][result.lists.years[0]]) return
 
@@ -41,6 +49,15 @@ export const processWorkbookData = (workbook: XLSX.WorkBook): T_Data => {
         })
     });
     return result
+}
+
+const processSettings = (workbook: XLSX.WorkBook) => {
+    const { SheetNames, Sheets } = workbook
+    console.log({Sheets, SheetNames: SheetNames[0]}, Sheets[SheetNames[0]]);
+    
+    const settings = XLSX.utils.sheet_to_json(Sheets[SheetNames[0]])
+    console.log({settings});
+    
 }
 
 export const processIndices = (data: T_Data) => {
