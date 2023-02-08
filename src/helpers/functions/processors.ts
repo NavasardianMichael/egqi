@@ -12,9 +12,9 @@ import XLSX from "xlsx";
 const processCountries = (templateSheet: T_Row[]): T_CountriesState => {  
     return templateSheet.reduce((state, row) => {
         const countryName = row['Country Name']
-        state.allIds.push(countryName)
-        state.byId[countryName] = {
-            id: COUNTRY_CODES_BY_NAMES[countryName as keyof typeof COUNTRY_CODES_BY_NAMES],
+        state.allNames.push(countryName)
+        state.byName[countryName] = {
+            abbr: COUNTRY_CODES_BY_NAMES[countryName as keyof typeof COUNTRY_CODES_BY_NAMES],
             name: countryName
         }
         return state
@@ -63,26 +63,37 @@ export const processWorkbookData = (workbook: XLSX.WorkBook) => {
     return result
 }
 
+
 export const processIndices = (utils: Omit<RootState, 'indices'>, contentSheets: T_Sheets): T_IndicesState => {
 
-    const normalized = normalizeValues(utils, contentSheets)
-    console.log({normalized});
-    return {
-        
-    }
+    const normalizedValues = normalizeValues(utils, contentSheets)
+    const { countries, years } = utils
+    console.log({normalizedValues});
     
+    let result: T_IndicesState = {}
+    
+    countries.allNames.forEach(countryName => {
+        years.forEach(year => {
+            result[countryName][year] = {
+                egqi: 0,
+                egqgi: 0,
+                egqei: 0,
+            }
+        })
+    })
+
+    return result    
 }
 
 const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_Sheets): T_NormalizedValues => { 
     let result: T_NormalizedValues = {}
-
     const { indicators, years } = utils
     
     indicators.allNames.forEach((indicatorName) => {
         const { min, max } = getCriticalValues(utils, contentSheets[indicators.byName[indicatorName].abbr])
         const distance = max - min
         contentSheets[indicators.byName[indicatorName].abbr].forEach((row) => {
-            const countryName = row["Country Name"]
+            const countryName = row['Country Name']
             years.forEach((year) => {
                 const value = +row[year]
                 if(isNaN(value)) return

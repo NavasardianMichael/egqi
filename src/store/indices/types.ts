@@ -9,7 +9,7 @@ export type T_Indices = {
 }
 
 export type T_IndicesState = {
-    [key: T_Country['id']]: {
+    [key: T_Country['name']]: {
         [key: T_Year]: T_Indices
     }
 }

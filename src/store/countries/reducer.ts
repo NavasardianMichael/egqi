@@ -2,8 +2,8 @@ import { SET_COUNTRIES } from "./actionTypes"
 import { T_CountriesActions, T_CountriesState } from "./types"
 
 export const initialCountriesState: T_CountriesState = {
-    byId: {},
-    allIds: []
+    byName: {},
+    allNames: []
 }
 
 export function countriesReducer(state: T_CountriesState = initialCountriesState, action: T_CountriesActions): T_CountriesState {

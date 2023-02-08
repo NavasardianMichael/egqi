@@ -12,7 +12,7 @@ export type T_Sheets = {
 }
 
 export type T_NormalizedValues = {
-    [key: T_Country['id']]: {
+    [key: T_Country['name']]: {
         [key: T_Indicator['name']]: {
             [key: T_Year]: number
         }

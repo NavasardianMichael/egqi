@@ -1,15 +1,15 @@
 import { SET_COUNTRIES } from "./actionTypes"
 
 export type T_Country = {
-    id: string
+    abbr: string
     name: string
 }
 
 export type T_CountriesState = {
-    byId: {
-        [key: T_Country['id']]: T_Country
+    byName: {
+        [key: T_Country['name']]: T_Country
     }
-    allIds: T_Country['id'][]
+    allNames: T_Country['name'][]
 }
 
 export type T_SetCountries = (state: T_CountriesState) => {
