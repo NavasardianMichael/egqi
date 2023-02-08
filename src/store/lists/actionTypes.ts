@@ -1,1 +1,0 @@
-export const SET_LISTS = 'LISTS/SET_LISTS' 

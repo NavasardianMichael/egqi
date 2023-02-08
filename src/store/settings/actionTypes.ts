@@ -1,1 +1,0 @@
-export const SET_SETTINGS = 'SETTINGS/SET_SETTINGS' 

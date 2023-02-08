@@ -1,0 +1,1 @@
+export const SET_INDICES = 'INDICES/SET_INDICES' 

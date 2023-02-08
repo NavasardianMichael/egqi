@@ -1,12 +1,7 @@
 import { processWorkbookData } from "helpers/functions/processors";
-import { useDispatch } from "react-redux";
-import { setLists } from "store/lists/actionCreators";
-import { setSettings } from "store/settings/actionCreators";
-import { setValues } from "store/values/actionCreators";
 import XLSX from "xlsx";
 
 function FileInput() {
-  const dispatch = useDispatch()
   
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const file = e.target.files?.[0] as File;
@@ -19,9 +14,10 @@ function FileInput() {
       });
       
       const processedData = processWorkbookData(workbook)
-      dispatch(setLists(processedData.lists))
-      dispatch(setValues(processedData.values))
-      dispatch(setSettings(processedData.settings))
+      console.log({processedData})
+      // dispatch(setLists(processedData.lists))
+      // dispatch(setValues(processedData.values))
+      // dispatch(setSettings(processedData.settings))
     };
 
     reader.readAsBinaryString(file);
