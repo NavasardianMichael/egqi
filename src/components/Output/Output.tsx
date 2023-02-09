@@ -20,7 +20,10 @@ const Output = () => {
                     <tr>
                         <th scope="col"></th>
                         <th scope="col">Country</th>
-                        <th scope="col">EGQGI</th>
+                        <th scope="col" className={styles.sortable_cell}>
+                            <button />
+                            <span>EGQGI</span>
+                        </th>
                         <th scope="col">EGQEI</th>
                     </tr>
                 </thead>
@@ -31,7 +34,7 @@ const Output = () => {
                             console.log(countryName)
                             return (
                                 <tr key={countryName}>
-                                    <td className={styles.img_cel}>
+                                    <td className={styles.img_cell}>
                                         <img src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} />
                                     </td>
                                     <td>{countryName}</td>
