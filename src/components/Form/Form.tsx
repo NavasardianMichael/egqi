@@ -1,12 +1,12 @@
 import FileInput from "components/Form/FileInput";
+import Output from "components/Output/Output";
 import { ProcessButton } from "./ProcessButton";
 
 const Form = () => {
   return (
-    <div className="d-flex align-items-center mt-3 flex-wrap" style={{gap: 30}}>
+    <div className="d-flex mt-3 flex-column" style={{gap: 30}}>
       <FileInput />
-      {/* <Percentiles /> */}
-      {/* <Weights /> */}
+      <Output />
       <ProcessButton />
     </div>
   );

@@ -5,7 +5,10 @@ export type T_Indicator = {
     name: string
     percentile: number
     weight: number
-    subindex: number
+    subindex: 0 | 1
+    affect: 1 | -1
+    min: number
+    max: number
 }
 
 export type T_IndicatorsState = {

@@ -5,8 +5,8 @@ import { initialCountriesState } from "store/countries/reducer";
 import { T_CountriesState } from "store/countries/types";
 import { initialIndicatorsState } from "store/indicators/reducer";
 import { T_Indicator, T_IndicatorsState } from "store/indicators/types";
-import { T_IndicesState } from "store/indices/types";
-import { T_YearsState } from "store/years/types";
+import { T_Indices, T_IndicesState } from "store/indices/types";
+import { T_Year, T_YearsState } from "store/years/types";
 import XLSX from "xlsx";
 
 const processCountries = (templateSheet: T_Row[]): T_CountriesState => {  
@@ -18,10 +18,8 @@ const processCountries = (templateSheet: T_Row[]): T_CountriesState => {
             name: countryName
         }
         return state
-    }, initialCountriesState) 
+    }, initialCountriesState)
 }
-
-
 
 const workbookContentToJson = (indicesSheetNames: T_Indicator['name'][], Sheets: XLSX.WorkBook['Sheets']) => {
     return indicesSheetNames.reduce((state: T_Sheets, indicatorName: keyof T_Sheets) => {
@@ -50,6 +48,7 @@ export const processWorkbookData = (workbook: XLSX.WorkBook) => {
     const countries = processCountries(workbookJsonSheet[indicesSheetNames[0]]) 
     const indicators = processIndicators(Sheets[indicatorsSheetName])
     const years = processYears(workbookJsonSheet[indicesSheetNames[0]][0])
+console.log(1111, {years});
 
     const result: RootState = {
         countries,
@@ -57,28 +56,60 @@ export const processWorkbookData = (workbook: XLSX.WorkBook) => {
         years,
         indices: processIndices({countries, indicators, years}, workbookJsonSheet)
     }
-    result.indices = processIndices(result, workbookJsonSheet)
     console.log({result});
     
     return result
 }
 
 
+const processEGQGI = (utils: Omit<RootState, 'indices'>, countryIndicators: T_NormalizedValues[keyof T_NormalizedValues], year: T_Year, subindex: T_Indicator['subindex']): T_Indices['egqgi'] => {
+    const { indicators } = utils
+    return indicators.allNames.reduce((indexSum, indicatorName) => {
+        if(indicators.byName[indicatorName].subindex !== subindex) return indexSum
+        indexSum += countryIndicators[indicatorName][year] * indicators.byName[indicatorName].weight
+        return indexSum
+    }, 0)
+}
+
 export const processIndices = (utils: Omit<RootState, 'indices'>, contentSheets: T_Sheets): T_IndicesState => {
 
     const normalizedValues = normalizeValues(utils, contentSheets)
     const { countries, years } = utils
-    console.log({normalizedValues});
     
     let result: T_IndicesState = {}
     
     countries.allNames.forEach(countryName => {
-        years.forEach(year => {
-            result[countryName][year] = {
-                egqi: 0,
-                egqgi: 0,
+        if(!result[countryName]) result[countryName] = {
+            byYear: {},
+            means: {
                 egqei: 0,
+                egqgi: 0,
+                egqi: 0
             }
+        }
+        
+        years.forEach(year => {
+            const egqgi = processEGQGI(utils, normalizedValues[countryName], year, 0)
+            const egqei = processEGQGI(utils, normalizedValues[countryName], year, 1)
+            result[countryName].byYear[year] = {
+                egqi: 0,
+                egqgi,
+                egqei,
+            }
+        })
+        
+        result[countryName].means = years.reduce((means: T_Indices, year: T_Year, i, arr) => {
+            means.egqgi += result[countryName].byYear[year].egqgi
+            means.egqei += result[countryName].byYear[year].egqei
+            if(i === arr.length - 1) {
+                means.egqgi /= years.length
+                means.egqei /= years.length
+            }
+            return means
+        }, {
+            egqi: 0,
+            egqei: 0,
+            egqgi: 0
         })
     })
 
@@ -90,19 +121,19 @@ const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_She
     const { indicators, years } = utils
     
     indicators.allNames.forEach((indicatorName) => {
-        const { min, max } = getCriticalValues(utils, contentSheets[indicators.byName[indicatorName].abbr])
+        const indicator = indicators.byName[indicatorName]
+        const { min, max } = getCriticalValues(utils, contentSheets[indicator.abbr], indicatorName)
         const distance = max - min
-        contentSheets[indicators.byName[indicatorName].abbr].forEach((row) => {
+        contentSheets[indicator.abbr].forEach((row) => {
             const countryName = row['Country Name']
             years.forEach((year) => {
                 const value = +row[year]
-                if(isNaN(value)) return
 
-                const normalizedValue = (value - min) / distance * 100
-                
+                let normalizedValue = (value - min) / distance * 100
+                if(indicator.affect === -1) normalizedValue = 100 - normalizedValue
                 if(!result[countryName]) result[countryName] = {}
-                if(!result[countryName][indicators.byName[indicatorName].name]) result[countryName][indicators.byName[indicatorName].name] = {}
-                result[countryName][indicators.byName[indicatorName].name][year] = Math.max(Math.min(normalizedValue, 100), 0)
+                if(!result[countryName][indicator.name]) result[countryName][indicator.name] = {}
+                result[countryName][indicator.name][year] = Math.max(Math.min(normalizedValue, 100), 0)
             })
         })
     })
@@ -110,13 +141,19 @@ const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_She
 }
 
 
-const getCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[]): { min: number, max: number } => {
+const getCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[], indicatorName: T_Indicator['name']): { min: number, max: number } => {
     let res = {
         min: 0,
         max: 0
     }
     const { percentiledMin, percentiledMax } = getPercentiledCriticalValues(utils, sheetRows)
-    const { years } = utils
+    const { indicators, years } = utils
+    const { max: givenMax, min: givenMin } = indicators.byName[indicatorName]
+    if(givenMax != null) {
+        res.max = givenMax
+        res.min = givenMin
+        return res
+    } 
     
     sheetRows.forEach((row) => {
         years.forEach(year => {

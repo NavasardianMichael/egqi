@@ -6,10 +6,10 @@ export const initialYearsState: T_YearsState = []
 export function yearsReducer(state: T_YearsState = initialYearsState, action: T_YearsActions): T_YearsState {
     switch (action.type) {
         case SET_YEARS:
-            return {
+            return [
                 ...state,
                 ...action.payload
-            }
+            ]
         default:
             return state
     }
