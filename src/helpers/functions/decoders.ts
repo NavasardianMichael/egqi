@@ -48,7 +48,6 @@ export const processWorkbookData = (workbook: XLSX.WorkBook) => {
     const countries = processCountries(workbookJsonSheet[indicesSheetNames[0]]) 
     const indicators = processIndicators(Sheets[indicatorsSheetName])
     const years = processYears(workbookJsonSheet[indicesSheetNames[0]][0])
-console.log(1111, {years});
 
     const result: RootState = {
         countries,
@@ -56,7 +55,6 @@ console.log(1111, {years});
         years,
         indices: processIndices({countries, indicators, years}, workbookJsonSheet)
     }
-    console.log({result});
     
     return result
 }
@@ -84,7 +82,8 @@ export const processIndices = (utils: Omit<RootState, 'indices'>, contentSheets:
             means: {
                 egqei: 0,
                 egqgi: 0,
-                egqi: 0
+                egqi: 0,
+                egqemr: 0,
             }
         }
         
@@ -92,24 +91,30 @@ export const processIndices = (utils: Omit<RootState, 'indices'>, contentSheets:
             const egqgi = processEGQGI(utils, normalizedValues[countryName], year, 0)
             const egqei = processEGQGI(utils, normalizedValues[countryName], year, 1)
             result[countryName].byYear[year] = {
-                egqi: 0,
+                egqi: (egqei + egqgi) / 2,
                 egqgi,
                 egqei,
+                egqemr: egqei - egqgi
             }
         })
         
         result[countryName].means = years.reduce((means: T_Indices, year: T_Year, i, arr) => {
             means.egqgi += result[countryName].byYear[year].egqgi
             means.egqei += result[countryName].byYear[year].egqei
+            means.egqemr += result[countryName].byYear[year].egqemr
+            means.egqi += result[countryName].byYear[year].egqi
             if(i === arr.length - 1) {
                 means.egqgi /= years.length
                 means.egqei /= years.length
+                means.egqemr /= years.length
+                means.egqi /= years.length
             }
             return means
         }, {
             egqi: 0,
             egqei: 0,
-            egqgi: 0
+            egqgi: 0,
+            egqemr: 0
         })
     })
 

@@ -1,5 +1,6 @@
-import { SET_COUNTRIES } from "./actionTypes"
-import { T_CountriesActions, T_CountriesState } from "./types"
+import { COL_NAMES, COL_SORT_TYPES } from "helpers/constants.ts/output"
+import { SET_COUNTRIES, SORT_COUNTRIES } from "./actionTypes"
+import { T_CountriesActions, T_CountriesState, T_Country } from "./types"
 
 export const initialCountriesState: T_CountriesState = {
     byName: {},
@@ -12,6 +13,37 @@ export function countriesReducer(state: T_CountriesState = initialCountriesState
             return {
                 ...state,
                 ...action.payload
+            }
+        case SORT_COUNTRIES:
+            const { col, order, indices } = action.payload
+            console.log({col, order});
+            
+            let newNames: T_CountriesState['allNames'] = [...state.allNames]
+            if(col === COL_NAMES.country) {
+                    order !== COL_SORT_TYPES[1] ? 
+                    newNames.sort((a: T_Country['name'], b: T_Country['name']) => {
+                        if(a > b) return 1
+                        if(a < b) return -1
+                        return 0                        
+                    })  :
+                    newNames.sort((a: any, b: any) => {
+                        if(a > b) return -1
+                        if(a < b) return 1
+                        return 0                        
+                    }) 
+                    console.log(order === COL_SORT_TYPES[1]);
+            } else {
+                order !== COL_SORT_TYPES[1] ?
+                newNames.sort((a: T_Country['name'], b: T_Country['name']) => {
+                    return indices[a].means[col] - indices[b].means[col]
+                }) :
+                newNames.sort((a: T_Country['name'], b: T_Country['name']) => {
+                    return indices[b].means[col] - indices[a].means[col]
+                })
+            }
+            return {
+                ...state,
+                allNames: newNames
             }
         default:
             return state

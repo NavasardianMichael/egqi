@@ -1,4 +1,4 @@
-import { processWorkbookData } from "helpers/functions/processors";
+import { processWorkbookData } from "helpers/functions/decoders";
 import { useDispatch } from "react-redux";
 import { setCountriesState } from "store/countries/actionCreators";
 import { setIndicators } from "store/indicators/actionCreators";

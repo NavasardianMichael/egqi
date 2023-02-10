@@ -6,6 +6,7 @@ export type T_Indices = {
     egqi: number
     egqgi: number
     egqei: number
+    egqemr: number
 }
 
 export type T_IndicesState = {

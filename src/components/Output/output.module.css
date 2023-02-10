@@ -1,3 +1,7 @@
+table.output {
+    max-width: 1000px;
+}
+
 table.output .img_cell {
     width: 70px;
     height: 50px;
@@ -13,18 +17,29 @@ table.output .img_cell img {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-transform: uppercase;
 }
 
 .sortable_cell button {
     all: unset;
     display: block;
     cursor: pointer;
+    transition: .3s;
 }
 
 .sortable_cell button::after {
     display: block;
     content: '';
-    width: 32px;
-    height: 32px;
-    background-image: url('assets/images/chevron-up.png');
+    width: 16px;
+    height: 16px;
+    background-image: url('assets/images/chevron-up.svg');
+    background-size: 100%;
+}
+
+.sortable_cell button.disabled {
+    opacity: .3;
+}
+
+.sortable_cell button.descending {
+    transform: rotate(180deg);
 }

@@ -6,8 +6,8 @@ const Form = () => {
   return (
     <div className="d-flex mt-3 flex-column" style={{gap: 30}}>
       <FileInput />
-      <Output />
       <ProcessButton />
+      <Output />
     </div>
   );
 }
