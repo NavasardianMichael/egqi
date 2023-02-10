@@ -1,4 +1,4 @@
-import { COL_NAMES, COL_SORT_TYPES } from "helpers/constants.ts/output"
+import { COL_NAMES, COL_SORT_TYPES } from "helpers/constants.ts/indices"
 import { SET_COUNTRIES, SORT_COUNTRIES } from "./actionTypes"
 import { T_CountriesActions, T_CountriesState, T_Country } from "./types"
 
@@ -16,9 +16,8 @@ export function countriesReducer(state: T_CountriesState = initialCountriesState
             }
         case SORT_COUNTRIES:
             const { col, order, indices } = action.payload
-            console.log({col, order});
-            
             let newNames: T_CountriesState['allNames'] = [...state.allNames]
+            
             if(col === COL_NAMES.country) {
                     order !== COL_SORT_TYPES[1] ? 
                     newNames.sort((a: T_Country['name'], b: T_Country['name']) => {
@@ -31,7 +30,6 @@ export function countriesReducer(state: T_CountriesState = initialCountriesState
                         if(a < b) return 1
                         return 0                        
                     }) 
-                    console.log(order === COL_SORT_TYPES[1]);
             } else {
                 order !== COL_SORT_TYPES[1] ?
                 newNames.sort((a: T_Country['name'], b: T_Country['name']) => {

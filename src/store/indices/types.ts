@@ -1,4 +1,5 @@
 import { T_Country } from "store/countries/types"
+import { T_Indicator } from "store/indicators/types"
 import { T_Year } from "store/years/types"
 import { SET_INDICES } from "./actionTypes"
 
@@ -9,11 +10,15 @@ export type T_Indices = {
     egqemr: number
 }
 
+export type T_IndicesByIndicator = {
+    [key: T_Indicator['name']]: {
+        [key: T_Year]: number
+    }
+}
+
 export type T_IndicesState = {
     [key: T_Country['name']]: {
-        byYear: {
-            [key: T_Year]: T_Indices
-        }
+        byIndicator: T_IndicesByIndicator
         means: T_Indices
     }
 }

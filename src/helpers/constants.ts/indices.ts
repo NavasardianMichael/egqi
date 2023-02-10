@@ -11,3 +11,10 @@ export const COL_SORT_TYPES = {
     1: 1,
     2: 2,
 } as const
+
+export const INDICES_INITIALS = {
+    [COL_NAMES.egqgi]: 0,
+    [COL_NAMES.egqei]: 0,
+    [COL_NAMES.egqi]: 0,
+    [COL_NAMES.egqemr]: 0,
+}

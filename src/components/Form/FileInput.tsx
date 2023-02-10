@@ -31,11 +31,8 @@ function FileInput() {
   };
 
   return (
-    <div className="my-3">
+    <div className="mt-3">
       <div>
-        <label htmlFor="formFile" className="form-label">
-          File
-        </label>
         <input
           onChange={handleChange}
           className="form-control w-100"

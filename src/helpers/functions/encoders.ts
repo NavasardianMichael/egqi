@@ -18,19 +18,22 @@ export const generateExcelFile = (data: any, fileName: string) => {
 }
 
 export const generateIndicatorsExcelFile = (data: RootState) => {
-    const { countries, indicators, indices, years } = data
-    const processed = indicators.allNames.map(indicatorName => {
-        return countries.allNames.map((countryName) => {
-            return {
+    const { countries, indicators, years, indices } = data
+    const processed = indicators.allNames.reduce((state: any, indicatorName) => {
+        countries.allNames.forEach((countryName) => {
+            state.push({
                 'Country Name': countryName,
                 'Indicator Name': indicatorName,
                 ...years.reduce((state: {[key: T_Year]: number}, year) => {
-                    state[year] = indices[countryName].byYear[year].egqei
+                    state[year] = indices[countryName].byIndicator[indicatorName][year]
                     return state
                 }, {})
-            }
+            })
         })
-    })
+        return state 
+    }, [])
+    console.log({processed});
+    
     generateExcelFile(processed, 'EGQI indicators')
 }
 

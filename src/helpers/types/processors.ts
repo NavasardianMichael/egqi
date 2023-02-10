@@ -10,11 +10,3 @@ export type T_Row = {
 export type T_Sheets = {
     [key: T_Indicator['name']]: T_Row[]
 }
-
-export type T_NormalizedValues = {
-    [key: T_Country['name']]: {
-        [key: T_Indicator['name']]: {
-            [key: T_Year]: number
-        }
-    }
-}

@@ -5,8 +5,8 @@ import { selectCountriesState } from "store/countries/selectors";
 import { selectIndices } from "store/indices/selectors";
 import { selectYears } from "store/years/selectors";
 import styles from './output.module.css'
-import { COL_NAMES, COL_SORT_TYPES } from 'helpers/constants.ts/output';
 import { sortCountries } from 'store/countries/actionCreators';
+import { COL_NAMES, COL_SORT_TYPES } from 'helpers/constants.ts/indices';
 
 const Output = () => {
 
