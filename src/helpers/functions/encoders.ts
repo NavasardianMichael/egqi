@@ -80,8 +80,8 @@ export const generateSummaryRowsExcelFile = (data: RootState) => {
                 year,
                 ...calcIndices
             })
-            id++
         })
+        id++
         return state
     }, [])
     console.log({processed});
