@@ -116,7 +116,12 @@ const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_She
                 years.forEach((year) => {
                     
                     const value = +row[year]
-                    
+                    if(countryName === 'Canada') console.log({
+                        indicatorName,
+                        countryName,
+                        value,
+                        row,
+                    })
                     let normalizedValue = (value - min) / distance * 100
                     
                     if(indicator.affect === -1) normalizedValue = 100 - normalizedValue

@@ -1,5 +1,6 @@
 table.output {
     max-width: 1000px;
+    vertical-align: middle;
 }
 
 table.output .img_cell {
