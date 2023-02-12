@@ -12,6 +12,11 @@ export const COL_SORT_TYPES = {
     2: 2,
 } as const
 
+export const SUBINDEX_TYPES = {
+    0: 0,
+    1: 1
+}
+
 export const INDICES_INITIALS = {
     [COL_NAMES.egqgi]: 0,
     [COL_NAMES.egqei]: 0,

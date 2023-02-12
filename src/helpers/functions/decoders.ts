@@ -1,12 +1,12 @@
 import { COUNTRY_CODES_BY_NAMES } from "helpers/constants.ts/countries";
-import { INDICES_INITIALS } from "helpers/constants.ts/indices";
+import { INDICES_INITIALS, SUBINDEX_TYPES } from "helpers/constants.ts/indices";
 import { T_Row, T_Sheets } from "helpers/types/processors";
 import { RootState } from "index";
 import { initialCountriesState } from "store/countries/reducer";
 import { T_CountriesState, T_Country } from "store/countries/types";
 import { initialIndicatorsState } from "store/indicators/reducer";
 import { T_Indicator, T_IndicatorsState } from "store/indicators/types";
-import { T_Indices, T_IndicesByIndicator, T_IndicesState } from "store/indices/types";
+import { T_Indices, T_IndicesByIndicator, T_IndicesByYear, T_IndicesState } from "store/indices/types";
 import { T_YearsState } from "store/years/types";
 import XLSX from "xlsx";
 
@@ -68,38 +68,68 @@ const processIndices = (utils: Omit<RootState, 'indices'>, contentSheets: T_Shee
     let result: T_IndicesState = {}
     
     countries.allNames.forEach((countryName: T_Country['name']) => {
-        if(!result[countryName]) {
-            result[countryName] = {
-                byIndicator: normalizedValues[countryName],
-                means: INDICES_INITIALS
-            }
-        }
+        const countryIndicators = normalizedValues[countryName] 
         
-        const egqgi = processEGQGI(utils, normalizedValues[countryName], 0)
-        const egqei = processEGQGI(utils, normalizedValues[countryName], 1)
-        result[countryName].means = {
-            egqi: (egqei + egqgi) / 2,
-            egqgi,
-            egqei,
-            egqemr: egqei / egqgi
+        const indicesByYears = processIndicesByYear(utils, countryIndicators)
+        console.log({indicesByYears});
+        
+        result[countryName] = {
+            byIndicator: countryIndicators,
+            byYear: indicesByYears,
+            means: processIndicesMeans(utils, indicesByYears)
         }
     })
+console.log({result});
 
     return result
 }
 
-const processEGQGI = (utils: Omit<RootState, 'indices'>, countryIndicators: T_IndicesByIndicator, subindex: T_Indicator['subindex']): T_Indices['egqgi'] => {
-    const { indicators, years } = utils
-    
-    return years.reduce((indexSum, year) => {
-        indicators.allNames.forEach(indicatorName => {
-            if(indicators.byName[indicatorName].subindex !== subindex) return indexSum
-            indexSum += countryIndicators[indicatorName][year] * indicators.byName[indicatorName].weight
-        })
-        return indexSum
-    }, 0) / years.length
+const processIndicesMeans = (utils: Omit<RootState, 'indices'>, indicesByYears: T_IndicesByYear): T_Indices => {
+    const { years } = utils
+    return years.reduce((state, year, i, arr) => {
+        state.egqgi += indicesByYears[year].egqgi
+        state.egqei += indicesByYears[year].egqei
+        state.egqi += indicesByYears[year].egqi
+        state.egqemr += indicesByYears[year].egqemr
+        if(i === arr.length - 1) {
+            state.egqgi /= years.length
+            state.egqei /= years.length
+            state.egqi /= years.length
+            state.egqemr /= years.length
+        }
+        return state
+    }, {...INDICES_INITIALS})
 }
 
+const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicators: T_IndicesByIndicator): T_IndicesByYear => {
+    const { indicators, years } = utils
+    
+    const indicesByYears = years.reduce((state: T_IndicesByYear, year) => {
+        const indices = indicators.allNames.reduce((indicesState, indicatorName, i, arr) => {
+            const { subindex, weight } = indicators.byName[indicatorName]
+            if(subindex === SUBINDEX_TYPES[0]) {
+                indicesState.egqgi += countryIndicators[indicatorName][year] * weight
+            } else {
+                indicesState.egqei +=  weight * (
+                    +countryIndicators[indicatorName][year + 1] +
+                    +countryIndicators[indicatorName][year + 2] +
+                    +countryIndicators[indicatorName][year + 3]
+                ) / 3
+            }
+            if(i === arr.length - 1) {
+                indicesState.egqi = (indicesState.egqgi + indicesState.egqei) / 2
+                indicesState.egqemr =  indicesState.egqei / indicesState.egqgi
+            }
+             
+            return indicesState
+        }, {...INDICES_INITIALS})
+        
+        state[year] = {...indices}
+        return state
+    }, {})
+
+    return indicesByYears
+}
 
 const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_Sheets): { [key: T_Country['name']]: T_IndicesByIndicator} => { 
     let result: { [key: T_Country['name']]: T_IndicesByIndicator } = {}
@@ -112,16 +142,13 @@ const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_She
         const distance = max - min
         
         contentSheets[indicator.abbr].forEach((row) => {
-                const countryName = row['Country Name']
-                years.forEach((year) => {
+                const countryName = row['Country Name'];
+                [...years, years[years.length - 1] + 1, years[years.length - 1] + 2, years[years.length - 1] + 3].forEach((year) => {
                     
                     const value = +row[year]
-                    if(countryName === 'Canada') console.log({
-                        indicatorName,
-                        countryName,
-                        value,
-                        row,
-                    })
+
+                    if(isNaN(value)) return
+
                     let normalizedValue = (value - min) / distance * 100
                     
                     if(indicator.affect === -1) normalizedValue = 100 - normalizedValue

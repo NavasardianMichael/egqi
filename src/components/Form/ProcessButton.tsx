@@ -1,31 +1,31 @@
-import { generateIndicatorsExcelFile, generateIndicatorsRowsExcelFile, generateSummaryExcelFile, generateSummaryRowsExcelFile } from "helpers/functions/encoders"
+import { DOWNLOAD_BUTTONS } from "helpers/constants.ts/output"
 import { RootState } from "index"
-import { useStore } from "react-redux"
+import { useSelector, useStore } from "react-redux"
+import { selectYears } from "store/years/selectors"
 
 export const ProcessButton = () => {
     const { getState } = useStore<RootState>()
-    const state = getState() 
-    const handleSummaryClick = () => {
-        generateSummaryExcelFile(state)
-    }
+    const state = getState()
+    const years = useSelector(selectYears)
 
-    const handleSummaryRowsClick = () => {
-        generateSummaryRowsExcelFile(state)
-    }
-    
-    const handleIndicatorsClick = () => {
-        generateIndicatorsExcelFile(state)
-    }
+    if(!years?.length) return null
 
-    const handleIndicatorsRowsClick = () => {
-        generateIndicatorsRowsExcelFile(state)
-    }
     return (
         <div className='d-flex justify-content-start justify-content-left' style={{gap: 20}}>
-            <button onClick={handleSummaryClick} type="button" className="btn link-primary">Download Summary</button>
-            <button onClick={handleSummaryRowsClick} type="button" className="btn btn-primary">Download Summary (Rows)</button>
-            <button onClick={handleIndicatorsClick} type="button" className="btn btn-primary">Download Indicators</button>
-            <button onClick={handleIndicatorsRowsClick} type="button" className="btn btn-primary">Download Indicators (rows)</button>
+            {
+                DOWNLOAD_BUTTONS.map(button => {
+                    return (
+                        <button 
+                            key={button.id}
+                            type="button" 
+                            className="btn btn-secondary"
+                            onClick={() => button.handler(state)}
+                        >
+                            {button.text}
+                        </button>
+                    )
+                })
+            }
         </div>
     )
 }

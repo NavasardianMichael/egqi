@@ -72,7 +72,7 @@ const Output = () => {
                         countries.allNames.map((countryName, i) => {
                             return (
                                 <tr key={countryName}>
-                                    <td>{i}</td>
+                                    <td>{i+1}</td>
                                     <td className={styles.img_cell}>
                                         <img src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} />
                                     </td>

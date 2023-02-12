@@ -16,9 +16,14 @@ export type T_IndicesByIndicator = {
     }
 }
 
+export type T_IndicesByYear = {
+    [key: T_Country['name']]: T_Indices
+}
+
 export type T_IndicesState = {
     [key: T_Country['name']]: {
         byIndicator: T_IndicesByIndicator
+        byYear: T_IndicesByYear
         means: T_Indices
     }
 }
