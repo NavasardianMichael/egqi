@@ -69,19 +69,48 @@ const processIndices = (utils: Omit<RootState, 'indices'>, contentSheets: T_Shee
     
     countries.allNames.forEach((countryName: T_Country['name']) => {
         const countryIndicators = normalizedValues[countryName] 
+        console.log({countryName});
         
         const indicesByYears = processIndicesByYear(utils, countryIndicators)
-        console.log({indicesByYears});
-        
         result[countryName] = {
             byIndicator: countryIndicators,
             byYear: indicesByYears,
             means: processIndicesMeans(utils, indicesByYears)
         }
     })
-console.log({result});
 
     return result
+}
+
+const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicators: T_IndicesByIndicator): T_IndicesByYear => {
+    const { indicators, years } = utils
+    
+    const indicesByYears = years.reduce((state: T_IndicesByYear, year) => {
+        const indices = indicators.allNames.reduce((indicesState, indicatorName, i, arr) => {
+            const { subindex, weight } = indicators.byName[indicatorName]
+            if(subindex === SUBINDEX_TYPES[0]) {
+                console.log(indicesState.egqgi, countryIndicators[indicatorName][year], weight);
+                indicesState.egqgi += countryIndicators[indicatorName][year] * weight
+            } else {
+                indicesState.egqei +=  weight * (
+                    countryIndicators[indicatorName][year + 1] +
+                    countryIndicators[indicatorName][year + 2] +
+                    countryIndicators[indicatorName][year + 3]
+                ) / 3
+            }
+            if(i === arr.length - 1) {
+                indicesState.egqi = (indicesState.egqgi + indicesState.egqei) / 2
+                indicesState.egqemr =  indicesState.egqei / indicesState.egqgi
+            }
+            
+            return indicesState
+        }, {...INDICES_INITIALS})
+        
+        state[year] = {...indices}
+        return state
+    }, {})
+
+    return indicesByYears
 }
 
 const processIndicesMeans = (utils: Omit<RootState, 'indices'>, indicesByYears: T_IndicesByYear): T_Indices => {
@@ -101,36 +130,6 @@ const processIndicesMeans = (utils: Omit<RootState, 'indices'>, indicesByYears: 
     }, {...INDICES_INITIALS})
 }
 
-const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicators: T_IndicesByIndicator): T_IndicesByYear => {
-    const { indicators, years } = utils
-    
-    const indicesByYears = years.reduce((state: T_IndicesByYear, year) => {
-        const indices = indicators.allNames.reduce((indicesState, indicatorName, i, arr) => {
-            const { subindex, weight } = indicators.byName[indicatorName]
-            if(subindex === SUBINDEX_TYPES[0]) {
-                indicesState.egqgi += countryIndicators[indicatorName][year] * weight
-            } else {
-                indicesState.egqei +=  weight * (
-                    +countryIndicators[indicatorName][year + 1] +
-                    +countryIndicators[indicatorName][year + 2] +
-                    +countryIndicators[indicatorName][year + 3]
-                ) / 3
-            }
-            if(i === arr.length - 1) {
-                indicesState.egqi = (indicesState.egqgi + indicesState.egqei) / 2
-                indicesState.egqemr =  indicesState.egqei / indicesState.egqgi
-            }
-             
-            return indicesState
-        }, {...INDICES_INITIALS})
-        
-        state[year] = {...indices}
-        return state
-    }, {})
-
-    return indicesByYears
-}
-
 const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_Sheets): { [key: T_Country['name']]: T_IndicesByIndicator} => { 
     let result: { [key: T_Country['name']]: T_IndicesByIndicator } = {}
     const { indicators, years } = utils
@@ -138,6 +137,7 @@ const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_She
     indicators.allNames.forEach((indicatorName) => {
         const indicator = indicators.byName[indicatorName]
         const { min, max } = getCriticalValues(utils, contentSheets[indicator.abbr], indicatorName)
+        console.log({min, max});
         
         const distance = max - min
         
@@ -158,55 +158,60 @@ const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_She
                 })
             })
     })
-    console.log({result});
-    
+
     return result
 }
 
 const getCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[], indicatorName: T_Indicator['name']): { min: number, max: number } => {
-    let res = {
-        min: 0,
-        max: 0
-    }
     const { percentiledMin, percentiledMax } = getPercentiledCriticalValues(utils, sheetRows)
+    let res = {
+        min: percentiledMin,
+        max: percentiledMax
+    }
+    
     const { indicators, years } = utils
     const { max: givenMax, min: givenMin } = indicators.byName[indicatorName]
     if(givenMax != null) {
-        res.max = givenMax
-        res.min = givenMin
-        return res
+        return {
+            max: givenMax,
+            min: givenMin
+        } 
     } 
-    
+   
     sheetRows.forEach((row) => {
         years.forEach(year => {
             const value = +row[year]
             
             if(isNaN(value)) return
             
-            if(value > res.max && percentiledMax <= value) return res.max = value
-            if(value < res.min && percentiledMin >= res.min) res.min = value
+            if(value > res.max) return res.max = value
+            if(value < res.min) res.min = value
         })
     })
+    
     return res
 }
 
 const PERCENTILE = 3
 const getPercentiledCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[]): { percentiledMin: number, percentiledMax: number } => {
     const { years } = utils
-    const allValues: number[] = []
+    let allValues: number[] = []
             
     sheetRows.forEach((row) => {
         years.forEach(year => {
             allValues.push(+row[year])
         })
     })
+    
+    allValues.sort((a, b) => a - b)
 
     const percentileCount = Math.round(allValues.length * PERCENTILE / 100)
     
     allValues.splice(0, percentileCount)
     allValues.splice(allValues.length - percentileCount, allValues.length)
+    
     return {
-        percentiledMax: allValues[0],
-        percentiledMin: allValues[allValues.length - 1]
+        percentiledMax: allValues[allValues.length - 1],
+        percentiledMin: allValues[0]
     }
 }

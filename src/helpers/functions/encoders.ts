@@ -33,7 +33,6 @@ export const generateIndicatorsExcelFile = (data: RootState) => {
         })
         return state
     }, [])
-    console.log({processed});
     
     generateExcelFile(processed, 'EGQI indicators')
 }
@@ -56,7 +55,6 @@ export const generateIndicatorsRowsExcelFile = (data: RootState) => {
         })
         return state
     }, [])
-    console.log({processed});
     
     generateExcelFile(processed, 'EGQI indicators rows')
 }
@@ -84,7 +82,6 @@ export const generateSummaryRowsExcelFile = (data: RootState) => {
         id++
         return state
     }, [])
-    console.log({processed});
     
     generateExcelFile(processed, 'EGQI indicators rows')
 }

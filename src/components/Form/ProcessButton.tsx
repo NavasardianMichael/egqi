@@ -18,7 +18,7 @@ export const ProcessButton = () => {
                         <button 
                             key={button.id}
                             type="button" 
-                            className="btn btn-secondary"
+                            className="btn btn-primary"
                             onClick={() => button.handler(state)}
                         >
                             {button.text}

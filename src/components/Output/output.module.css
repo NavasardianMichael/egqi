@@ -1,4 +1,6 @@
 table.output {
+    width: 50%;
+    min-width: 400px;
     max-width: 1000px;
     vertical-align: middle;
 }
@@ -43,4 +45,13 @@ table.output .img_cell img {
 
 .sortable_cell button.descending {
     transform: rotate(180deg);
+}
+
+.actions button {
+    all: unset;
+    cursor: pointer;
+}
+
+.actions button:hover {
+    color: #0d6efd;
 }

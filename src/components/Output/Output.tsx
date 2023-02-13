@@ -64,6 +64,7 @@ const Output = () => {
                                 )
                             })
                         }
+                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,7 +72,7 @@ const Output = () => {
                     {
                         countries.allNames.map((countryName, i) => {
                             return (
-                                <tr key={countryName}>
+                                <tr key={countryName} className={styles.row}>
                                     <td>{i+1}</td>
                                     <td className={styles.img_cell}>
                                         <img src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} />
@@ -81,6 +82,11 @@ const Output = () => {
                                     <td>{indices[countryName].means.egqei.toFixed(2)}</td>
                                     <td>{indices[countryName].means.egqi.toFixed(2)}</td>
                                     <td>{indices[countryName].means.egqemr.toFixed(2)}</td>
+                                    <td className={styles.actions}>
+                                        <button title={`${countryName} Details`}>
+                                            <i className="bi bi-info-circle"></i>
+                                        </button>
+                                    </td>
                                 </tr> 
                             )
                         })
