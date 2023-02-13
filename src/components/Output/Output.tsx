@@ -7,6 +7,7 @@ import { selectYears } from "store/years/selectors";
 import styles from './output.module.css'
 import { sortCountries } from 'store/countries/actionCreators';
 import { COL_NAMES, COL_SORT_TYPES } from 'helpers/constants.ts/indices';
+import { CountryDetails } from 'components/CountryDetails/CountryDetails';
 
 const Output = () => {
 
@@ -95,7 +96,8 @@ const Output = () => {
                     </>
 
                 </tbody>
-            </table>      
+            </table>    
+            <CountryDetails />  
         </div>
     );
 }

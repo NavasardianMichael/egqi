@@ -69,7 +69,6 @@ const processIndices = (utils: Omit<RootState, 'indices'>, contentSheets: T_Shee
     
     countries.allNames.forEach((countryName: T_Country['name']) => {
         const countryIndicators = normalizedValues[countryName] 
-        console.log({countryName});
         
         const indicesByYears = processIndicesByYear(utils, countryIndicators)
         result[countryName] = {
@@ -89,7 +88,6 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicato
         const indices = indicators.allNames.reduce((indicesState, indicatorName, i, arr) => {
             const { subindex, weight } = indicators.byName[indicatorName]
             if(subindex === SUBINDEX_TYPES[0]) {
-                console.log(indicesState.egqgi, countryIndicators[indicatorName][year], weight);
                 indicesState.egqgi += countryIndicators[indicatorName][year] * weight
             } else {
                 indicesState.egqei +=  weight * (
@@ -137,7 +135,6 @@ const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_She
     indicators.allNames.forEach((indicatorName) => {
         const indicator = indicators.byName[indicatorName]
         const { min, max } = getCriticalValues(utils, contentSheets[indicator.abbr], indicatorName)
-        console.log({min, max});
         
         const distance = max - min
         
