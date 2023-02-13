@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { combineClassNames } from "helpers/functions/commons";
 import { useDispatch, useSelector } from "react-redux";
 import { selectCountriesState } from "store/countries/selectors";
@@ -8,6 +8,7 @@ import styles from './output.module.css'
 import { sortCountries } from 'store/countries/actionCreators';
 import { COL_NAMES, COL_SORT_TYPES } from 'helpers/constants.ts/indices';
 import { CountryDetails } from 'components/CountryDetails/CountryDetails';
+import { T_Country } from 'store/countries/types';
 
 const Output = () => {
 
@@ -15,6 +16,7 @@ const Output = () => {
     const countries = useSelector(selectCountriesState)
     const years = useSelector(selectYears)
     const indices = useSelector(selectIndices)
+    const [openedCountryName, setOpenedCountryName] = useState<T_Country['name']>('')
     const [sortedStatuses, setSortedStatuses] = useState<{ [key in keyof typeof COL_NAMES]: 0 | 1 | 2 }>({
         [COL_NAMES.country]: 0,
         [COL_NAMES.egqi]: 0,
@@ -23,7 +25,7 @@ const Output = () => {
         [COL_NAMES.egqemr]: 0,
     })
 
-    const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    const handletableHeaderClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
         const name = e.currentTarget.name as keyof typeof COL_NAMES
         setSortedStatuses(prev => {
             return {
@@ -37,6 +39,15 @@ const Output = () => {
             order: 3 - (sortedStatuses[name] || 2) as keyof typeof COL_SORT_TYPES
         }))
     }
+
+    const handleShowDetails: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+        const { name } = e.currentTarget
+        setOpenedCountryName(name) 
+    }
+
+    const closeDetails = useCallback(() => {
+        setOpenedCountryName('')
+    }, [])
 
     const thClassNames = [styles.disabled, styles.descending, '']
 
@@ -57,7 +68,7 @@ const Output = () => {
                                             <button 
                                                 className={thClassNames[sortedStatuses[colName]]} 
                                                 name={colName}
-                                                onClick={handleClick}
+                                                onClick={handletableHeaderClick}
                                             />
                                             <span>{colName}</span>
                                         </div>
@@ -84,7 +95,11 @@ const Output = () => {
                                     <td>{indices[countryName].means.egqi.toFixed(2)}</td>
                                     <td>{indices[countryName].means.egqemr.toFixed(2)}</td>
                                     <td className={styles.actions}>
-                                        <button title={`${countryName} Details`}>
+                                        <button 
+                                            title={`${countryName} Details`}
+                                            name={countryName}
+                                            onClick={handleShowDetails} 
+                                        >
                                             <i className="bi bi-info-circle"></i>
                                         </button>
                                     </td>
@@ -96,8 +111,11 @@ const Output = () => {
                     </>
 
                 </tbody>
-            </table>    
-            <CountryDetails />  
+            </table>
+            <CountryDetails 
+                countryName={openedCountryName} 
+                close={closeDetails} 
+            />  
         </div>
     );
 }

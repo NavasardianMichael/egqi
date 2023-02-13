@@ -1,12 +1,27 @@
+.portal {
+    transition: .2s;
+    transform: scale(1);
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.portal.closed {
+    transform: scale(0);
+}
+
 .portal_content {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 1;
-    width: 90vh;
+    width: 90vw;
     min-width: 800px;
     height: 70vh;
+    overflow: auto;
     min-height: 600px;
     background-color: #FFF;
     border-radius: 8px;
@@ -21,4 +36,13 @@
     left: 0;
     background-color: gray;
     opacity: .3;
+}
+
+.portal_close_btn {
+    all: unset;
+    cursor: pointer;
+    font-size: 24px;
+    position: absolute;
+    right: 15px;
+    top: 15px;
 }
