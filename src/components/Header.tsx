@@ -5,7 +5,7 @@ type Props = {}
 function Header({}: Props) {
   return (
     <div className='text-center d-flex flex-column'>
-      <h3>Digitizing the EGQI</h3>
+      <h3>Digitizing the Economic Growth Quality Index</h3>
       <img className='mx-auto' style={{maxWidth: '100px'}} src={logo} />
     </div>
   )

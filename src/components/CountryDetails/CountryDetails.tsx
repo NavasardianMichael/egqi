@@ -3,6 +3,7 @@ import { FC } from "react"
 import { useSelector } from "react-redux"
 import { T_Country } from "store/countries/types"
 import { selectIndicators } from "store/indicators/selectors"
+import { T_Indicator } from "store/indicators/types"
 import { selectIndices } from "store/indices/selectors"
 import { selectYears } from "store/years/selectors"
 
@@ -18,13 +19,13 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
 
     if(!years?.length || !indices) return null
     
-    const generateColorByValue = (value: number) => {
+    const generateColorByValue = (value: number, indicatorName: T_Indicator['name']) => {
         const colors = [
-            'red',
-            'yellow',
-            'green'
+            'rgba(255, 67, 67, 0.5)',
+            'rgba(247, 247, 77, 0.877)',
+            'rgba(87, 247, 87, 0.63)'
         ]
-        return colors[Math.floor(value / (100 / 3))]
+        return (indicators.byName[indicatorName].affect > 0 ? colors : colors.reverse())[Math.floor(value / (100 / 3))]
     }
 
     return (
@@ -57,7 +58,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                                     <td 
                                                         className='text-center' 
                                                         key={indicatorName+year} 
-                                                        style={{backgroundColor: generateColorByValue(+value)}}
+                                                        style={{backgroundColor: generateColorByValue(+value, indicatorName)}}
                                                     >
                                                         {value}
                                                     </td>
