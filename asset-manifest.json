@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/egqi/static/css/main.b620e5f0.css",
+    "main.js": "/egqi/static/js/main.c9d5982f.js",
+    "static/media/logo.png": "/egqi/static/media/logo.a88340832d314cf30b1e.png",
+    "index.html": "/egqi/index.html",
+    "static/media/chevron-up.svg": "/egqi/static/media/chevron-up.ce2f948a407e52ea8434.svg",
+    "main.b620e5f0.css.map": "/egqi/static/css/main.b620e5f0.css.map",
+    "main.c9d5982f.js.map": "/egqi/static/js/main.c9d5982f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b620e5f0.css",
+    "static/js/main.c9d5982f.js"
+  ]
+}
