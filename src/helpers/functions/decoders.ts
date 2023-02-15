@@ -76,7 +76,6 @@ const processIndices = (utils: Omit<RootState, 'indices'>, contentSheets: T_Shee
             byYear: indicesByYears,
             means: processIndicesMeans(utils, indicesByYears)
         }
-        console.log({countryName, indicesByYears});
     })
     
     return result
@@ -136,7 +135,6 @@ const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_She
     indicators.allNames.forEach((indicatorName) => {
         const indicator = indicators.byName[indicatorName]
         const { min, max } = getCriticalValues(utils, contentSheets[indicator.abbr], indicatorName)
-        console.log({ min, max, indicatorName });
         
         const distance = max - min
         

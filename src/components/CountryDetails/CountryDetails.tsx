@@ -1,5 +1,7 @@
 import { Portal } from "components/Portal/Portal"
-import { FC } from "react"
+import { INDICES_TYPES } from "helpers/constants.ts/indices"
+import { INDICATOR_COLORS } from "helpers/constants.ts/output"
+import { FC, Fragment } from "react"
 import { useSelector } from "react-redux"
 import { T_Country } from "store/countries/types"
 import { selectIndicators } from "store/indicators/selectors"
@@ -19,13 +21,9 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
 
     if(!years?.length || !indices) return null
     
-    const generateColorByValue = (value: number, indicatorName: T_Indicator['name']) => {
-        const colors = [
-            'rgba(255, 67, 67, 0.5)',
-            'rgba(247, 247, 77, 0.877)',
-            'rgba(87, 247, 87, 0.63)'
-        ]
-        return (indicators.byName[indicatorName].affect > 0 ? colors : colors.reverse())[Math.floor(value / (100 / 3))]
+    const generateColorByValue = (value: number, affect: T_Indicator['affect']) => {
+        if(value == null) return ''
+        return (affect > 0 ? INDICATOR_COLORS : [...INDICATOR_COLORS].reverse())[Math.floor(value / (100 / 3))] ?? INDICATOR_COLORS[2]
     }
 
     return (
@@ -43,32 +41,75 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                     )
                                 })
                             }
+                            <th scope="col">Average</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            indicators.allNames.map(indicatorName => {
-                                return (
-                                    <tr key={indicatorName}>
-                                        <td>{indicatorName}</td>
-                                        {
-                                            years.map(year => {
-                                                const value = indices?.[countryName]?.byIndicator[indicatorName][year].toFixed(2)
-                                                return (
-                                                    <td 
-                                                        className='text-center' 
-                                                        key={indicatorName+year} 
-                                                        style={{backgroundColor: generateColorByValue(+value, indicatorName)}}
-                                                    >
-                                                        {value}
-                                                    </td>
-                                                )
-                                            })
-                                        }
-                                    </tr>                                    
-                                )
-                            })
-                        }                        
+                        <>
+                            {
+                                indicators.allNames.map(indicatorName => {
+                                    const { affect } = indicators.byName[indicatorName]
+                                    const averageForIndicator = ((years.reduce((value, year) => {
+                                        return value + indices?.[countryName]?.byIndicator[indicatorName][year]
+                                    }, 0))
+                                    / years.length)
+                                    return (
+                                        <tr key={indicatorName}>
+                                            <td>{indicatorName}</td>
+                                            {
+                                                years.map(year => {
+                                                    
+                                                    const value = indices?.[countryName]?.byIndicator[indicatorName][year]
+                                                    const color = generateColorByValue(+value, affect)
+                                                    return (
+                                                        <td 
+                                                            className='text-center' 
+                                                            key={indicatorName+year} 
+                                                            style={{backgroundColor: color}}
+                                                        >
+                                                            {value?.toFixed(2)}
+                                                        </td>
+                                                    )
+                                                })
+                                            }
+                                            <td className='text-center' style={{backgroundColor: generateColorByValue(+averageForIndicator, affect)}}>
+                                                {
+                                                    averageForIndicator
+                                                    ?.toFixed(2)
+                                                }
+                                            </td>                                            
+                                        </tr>                                    
+                                    )
+                                })
+                            }
+                            {
+                                INDICES_TYPES.map(type => {
+                                    return (
+                                        <tr key={type}>
+                                            <>
+                                                <td>{`Average ${type.toUpperCase()} in year`}</td>
+                                                {
+                                                    years.map(year => {
+                                                        const value = indices?.[countryName]?.byYear[year][type]
+                                                        return (
+                                                            <Fragment key={type+year}>
+                                                                <td 
+                                                                    className='text-center' 
+                                                                    style={{backgroundColor: generateColorByValue(+value, 1)}}
+                                                                >
+                                                                    {value?.toFixed(2)}
+                                                                </td>
+                                                            </Fragment>
+                                                        )
+                                                    })
+                                                }
+                                                <td className='text-center'>-</td>
+                                            </>
+                                        </tr>
+                                    )
+                                })
+                            }
+                        </>                   
                     </tbody>
                 </table>
             </>

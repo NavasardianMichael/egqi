@@ -6,6 +6,12 @@ export const COL_NAMES = {
     egqemr: 'egqemr',
 } as const
 
+export const INDICES_TYPES = [
+    COL_NAMES.egqgi,
+    COL_NAMES.egqei,
+    COL_NAMES.egqi,
+]
+
 export const COL_SORT_TYPES = {
     0: 0,
     1: 1,

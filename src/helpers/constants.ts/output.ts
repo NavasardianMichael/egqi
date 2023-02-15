@@ -22,3 +22,9 @@ export const DOWNLOAD_BUTTONS = [
         handler: generateIndicatorsRowsExcelFile,
     },
 ]
+
+export const INDICATOR_COLORS = [
+    'rgba(255, 67, 67, 0.5)',
+    'rgba(247, 247, 77, 0.877)',
+    'rgba(87, 247, 87, 0.63)'
+]
