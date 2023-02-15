@@ -1,3 +1,4 @@
+import { INDICES_TYPES } from 'helpers/constants.ts/indices';
 import { RootState } from 'index';
 import { T_Country } from 'store/countries/types';
 import { T_Year } from 'store/years/types';
@@ -37,55 +38,6 @@ export const generateIndicatorsExcelFile = (data: RootState) => {
     generateExcelFile(processed, 'EGQI indicators')
 }
 
-export const generateIndicatorsRowsExcelFile = (data: RootState) => {
-    const { countries, indicators, years, indices } = data
-    let id = 1
-    const processed = indicators.allNames.reduce((state: any, indicatorName) => {
-        countries.allNames.forEach((countryName) => {
-            years.forEach(year => {
-                state.push({
-                    id, 
-                    'Country Name': countryName,
-                    'Indicator Name': indicatorName,
-                    year,
-                    value: indices[countryName].byIndicator[indicatorName][year]  
-                })
-                id++
-            })
-        })
-        return state
-    }, [])
-    
-    generateExcelFile(processed, 'EGQI indicators rows')
-}
-
-export const generateSummaryRowsExcelFile = (data: RootState) => {
-    const { countries, indicators, years, indices } = data
-    let id = 1
-    const processed = countries.allNames.reduce((state: any[], countryName: T_Country['name']) => {
-        years.forEach(year => {
-            const calcIndices = indicators.allNames.reduce((indicesState: any, indicatorName) => {
-                const { subindex, weight } = indicators.byName[indicatorName]
-                indicesState[subindex === 0 ? 'EGQGI' : 'EGQEI'] += indices[countryName].byIndicator[indicatorName][year] * weight
-                return indicesState
-            }, {
-                EGQGI: 0,
-                EGQEI: 0
-            })
-            state.push({
-                id, 
-                'Country Name': countryName,
-                year,
-                ...calcIndices
-            })
-        })
-        id++
-        return state
-    }, [])
-    
-    generateExcelFile(processed, 'EGQI indicators rows')
-}
-
 export const generateSummaryExcelFile = (data: RootState) => {
     const { countries, indices } = data
     const processed = countries.allNames.map(countryName => {
@@ -100,7 +52,24 @@ export const generateSummaryExcelFile = (data: RootState) => {
     generateExcelFile(processed, 'EGQI Summary')
 }
 
-export const generateCountryDetailsExcelFile = (data: RootState & { countryName: T_Country['name'] }) => {
+export const generateCountryIndicesByYearsExcelFile = (data: RootState & { countryName: T_Country['name'] }) => {
+    const { years, indices, countryName } = data
+    const processed = INDICES_TYPES.map(type => {
+        return {
+            'Country': countryName,
+            'Index Name': type.toUpperCase(),
+            ...years.reduce((state: { [key: T_Year]: number }, year) => {
+                state[year] = indices[countryName].byYear[year].egqei
+                return state
+            }, {})
+        }
+    })
+    console.log({processed});
+    
+    generateExcelFile(processed, `${countryName} EGQI Details`)
+}
+
+export const generateCountryAllValuesExcelFile = (data: RootState & { countryName: T_Country['name'] }) => {
     const { years, indicators, indices, countryName } = data
     const processed = indicators.allNames.map(indicatorName => {
         return {

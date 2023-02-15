@@ -1,25 +1,15 @@
-import { generateIndicatorsExcelFile, generateIndicatorsRowsExcelFile, generateSummaryExcelFile, generateSummaryRowsExcelFile } from "helpers/functions/encoders";
+import { generateIndicatorsExcelFile, generateSummaryExcelFile } from "helpers/functions/encoders";
 
 export const DOWNLOAD_BUTTONS = [
     {
         id: 1,
-        text: 'Download Summary',
+        text: 'Download Indices',
         handler: generateSummaryExcelFile,
     },
     {
         id: 2,
-        text: 'Download Summary (Rows)',
-        handler: generateSummaryRowsExcelFile,
-    },
-    {
-        id: 3,
-        text: 'Download normalized values',
+        text: 'Download normalized indicators',
         handler: generateIndicatorsExcelFile,
-    },
-    {
-        id: 4,
-        text: 'Download normalized values (Rows)',
-        handler: generateIndicatorsRowsExcelFile,
     },
 ]
 

@@ -15,14 +15,14 @@ export const ProcessButton = () => {
             {
                 DOWNLOAD_BUTTONS.map(button => {
                     return (
-                        <button 
+                        <a 
                             key={button.id}
                             type="button" 
-                            className="btn btn-primary"
+                            className="link-primary"
                             onClick={() => button.handler(state)}
                         >
                             {button.text}
-                        </button>
+                        </a>
                     )
                 })
             }

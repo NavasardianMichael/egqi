@@ -4,7 +4,7 @@ import { Portal } from "components/Portal/Portal"
 import { INDICES_TYPES } from "helpers/constants.ts/indices"
 import { INDICATOR_COLORS } from "helpers/constants.ts/output"
 import { combineClassNames } from "helpers/functions/commons"
-import { generateCountryDetailsExcelFile } from "helpers/functions/encoders"
+import { generateCountryAllValuesExcelFile, generateCountryIndicesByYearsExcelFile } from "helpers/functions/encoders"
 import { selectCountriesState } from "store/countries/selectors"
 import { T_Country } from "store/countries/types"
 import { selectIndicators } from "store/indicators/selectors"
@@ -31,8 +31,18 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
         return (affect > 0 ? INDICATOR_COLORS : [...INDICATOR_COLORS].reverse())[Math.floor(value / (100 / 3))] ?? INDICATOR_COLORS[2]
     }
 
-    const handleDownloadBtnClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-        generateCountryDetailsExcelFile({
+    const handleDownloadIndicesBtnClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+        generateCountryIndicesByYearsExcelFile({
+            countries,
+            years,
+            indices,
+            indicators,
+            countryName: e.currentTarget.name
+        })
+    }
+
+    const handleDownloadAllValuesBtnClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+        generateCountryAllValuesExcelFile({
             countries,
             years,
             indices,
@@ -48,13 +58,20 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                     !!countryName &&
                     <div className={combineClassNames(['d-flex', styles.country_details_header])}>
                         <img src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} />
-                        <h1 className={styles.country_details_name}>{countryName}</h1>
+                        <h2 className={styles.country_details_name}>{countryName}</h2>
                         <button 
                             name={countryName}
-                            className={styles.country_details_download_btn} 
-                            onClick={handleDownloadBtnClick}
+                            className={styles.country_details_download_btn}
+                            onClick={handleDownloadIndicesBtnClick}
                         >
-                            <i className='bi bi-download'></i>
+                            <i className='bi bi-download'></i> Indices by years
+                        </button>
+                        <button 
+                            name={countryName}
+                            className={styles.country_details_download_btn}
+                            onClick={handleDownloadAllValuesBtnClick}
+                        >
+                            <i className='bi bi-download'></i> Normalized values
                         </button>
                     </div>
                 }

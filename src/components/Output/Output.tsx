@@ -6,7 +6,7 @@ import { selectIndices } from "store/indices/selectors";
 import { selectYears } from "store/years/selectors";
 import styles from './output.module.css'
 import { sortCountries } from 'store/countries/actionCreators';
-import { COL_NAMES, COL_SORT_TYPES } from 'helpers/constants.ts/indices';
+import { COL_FULL_NAMES, COL_NAMES, COL_SORT_TYPES } from 'helpers/constants.ts/indices';
 import { CountryDetails } from 'components/CountryDetails/CountryDetails';
 import { T_Country } from 'store/countries/types';
 
@@ -70,7 +70,7 @@ const Output = () => {
                                                 name={colName}
                                                 onClick={handletableHeaderClick}
                                             />
-                                            <span>{colName}</span>
+                                            <span title={COL_FULL_NAMES[colName]}>{colName}</span>
                                         </div>
                                     </th>
                                 )
@@ -81,35 +81,33 @@ const Output = () => {
                 </thead>
                 <tbody>
                     <>
-                    {
-                        countries.allNames.map((countryName, i) => {
-                            return (
-                                <tr key={countryName} className={styles.row}>
-                                    <td>{i+1}</td>
-                                    <td className={styles.img_cell}>
-                                        <img src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} />
-                                    </td>
-                                    <td>{countryName}</td>
-                                    <td>{indices[countryName].means.egqgi.toFixed(2)}</td>
-                                    <td>{indices[countryName].means.egqei.toFixed(2)}</td>
-                                    <td>{indices[countryName].means.egqi.toFixed(2)}</td>
-                                    <td>{indices[countryName].means.egqemr.toFixed(2)}</td>
-                                    <td className={styles.actions}>
-                                        <button 
-                                            title={`${countryName} Details`}
-                                            name={countryName}
-                                            onClick={handleShowDetails} 
-                                        >
-                                            <i className="bi bi-info-circle"></i>
-                                        </button>
-                                    </td>
-                                </tr> 
-                            )
-                        })
-                    }
-                        
+                        {
+                            countries.allNames.map((countryName, i) => {
+                                return (
+                                    <tr key={countryName} className={styles.row}>
+                                        <td>{i+1}</td>
+                                        <td className={styles.img_cell}>
+                                            <img src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} />
+                                        </td>
+                                        <td>{countryName}</td>
+                                        <td>{indices[countryName].means.egqgi.toFixed(2)}</td>
+                                        <td>{indices[countryName].means.egqei.toFixed(2)}</td>
+                                        <td>{indices[countryName].means.egqi.toFixed(2)}</td>
+                                        <td>{indices[countryName].means.egqemr.toFixed(2)}</td>
+                                        <td className={styles.actions}>
+                                            <button 
+                                                title={`${countryName} Details`}
+                                                name={countryName}
+                                                onClick={handleShowDetails} 
+                                            >
+                                                <i className="bi bi-info-circle"></i>
+                                            </button>
+                                        </td>
+                                    </tr> 
+                                )
+                            })
+                        }   
                     </>
-
                 </tbody>
             </table>
             <CountryDetails 

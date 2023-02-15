@@ -6,6 +6,14 @@ export const COL_NAMES = {
     egqemr: 'egqemr',
 } as const
 
+export const COL_FULL_NAMES = {
+    [COL_NAMES.country]: 'Country Name',
+    [COL_NAMES.egqgi]: 'Economic Growth Quality Generation Index',
+    [COL_NAMES.egqei]: 'Economic Growth Quality Effect Index',
+    [COL_NAMES.egqi]: 'Economic Growth Quality Index',
+    [COL_NAMES.egqemr]: 'Economic Growth Quality Effective Manifestation Ratio (EGQEI / EGQGI)',
+} as const
+
 export const INDICES_TYPES = [
     COL_NAMES.egqgi,
     COL_NAMES.egqei,

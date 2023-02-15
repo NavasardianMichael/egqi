@@ -1,10 +1,9 @@
 .portal_content {
     z-index: 1;
-    width: 97.5vw;
+    width: 92vw;
     max-width: 1800px;
     min-width: 800px;
-    height: 95vh;
-    min-height: 600px;
+    height: 86vh;
     overflow: auto;
     background-color: #FFF;
     border-radius: 8px;
