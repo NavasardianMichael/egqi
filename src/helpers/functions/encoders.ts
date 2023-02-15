@@ -7,7 +7,7 @@ export const generateExcelFile = (data: any, fileName: string) => {
   try {
     const workbook = XLSX.utils.book_new();  
     const worksheet = XLSX.utils.json_to_sheet(data);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'indices');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'EGQI data');
     XLSX.writeFile(workbook, `${fileName}.xlsx`)
     
     let res = XLSX.write(workbook, { type: "array" });
@@ -98,4 +98,21 @@ export const generateSummaryExcelFile = (data: RootState) => {
         }
     })
     generateExcelFile(processed, 'EGQI Summary')
+}
+
+export const generateCountryDetailsExcelFile = (data: RootState & { countryName: T_Country['name'] }) => {
+    const { years, indicators, indices, countryName } = data
+    const processed = indicators.allNames.map(indicatorName => {
+        return {
+            'Country': countryName,
+            'Indicator': indicatorName, 
+            ...years.reduce((state: { [key: T_Year]: number }, year) => {
+                state[year] = indices[countryName].byIndicator[indicatorName][year]
+                return state
+            }, {})
+        }
+    })
+    console.log({processed});
+    
+    generateExcelFile(processed, `${countryName} EGQI Details`)
 }

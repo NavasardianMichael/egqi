@@ -1,0 +1,25 @@
+.country_details_header {
+    gap: 20px;
+    align-items: center;
+}
+
+.country_details_name {
+    margin-bottom: 0;
+}
+
+.country_details_header img {
+    width: 70px;
+    height: 40px;
+    object-fit: cover;
+}
+
+.country_details_download_btn {
+    all: unset;
+    cursor: pointer;
+    transition: .2s;
+    font-size: 20px;
+}
+
+.country_details_download_btn:hover {
+    color: #0d6efd;
+}

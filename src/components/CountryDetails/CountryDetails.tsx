@@ -1,13 +1,17 @@
+import { FC, Fragment } from "react"
+import { useSelector } from "react-redux"
 import { Portal } from "components/Portal/Portal"
 import { INDICES_TYPES } from "helpers/constants.ts/indices"
 import { INDICATOR_COLORS } from "helpers/constants.ts/output"
-import { FC, Fragment } from "react"
-import { useSelector } from "react-redux"
+import { combineClassNames } from "helpers/functions/commons"
+import { generateCountryDetailsExcelFile } from "helpers/functions/encoders"
+import { selectCountriesState } from "store/countries/selectors"
 import { T_Country } from "store/countries/types"
 import { selectIndicators } from "store/indicators/selectors"
 import { T_Indicator } from "store/indicators/types"
 import { selectIndices } from "store/indices/selectors"
 import { selectYears } from "store/years/selectors"
+import styles from './countryDetails.module.css'
 
 type T_Props = {
     countryName: T_Country['name']
@@ -16,21 +20,45 @@ type T_Props = {
 
 export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
     const years = useSelector(selectYears)
+    const countries = useSelector(selectCountriesState)
     const indicators = useSelector(selectIndicators)
     const indices = useSelector(selectIndices)
 
-    if(!years?.length || !indices) return null
+    if(!years?.length || !indices || !countries?.allNames?.length) return null
     
     const generateColorByValue = (value: number, affect: T_Indicator['affect']) => {
         if(value == null) return ''
         return (affect > 0 ? INDICATOR_COLORS : [...INDICATOR_COLORS].reverse())[Math.floor(value / (100 / 3))] ?? INDICATOR_COLORS[2]
     }
 
+    const handleDownloadBtnClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+        generateCountryDetailsExcelFile({
+            countries,
+            years,
+            indices,
+            indicators,
+            countryName: e.currentTarget.name
+        })
+    }
+
     return (
         <Portal opened={!!countryName} close={close}>
             <>
-                <h1>{countryName}</h1>
-                <table className='table' style={{fontSize: 14}}>
+                {
+                    !!countryName &&
+                    <div className={combineClassNames(['d-flex', styles.country_details_header])}>
+                        <img src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} />
+                        <h1 className={styles.country_details_name}>{countryName}</h1>
+                        <button 
+                            name={countryName}
+                            className={styles.country_details_download_btn} 
+                            onClick={handleDownloadBtnClick}
+                        >
+                            <i className='bi bi-download'></i>
+                        </button>
+                    </div>
+                }
+                <table className='table mt-3' style={{fontSize: 14}}>
                     <thead>
                         <tr>
                             <th scope="col">Indicator Name</th>
@@ -87,7 +115,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                     return (
                                         <tr key={type}>
                                             <>
-                                                <td>{`Average ${type.toUpperCase()} in year`}</td>
+                                                <td>{`Yearly ${type.toUpperCase()}`}</td>
                                                 {
                                                     years.map(year => {
                                                         const value = indices?.[countryName]?.byYear[year][type]
