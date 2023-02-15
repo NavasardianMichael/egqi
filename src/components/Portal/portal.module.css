@@ -1,24 +1,7 @@
-.portal {
-    transition: .2s;
-    transform: scale(1);
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-}
-
-.portal.closed {
-    transform: scale(0);
-}
-
 .portal_content {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     z-index: 1;
     width: 90vw;
+    max-width: 1600px;
     min-width: 800px;
     height: 70vh;
     overflow: auto;
@@ -27,6 +10,17 @@
     border-radius: 8px;
     padding: 20px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    transition: .2s ease-in;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.portal_content.closed {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
 }
 
 .portal_overlay {
@@ -36,7 +30,7 @@
     bottom: 0;
     left: 0;
     background-color: gray;
-    opacity: .3;
+    opacity: .5;
 }
 
 .portal_close_btn {

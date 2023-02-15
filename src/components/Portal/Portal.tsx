@@ -20,18 +20,21 @@ export const Portal: FC<T_Props> = ({ children, opened, close }) => {
     }, [opened])
 
     return createPortal(
-        <div className={combineClassNames([styles.portal, opened ? undefined : styles.closed])}>
-            <div className={styles.portal_content}>
+        <>
+            <div className={combineClassNames([styles.portal_content, opened ? undefined : styles.closed])}>
                 {children}
                 <button onClick={handleCloseBtnClick} className={styles.portal_close_btn}>
                     <i className="bi bi-x"></i>
                 </button>
             </div>
-            <div
-                onClick={handleOverlayClick} 
-                className={styles.portal_overlay} 
-            />
-        </div>,
+            {
+                opened &&
+                <div
+                    onClick={handleOverlayClick} 
+                    className={styles.portal_overlay} 
+                />
+            }
+        </>,
         document.getElementById('root-portal') as HTMLDivElement
     )
 }

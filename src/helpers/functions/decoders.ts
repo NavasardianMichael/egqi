@@ -76,8 +76,9 @@ const processIndices = (utils: Omit<RootState, 'indices'>, contentSheets: T_Shee
             byYear: indicesByYears,
             means: processIndicesMeans(utils, indicesByYears)
         }
+        console.log({countryName, indicesByYears});
     })
-
+    
     return result
 }
 
@@ -161,13 +162,7 @@ const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_She
 }
 
 const getCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[], indicatorName: T_Indicator['name']): { min: number, max: number } => {
-    const { percentiledMin, percentiledMax } = getPercentiledCriticalValues(utils, sheetRows)
-    let res = {
-        min: percentiledMin,
-        max: percentiledMax
-    }
-    
-    const { indicators, years } = utils
+    const { indicators } = utils
     const { max: givenMax, min: givenMin } = indicators.byName[indicatorName]
     if(givenMax != null) {
         return {
@@ -175,19 +170,12 @@ const getCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[]
             min: givenMin
         } 
     } 
-   
-    sheetRows.forEach((row) => {
-        years.forEach(year => {
-            const value = +row[year]
-            
-            if(isNaN(value)) return
-            
-            if(value > res.max) return res.max = value
-            if(value < res.min) res.min = value
-        })
-    })
-    
-    return res
+
+    const { percentiledMin, percentiledMax } = getPercentiledCriticalValues(utils, sheetRows)
+    return {
+        min: percentiledMin,
+        max: percentiledMax
+    }    
 }
 
 const PERCENTILE = 3
@@ -201,7 +189,7 @@ const getPercentiledCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRo
         })
     })
     
-    allValues.sort((a, b) => a - b)
+    allValues = allValues.sort((a, b) => a - b)
 
     const percentileCount = Math.round(allValues.length * PERCENTILE / 100)
     
