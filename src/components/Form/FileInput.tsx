@@ -1,17 +1,20 @@
-import { processWorkbookData } from "helpers/functions/decoders";
 import { useDispatch } from "react-redux";
+import XLSX from "xlsx";
+import { processWorkbookData } from "helpers/functions/decoders";
 import { setCountriesState } from "store/countries/actionCreators";
 import { setIndicators } from "store/indicators/actionCreators";
 import { setIndices } from "store/indices/actionCreators";
 import { setYears } from "store/years/actionCreators";
-import XLSX from "xlsx";
 
 function FileInput() {
   
   const dispatch = useDispatch()
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    const file = e.target.files?.[0] as File;
+    handleExcelFile(e.target.files?.[0] as File)
+  };
+
+  const handleExcelFile = (file: File) => {
     const reader = new FileReader();
 
     reader.onload = (e) => {
@@ -28,7 +31,7 @@ function FileInput() {
     };
 
     reader.readAsBinaryString(file);
-  };
+  }
 
   return (
     <div className="mt-3">
