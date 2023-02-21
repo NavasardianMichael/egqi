@@ -34,7 +34,7 @@ function FileInput() {
   }
 
   return (
-    <div className="mt-3">
+    <div className="mt-3" data-testid='file'>
       <div>
         <input
           onChange={handleChange}
