@@ -1,6 +1,6 @@
-import { combineClassNames } from "helpers/functions/commons"
 import { FC, useCallback, useEffect } from "react"
 import { createPortal } from "react-dom"
+import { combineClassNames } from "helpers/functions/commons"
 import styles from './portal.module.css'
 
 type T_Props = {
@@ -31,7 +31,7 @@ export const Portal: FC<T_Props> = ({ children, opened, close }) => {
                 opened &&
                 <div
                     onClick={handleOverlayClick} 
-                    className={styles.portal_overlay} 
+                    className={styles.portal_overlay}
                 />
             }
         </>,

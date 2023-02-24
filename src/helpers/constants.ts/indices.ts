@@ -18,7 +18,7 @@ export const INDICES_TYPES = [
     COL_NAMES.egqgi,
     COL_NAMES.egqei,
     COL_NAMES.egqi,
-]
+] as const
 
 export const COL_SORT_TYPES = {
     0: 0,

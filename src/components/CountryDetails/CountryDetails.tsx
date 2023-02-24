@@ -28,7 +28,8 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
     
     const generateColorByValue = (value: number, affect: T_Indicator['affect']) => {
         if(value == null) return ''
-        return (affect > 0 ? INDICATOR_COLORS : [...INDICATOR_COLORS].reverse())[Math.floor(value / (100 / 3))] ?? INDICATOR_COLORS[2]
+        if(value == 100) return INDICATOR_COLORS[affect > 0 ? 2 : 0]
+        return (affect > 0 ? INDICATOR_COLORS : [...INDICATOR_COLORS].reverse())[Math.floor(value / (100 / 3))]
     }
 
     const handleDownloadIndicesBtnClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
@@ -154,7 +155,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                     )
                                 })
                             }
-                        </>                   
+                        </>
                     </tbody>
                 </table>
             </>

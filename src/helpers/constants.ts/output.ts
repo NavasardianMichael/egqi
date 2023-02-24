@@ -1,13 +1,23 @@
-import { generateIndicatorsExcelFile, generateSummaryExcelFile } from "helpers/functions/encoders";
+import { generateIndicatorsExcelFile, generateSummaryByYearsColumnsExcelFile, generateSummaryByYearsRowsExcelFile, generateSummaryExcelFile } from "helpers/functions/encoders";
 
 export const DOWNLOAD_BUTTONS = [
     {
         id: 1,
-        text: 'Download Indices',
+        text: 'Download Average Indices',
         handler: generateSummaryExcelFile,
     },
     {
         id: 2,
+        text: 'Download Indices by Years (rows)',
+        handler: generateSummaryByYearsRowsExcelFile,
+    },
+    {
+        id: 3,
+        text: 'Download Indices by Years (columns)',
+        handler: generateSummaryByYearsColumnsExcelFile,
+    },
+    {
+        id: 4,
         text: 'Download normalized indicators',
         handler: generateIndicatorsExcelFile,
     },
