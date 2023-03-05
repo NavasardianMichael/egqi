@@ -90,6 +90,7 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicato
             if(subindex === SUBINDEX_TYPES[0]) {
                 indicesState.egqgi += countryIndicators[indicatorName][year] * weight
             } else {
+                // indicesState.egqei += countryIndicators[indicatorName][year] * weight
                 indicesState.egqei +=  weight * (
                     countryIndicators[indicatorName][year + 1] +
                     countryIndicators[indicatorName][year + 2] +
@@ -169,16 +170,18 @@ const getCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[]
         } 
     } 
 
-    const { percentiledMin, percentiledMax } = getPercentiledCriticalValues(utils, sheetRows)
+    const { percentiledMin, percentiledMax } = getPercentiledCriticalValues(utils, sheetRows, indicatorName)
     return {
         min: percentiledMin,
         max: percentiledMax
     }    
 }
 
-const PERCENTILE = 3
-const getPercentiledCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[]): { percentiledMin: number, percentiledMax: number } => {
-    const { years } = utils
+const getPercentiledCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[], indicatorName: T_Indicator['name']): { percentiledMin: number, percentiledMax: number } => {
+    const { indicators, years } = utils
+    const { percentile } = indicators.byName[indicatorName]
+    console.log({percentile});
+    
     let allValues: number[] = []
             
     sheetRows.forEach((row) => {
@@ -189,7 +192,7 @@ const getPercentiledCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRo
     
     allValues = allValues.sort((a, b) => a - b)
 
-    const percentileCount = Math.round(allValues.length * PERCENTILE / 100)
+    const percentileCount = Math.round(allValues.length * percentile / 100)
     
     allValues.splice(0, percentileCount)
     allValues.splice(allValues.length - percentileCount, allValues.length)

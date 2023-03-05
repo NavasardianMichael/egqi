@@ -54,7 +54,7 @@ const Output = () => {
     if(!years?.length || !countries || !indices) return null
 
     return (
-        <div className="mt-4">
+        <div className="mt-3">
             <table className={combineClassNames(['table', 'text-center', styles.output])}>
                 <thead>
                     <tr>

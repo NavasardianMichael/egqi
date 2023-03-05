@@ -4,7 +4,7 @@ import { ProcessButton } from "./ProcessButton";
 
 const Form = () => {
   return (
-    <div className="d-flex mt-3 flex-column" style={{gap: 30}}>
+    <div className="d-flex flex-column p-3" style={{gap: 30}}>
       <FileInput />
       <ProcessButton />
       <Output />
