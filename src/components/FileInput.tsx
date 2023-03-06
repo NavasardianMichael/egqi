@@ -23,7 +23,10 @@ function FileInput() {
         type: 'binary',
       });
       
-      const { countries, indicators, indices, years } = processWorkbookData(workbook)
+      const output = processWorkbookData(workbook)
+      console.log({output});
+      
+      const { countries, indicators, indices, years } = output
       dispatch(setCountriesState(countries))
       dispatch(setIndicators(indicators))
       dispatch(setYears(years))
@@ -34,7 +37,7 @@ function FileInput() {
   }
 
   return (
-    <div className="mt-3" data-testid='file'>
+    <div data-testid='file'>
       <div>
         <input
           onChange={handleChange}

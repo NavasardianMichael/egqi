@@ -13,3 +13,7 @@
 body {
     scrollbar-width: thin;
 }
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link {
+    color: gray;
+}

@@ -79,7 +79,7 @@ export const generateIndicatorsExcelFile = (data: RootState) => {
                 'Country Name': countryName,
                 'Indicator Name': indicatorName,
                 ...years.reduce((state: {[key: T_Year]: number}, year) => {
-                    state[year] = indices[countryName].byIndicator[indicatorName][year]
+                    state[year] = indices[countryName].byIndicator[indicatorName][year].normalized
                     return state
                 }, {})
             })
@@ -102,7 +102,6 @@ export const generateCountryIndicesByYearsExcelFile = (data: RootState & { count
             }, {})
         }
     })
-    console.log({processed});
     
     generateExcelFile(processed, `${countryName} EGQI Details`)
 }
@@ -114,12 +113,11 @@ export const generateCountryAllValuesExcelFile = (data: RootState & { countryNam
             'Country': countryName,
             'Indicator': indicatorName, 
             ...years.reduce((state: { [key: T_Year]: number }, year) => {
-                state[year] = indices[countryName].byIndicator[indicatorName][year]
+                state[year] = indices[countryName].byIndicator[indicatorName][year].normalized
                 return state
             }, {})
         }
     })
-    console.log({processed});
     
     generateExcelFile(processed, `${countryName} EGQI Details`)
 }

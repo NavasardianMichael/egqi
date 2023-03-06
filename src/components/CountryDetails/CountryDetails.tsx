@@ -96,7 +96,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                 indicators.allNames.map(indicatorName => {
                                     const { affect } = indicators.byName[indicatorName]
                                     const averageForIndicator = ((years.reduce((value, year) => {
-                                        return value + indices?.[countryName]?.byIndicator[indicatorName][year]
+                                        return value + indices?.[countryName]?.byIndicator[indicatorName][year].normalized
                                     }, 0))
                                     / years.length)
                                     return (
@@ -105,7 +105,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                             {
                                                 years.map(year => {
                                                     
-                                                    const value = indices?.[countryName]?.byIndicator[indicatorName][year]
+                                                    const value = indices?.[countryName]?.byIndicator[indicatorName][year].normalized
                                                     const color = generateColorByValue(+value, affect)
                                                     return (
                                                         <td 

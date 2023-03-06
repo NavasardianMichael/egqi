@@ -4,13 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectCountriesState } from "store/countries/selectors";
 import { selectIndices } from "store/indices/selectors";
 import { selectYears } from "store/years/selectors";
-import styles from './output.module.css'
+import styles from './indicesTab.module.css'
 import { sortCountries } from 'store/countries/actionCreators';
 import { COL_FULL_NAMES, COL_NAMES, COL_SORT_TYPES } from 'helpers/constants.ts/indices';
 import { CountryDetails } from 'components/CountryDetails/CountryDetails';
 import { T_Country } from 'store/countries/types';
 
-const Output = () => {
+const Rankings = () => {
 
     const dispatch = useDispatch()
     const countries = useSelector(selectCountriesState)
@@ -54,7 +54,7 @@ const Output = () => {
     if(!years?.length || !countries || !indices) return null
 
     return (
-        <div className="mt-3">
+        <div>
             <table className={combineClassNames(['table', 'text-center', styles.output])}>
                 <thead>
                     <tr>
@@ -118,4 +118,4 @@ const Output = () => {
     );
 }
 
-export default Output;
+export default Rankings;

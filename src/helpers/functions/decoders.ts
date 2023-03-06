@@ -88,13 +88,13 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicato
         const indices = indicators.allNames.reduce((indicesState, indicatorName, i, arr) => {
             const { subindex, weight } = indicators.byName[indicatorName]
             if(subindex === SUBINDEX_TYPES[0]) {
-                indicesState.egqgi += countryIndicators[indicatorName][year] * weight
+                indicesState.egqgi += countryIndicators[indicatorName][year].normalized * weight
             } else {
                 // indicesState.egqei += countryIndicators[indicatorName][year] * weight
                 indicesState.egqei +=  weight * (
-                    countryIndicators[indicatorName][year + 1] +
-                    countryIndicators[indicatorName][year + 2] +
-                    countryIndicators[indicatorName][year + 3]
+                    countryIndicators[indicatorName][year + 1].normalized +
+                    countryIndicators[indicatorName][year + 2].normalized +
+                    countryIndicators[indicatorName][year + 3].normalized
                 ) / 3
             }
             if(i === arr.length - 1) {
@@ -146,13 +146,18 @@ const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_She
                     const value = +row[year]
 
                     if(isNaN(value)) return
-
+                    
                     let normalizedValue = (value - min) / distance * 100
                     
                     if(indicator.affect === -1) normalizedValue = 100 - normalizedValue
                     if(!result[countryName]) result[countryName] = {}
                     if(!result[countryName][indicator.name]) result[countryName][indicator.name] = {}
-                    result[countryName][indicator.name][year] = Math.max(Math.min(normalizedValue, 100), 0)
+                    if(!result[countryName][indicator.name][year]) result[countryName][indicator.name][year] = {
+                        original: Infinity,
+                        normalized: Infinity
+                    }
+                    result[countryName][indicator.name][year].original = value
+                    result[countryName][indicator.name][year].normalized = Math.max(Math.min(normalizedValue, 100), 0)
                 })
             })
     })
@@ -180,7 +185,6 @@ const getCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[]
 const getPercentiledCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[], indicatorName: T_Indicator['name']): { percentiledMin: number, percentiledMax: number } => {
     const { indicators, years } = utils
     const { percentile } = indicators.byName[indicatorName]
-    console.log({percentile});
     
     let allValues: number[] = []
             
