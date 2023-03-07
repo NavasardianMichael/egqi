@@ -1,3 +1,4 @@
+import { INDICES_TYPES } from "helpers/constants.ts/indices"
 import { combineClassNames } from "helpers/functions/commons"
 import { useSelector } from "react-redux"
 import { T_Country } from "store/countries/types"
@@ -30,41 +31,53 @@ function Table({ selectedCountry }: Props) {
                             )
                         })
                     }
-                    <th scope="col">Average</th>
                 </tr>
             </thead>
             <tbody>
                 <>
                     {
                         indicators.allNames.map(indicatorName => {
-                            const averageForIndicator = ((years.reduce((value, year) => {
-                                return value + currentCountryIndicators?.byIndicator[indicatorName][year].original
-                            }, 0))
-                            / years.length)
                             return (
                                 <tr key={indicatorName}>
                                     <td>{indicatorName}</td>
                                     {
                                         years.map(year => {
-                                            
+                                            const { max, min } = indicators.byName[indicatorName]
                                             const value = currentCountryIndicators?.byIndicator[indicatorName][year].original
                                             return (
                                                 <td 
                                                     className='text-center p-0 align-middle' 
                                                     key={indicatorName+year}
                                                 >
-                                                    <input type='number' value={value?.toFixed(2)} />
+                                                    <input 
+                                                        type='number' 
+                                                        max={max}
+                                                        min={min}
+                                                        value={value?.toFixed(2)}
+                                                    />
                                                 </td>
                                             )
                                         })
                                     }
-                                    <td className='text-center'>
-                                        {
-                                            averageForIndicator
-                                            ?.toFixed(2)
-                                        }
-                                    </td>                                            
-                                </tr>                                    
+                                </tr>
+                            )
+                        })
+                    }
+                    {
+                        INDICES_TYPES.map(type => {
+                            return (
+                                <tr key={type} className="fw-bold">
+                                    <td>{type.toUpperCase()}</td>
+                                    {
+                                        years.map(year => {
+                                            return (
+                                                <td key={'average'+year} className='text-center'>
+                                                    {currentCountryIndicators.byYear[year][type].toFixed(2)}
+                                                </td>
+                                            )
+                                        })
+                                    }
+                                </tr>
                             )
                         })
                     }

@@ -22,7 +22,7 @@ export const DOWNLOAD_BUTTONS = [
         handler: generateIndicatorsExcelFile,
     },
     {
-        id: 4,
+        id: 5,
         text: 'Download original indicators',
         handler: generateOriginalIndicatorsExcelFile,
     },

@@ -10,5 +10,10 @@
 .country_values input {
     all: unset;
     padding: 0;
-    width: 60px;
+    width: 70px;
+}
+
+.country_values input::-webkit-inner-spin-button, 
+.country_values input::-webkit-outer-spin-button {  
+   opacity: 1;
 }
