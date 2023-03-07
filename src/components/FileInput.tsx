@@ -1,14 +1,16 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import XLSX from "xlsx";
 import { processWorkbookData } from "helpers/functions/decoders";
 import { setCountriesState } from "store/countries/actionCreators";
 import { setIndicators } from "store/indicators/actionCreators";
 import { setIndices } from "store/indices/actionCreators";
 import { setYears } from "store/years/actionCreators";
+import { selectIndicators } from "store/indicators/selectors";
 
 function FileInput() {
   
   const dispatch = useDispatch()
+  const indicators = useSelector(selectIndicators)
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     handleExcelFile(e.target.files?.[0] as File)
@@ -24,7 +26,6 @@ function FileInput() {
       });
       
       const output = processWorkbookData(workbook)
-      console.log({output});
       
       const { countries, indicators, indices, years } = output
       dispatch(setCountriesState(countries))
@@ -35,6 +36,8 @@ function FileInput() {
 
     reader.readAsBinaryString(file);
   }
+
+  if(indicators.allNames.length) return null
 
   return (
     <div data-testid='file'>

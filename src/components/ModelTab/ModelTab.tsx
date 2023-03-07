@@ -1,62 +1,25 @@
+import { useState } from "react"
+import { useSelector } from "react-redux"
+import { T_Country } from "store/countries/types"
+import { selectIndicators } from "store/indicators/selectors"
+import Dropdown from "./Dropdown"
+import Table from "./Table"
+
 type Props = {}
 
 function ModelTab({}: Props) {
+
+    const indicators = useSelector(selectIndicators)
+    const selectedState = useState<T_Country['name']>()
+
+    if(!indicators.allNames.length) return (
+      <h5>Import data in the index tab to process the model</h5>
+    )
+
   return (
-    <div>
-      <table className='table' style={{fontSize: 14}}>
-          <thead>
-              <tr>
-                  <th scope="col">Indicator Name</th>
-                  {/* {
-                      years.map(year => {
-                        <th key={year} className='text-center' scope="col">{year}</th>
-                          return (
-                          )
-                      })
-                  } */}
-              </tr>
-          </thead>
-          <tbody>
-              <>
-                  {/* {
-                      indicators.allNames.map(indicatorName => {
-                          const { affect } = indicators.byName[indicatorName]
-                          const averageForIndicator = ((years.reduce((value, year) => {
-                              return value + indices?.[countryName]?.byIndicator[indicatorName][year].normalized
-                          }, 0))
-                          / years.length)
-                          return (
-                              <tr key={indicatorName}>
-                                  <td>{indicatorName}</td>
-                                  {
-                                      years.map(year => {
-                                          
-                                          const value = indices?.[countryName]?.byIndicator[indicatorName][year].normalized
-                                          const color = generateColorByValue(+value, affect)
-                                          return (
-                                              <td 
-                                                  className='text-center' 
-                                                  key={indicatorName+year} 
-                                                  style={{backgroundColor: color}}
-                                              >
-                                                  {value?.toFixed(2)}
-                                              </td>
-                                          )
-                                      })
-                                  }
-                                  <td className='text-center' style={{backgroundColor: generateColorByValue(+averageForIndicator, affect)}}>
-                                      {
-                                          averageForIndicator
-                                          ?.toFixed(2)
-                                      }
-                                  </td>                                            
-                              </tr>                                    
-                          )
-                      })
-                  } */}
-              </>
-          </tbody>
-      </table>
+    <div className="d-flex flex-column" style={{gap: 30}}>
+      <Dropdown selectedState={selectedState} />
+      { selectedState[0] && <Table selectedCountry={selectedState[0]} /> }      
     </div>
   )
 }

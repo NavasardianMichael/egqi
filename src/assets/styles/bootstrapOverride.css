@@ -1,0 +1,9 @@
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link {
+    color: gray;
+}
+
+.dropdown-menu {
+    max-height: 400px;
+    min-width: 250px;
+    overflow-y: overlay;
+}

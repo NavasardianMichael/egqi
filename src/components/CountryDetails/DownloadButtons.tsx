@@ -11,7 +11,7 @@ export const DownloadButtons = () => {
     if(!years?.length) return null
 
     return (
-        <div className='d-flex justify-content-start justify-content-left my-4' style={{gap: 20}}>
+        <div className='d-flex justify-content-start justify-content-left' style={{gap: 20}}>
             {
                 DOWNLOAD_BUTTONS.map(button => {
                     return (

@@ -87,7 +87,26 @@ export const generateIndicatorsExcelFile = (data: RootState) => {
         return state
     }, [])
     
-    generateExcelFile(processed, 'EGQI indicators')
+    generateExcelFile(processed, 'EGQI normalized indicators')
+}
+
+export const generateOriginalIndicatorsExcelFile = (data: RootState) => {
+    const { countries, indicators, years, indices } = data
+    const processed = indicators.allNames.reduce((state: any, indicatorName) => {
+        countries.allNames.forEach((countryName) => {
+            state.push({
+                'Country Name': countryName,
+                'Indicator Name': indicatorName,
+                ...years.reduce((state: {[key: T_Year]: number}, year) => {
+                    state[year] = indices[countryName].byIndicator[indicatorName][year].original
+                    return state
+                }, {})
+            })
+        })
+        return state
+    }, [])
+    
+    generateExcelFile(processed, 'EGQI original indicators')
 }
 
 export const generateCountryIndicesByYearsExcelFile = (data: RootState & { countryName: T_Country['name'] }) => {

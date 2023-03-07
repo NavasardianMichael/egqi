@@ -1,4 +1,4 @@
-import { generateIndicatorsExcelFile, generateSummaryByYearsColumnsExcelFile, generateSummaryByYearsRowsExcelFile, generateSummaryExcelFile } from "helpers/functions/encoders";
+import { generateIndicatorsExcelFile, generateOriginalIndicatorsExcelFile, generateSummaryByYearsColumnsExcelFile, generateSummaryByYearsRowsExcelFile, generateSummaryExcelFile } from "helpers/functions/encoders";
 
 export const DOWNLOAD_BUTTONS = [
     {
@@ -20,6 +20,11 @@ export const DOWNLOAD_BUTTONS = [
         id: 4,
         text: 'Download normalized indicators',
         handler: generateIndicatorsExcelFile,
+    },
+    {
+        id: 4,
+        text: 'Download original indicators',
+        handler: generateOriginalIndicatorsExcelFile,
     },
 ]
 

@@ -1,0 +1,14 @@
+.countries_list img {
+    width: 30px;
+    margin-right: 10px;
+}
+
+.country_values {
+    font-size: 12px;
+}
+
+.country_values input {
+    all: unset;
+    padding: 0;
+    width: 60px;
+}

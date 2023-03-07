@@ -55,7 +55,7 @@ const Rankings = () => {
 
     return (
         <div>
-            <table className={combineClassNames(['table', 'text-center', styles.output])}>
+            <table className={combineClassNames(['table', 'text-center', 'mt-3', styles.output])}>
                 <thead>
                     <tr>
                         <th scope="col">Rank</th>
