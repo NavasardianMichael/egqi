@@ -1,7 +1,7 @@
 import { INDICES_TYPES } from "helpers/constants.ts/indices"
 import { combineClassNames } from "helpers/functions/commons"
 import { processIndices } from "helpers/functions/decoders"
-import { useLayoutEffect, useRef } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { selectCountriesState } from "store/countries/selectors"
 import { T_Country } from "store/countries/types"
@@ -30,8 +30,8 @@ function Table({ selectedCountry }: Props) {
     const indicators = useSelector(selectIndicators)
     const indices = useSelector(selectIndices)
     const currentCountryIndicators = indices[selectedCountry]
-    const indicesInitialStateRef = useRef(currentCountryIndicators)
-    const isSimulated = indicesInitialStateRef.current !== indices[selectedCountry]
+    const [initialCurrentIndices, setInitialCurrentIndices] = useState(currentCountryIndicators)
+    const isSimulated = initialCurrentIndices !== indices[selectedCountry]
 
     const handleBlur: React.FocusEventHandler<HTMLInputElement> = (e) => {
         const { indicatorname: indicatorName, year } = e.target.dataset as DOMStringMap & T_InputDataset
@@ -57,18 +57,17 @@ function Table({ selectedCountry }: Props) {
             }
         })
         dispatch(setIndices(res))
-        
     }
 
     const handleReset: React.MouseEventHandler<HTMLButtonElement> = () => {
         dispatch(setIndices({
             ...indices,
-            [selectedCountry]: indicesInitialStateRef.current
+            [selectedCountry]: initialCurrentIndices
         }))
     }
 
-    useLayoutEffect(() => {
-        indicesInitialStateRef.current = {...indices[selectedCountry]}
+    useEffect(() => {
+        setInitialCurrentIndices(currentCountryIndicators)
     }, [selectedCountry])
 
     return (
@@ -105,11 +104,11 @@ function Table({ selectedCountry }: Props) {
                                             years.map(year => {
                                                 const { max, min } = indicators.byName[indicatorName]
                                                 const value = currentCountryIndicators?.byIndicator[indicatorName][year].original
-                                                const hasBeenSimulated = +indicesInitialStateRef.current.byIndicator[indicatorName][year].original !== +value
+                                                const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName][year].original !== +value
                                                 return (
                                                     <td 
                                                         className='text-center p-0 align-middle' 
-                                                        key={indicatorName+year}
+                                                        key={selectedCountry+indicatorName+year}
                                                         style={{
                                                             backgroundColor: hasBeenSimulated ? 'darkcyan' : 'initial',
                                                             color: hasBeenSimulated ? 'white' : 'initial'
@@ -140,7 +139,7 @@ function Table({ selectedCountry }: Props) {
                                         {
                                             years.map(year => {
                                                 const value = currentCountryIndicators.byYear[year][type]
-                                                const hasBeenSimulated = +indicesInitialStateRef.current.byYear[year][type] !== +value
+                                                const hasBeenSimulated = +initialCurrentIndices.byYear[year][type] !== +value
                                                 return (
                                                     <td 
                                                         key={'average'+year} 
