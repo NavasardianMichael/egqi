@@ -17,12 +17,13 @@ export const processWorkbookData = (workbook: XLSX.WorkBook) => {
     const countries = processCountries(workbookJsonSheet[indicesSheetNames[0]]) 
     const indicators = processIndicators(Sheets[indicatorsSheetName])
     const years = processYears(workbookJsonSheet[indicesSheetNames[0]][0])
+    const initialValues = processInitialValues({countries, indicators, years}, workbookJsonSheet)
 
     const result: RootState = {
         countries,
         indicators,
         years,
-        indices: processIndices({countries, indicators, years}, workbookJsonSheet)
+        indices: processIndices({countries, indicators, years, indices: initialValues})
     }
     
     return result
@@ -60,15 +61,53 @@ const processYears = (templateSheet: T_Row): T_YearsState => {
     return Object.keys(templateSheet).filter(value => !isNaN(+value)).map(year => +year)
 }
 
-const processIndices = (utils: Omit<RootState, 'indices'>, contentSheets: T_Sheets): T_IndicesState => {
+const processInitialValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_Sheets): T_IndicesState => {
+    // const normalizedValues = normalizeValues(utils, contentSheets)
+    const { indicators, years } = utils
+    
+    let result: T_IndicesState = {}
+    
+    indicators.allNames.forEach((indicatorName) => {
+        const indicator = indicators.byName[indicatorName]        
+        
+        contentSheets[indicator.abbr].forEach((row) => {
+            const countryName = row['Country Name'];
+            [...years, +years[years.length-1] + 1, +years[years.length-1] + 2, +years[years.length-1] + 3 ].forEach(year => {
+                const value = +row[year]
+    
+                if(isNaN(value)) return
+                if(!result[countryName]) result[countryName] = {
+                    byIndicator: {},
+                    byYear: {},
+                    means: {
+                        egqei: Infinity,
+                        egqgi: Infinity,
+                        egqi: Infinity,
+                        egqemr: Infinity,
+                    }
+                }
+                if(!result[countryName].byIndicator[indicatorName]) result[countryName].byIndicator[indicatorName] = {}
+                result[countryName].byIndicator[indicatorName][year] = {
+                    normalized: Infinity,
+                    original: value
+                }
+            })
+        })
+    })
+    
+    return result
+    
+} 
 
-    const normalizedValues = normalizeValues(utils, contentSheets)
+export const processIndices = (utils: RootState): T_IndicesState => {
+
+    const normalizedValues = normalizeValues(utils)
     const { countries } = utils
     
     let result: T_IndicesState = {}
     
     countries.allNames.forEach((countryName: T_Country['name']) => {
-        const countryIndicators = normalizedValues[countryName] 
+        const countryIndicators = normalizedValues[countryName].byIndicator
         
         const indicesByYears = processIndicesByYear(utils, countryIndicators)
         result[countryName] = {
@@ -129,43 +168,34 @@ const processIndicesMeans = (utils: Omit<RootState, 'indices'>, indicesByYears: 
     }, {...INDICES_INITIALS})
 }
 
-const normalizeValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_Sheets): { [key: T_Country['name']]: T_IndicesByIndicator} => { 
-    let result: { [key: T_Country['name']]: T_IndicesByIndicator } = {}
-    const { indicators, years } = utils
+const normalizeValues = (utils: RootState): T_IndicesState => { 
+    const { countries, indicators, years, indices } = utils
+    let result = indices
     
-    indicators.allNames.forEach((indicatorName) => {
-        const indicator = indicators.byName[indicatorName]
-        const { min, max } = getCriticalValues(utils, contentSheets[indicator.abbr], indicatorName)
-        
-        const distance = max - min
-        
-        contentSheets[indicator.abbr].forEach((row) => {
-                const countryName = row['Country Name'];
-                [...years, years[years.length - 1] + 1, years[years.length - 1] + 2, years[years.length - 1] + 3].forEach((year) => {
-                    
-                    const value = +row[year]
+    countries.allNames.forEach(countryName => {        
+        indicators.allNames.forEach((indicatorName) => {
+            const indicator = indicators.byName[indicatorName]
+            const { min, max } = getCriticalValues(utils, indicatorName)
+            
+            const distance = max - min;
+            
+            [...years, +years[years.length - 1] + 1, +years[years.length - 1] + 2, +years[years.length - 1] + 3].forEach((year) => {
+                const value = +indices[countryName].byIndicator[indicatorName][year]?.original
+                
+                if(isNaN(value)) return
 
-                    if(isNaN(value)) return
-                    
-                    let normalizedValue = (value - min) / distance * 100
-                    
-                    if(indicator.affect === -1) normalizedValue = 100 - normalizedValue
-                    if(!result[countryName]) result[countryName] = {}
-                    if(!result[countryName][indicator.name]) result[countryName][indicator.name] = {}
-                    if(!result[countryName][indicator.name][year]) result[countryName][indicator.name][year] = {
-                        original: Infinity,
-                        normalized: Infinity
-                    }
-                    result[countryName][indicator.name][year].original = value
-                    result[countryName][indicator.name][year].normalized = Math.max(Math.min(normalizedValue, 100), 0)
-                })
+                let normalizedValue = (indices[countryName].byIndicator[indicatorName][year].original - min) / distance * 100
+                if(indicator.affect === -1) normalizedValue = 100 - normalizedValue
+                result[countryName].byIndicator[indicator.name][year].normalized = Math.max(Math.min(normalizedValue, 100), 0)
             })
+        })
     })
+
 
     return result
 }
 
-const getCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[], indicatorName: T_Indicator['name']): { min: number, max: number } => {
+const getCriticalValues = (utils: RootState, indicatorName: T_Indicator['name']): { min: number, max: number } => {
     const { indicators } = utils
     const { max: givenMax, min: givenMin } = indicators.byName[indicatorName]
     if(givenMax != null) {
@@ -175,22 +205,24 @@ const getCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[]
         } 
     } 
 
-    const { percentiledMin, percentiledMax } = getPercentiledCriticalValues(utils, sheetRows, indicatorName)
+    const { percentiledMin, percentiledMax } = getPercentiledCriticalValues(utils, indicatorName)
     return {
         min: percentiledMin,
         max: percentiledMax
     }    
 }
 
-const getPercentiledCriticalValues = (utils: Omit<RootState, 'indices'>, sheetRows: T_Row[], indicatorName: T_Indicator['name']): { percentiledMin: number, percentiledMax: number } => {
-    const { indicators, years } = utils
+const getPercentiledCriticalValues = (utils: RootState, indicatorName: T_Indicator['name']): { percentiledMin: number, percentiledMax: number } => {
+    const { indicators, years, countries, indices } = utils
     const { percentile } = indicators.byName[indicatorName]
     
     let allValues: number[] = []
             
-    sheetRows.forEach((row) => {
-        years.forEach(year => {
-            allValues.push(+row[year])
+    countries.allNames.forEach(countryName => {
+        [...years, +years[years.length - 1] + 1, +years[years.length - 1] + 2, +years[years.length - 1] + 3].forEach(year => {
+            const value = indices[countryName].byIndicator[indicatorName][year]?.original;
+            if(isNaN(value)) return;
+            allValues.push(value)
         })
     })
     

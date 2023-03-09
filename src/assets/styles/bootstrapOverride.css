@@ -1,5 +1,6 @@
 .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link {
     color: gray;
+    font-weight: 600;
 }
 
 .dropdown-menu {
