@@ -35,6 +35,10 @@ function Table({ selectedCountry }: Props) {
 
     const handleBlur: React.FocusEventHandler<HTMLInputElement> = (e) => {
         const { indicatorname: indicatorName, year } = e.target.dataset as DOMStringMap & T_InputDataset
+        const value = +e.target.value
+
+        if(value === indices[selectedCountry].byIndicator[indicatorName][year].original) return;
+
         const res = processIndices({
             countries,
             indicators,
@@ -49,7 +53,7 @@ function Table({ selectedCountry }: Props) {
                             ...indices[selectedCountry].byIndicator[indicatorName],
                             [year]: {
                                 ...indices[selectedCountry].byIndicator[indicatorName][year],
-                                original: +e.target.value
+                                original: value
                             }
                         }
                     }
@@ -120,7 +124,7 @@ function Table({ selectedCountry }: Props) {
                                                             min={min}
                                                             data-indicatorname={indicatorName}
                                                             data-year={year}
-                                                            defaultValue={value?.toFixed(2)}
+                                                            defaultValue={value}
                                                             onBlur={handleBlur}
                                                         />
                                                     </td>
