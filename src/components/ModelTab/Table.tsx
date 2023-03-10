@@ -31,7 +31,7 @@ function Table({ selectedCountry }: Props) {
     const indices = useSelector(selectIndices)
     const currentCountryIndicators = indices[selectedCountry]
     const [initialCurrentIndices, setInitialCurrentIndices] = useState(currentCountryIndicators)
-    const isSimulated = initialCurrentIndices !== indices[selectedCountry]
+    // const isSimulated = initialCurrentIndices !== indices[selectedCountry]
 
     const handleBlur: React.FocusEventHandler<HTMLInputElement> = (e) => {
         const { indicatorname: indicatorName, year } = e.target.dataset as DOMStringMap & T_InputDataset
@@ -63,12 +63,14 @@ function Table({ selectedCountry }: Props) {
         dispatch(setIndices(res))
     }
 
-    const handleReset: React.MouseEventHandler<HTMLButtonElement> = () => {
-        dispatch(setIndices({
-            ...indices,
-            [selectedCountry]: initialCurrentIndices
-        }))
-    }
+    // const handleReset: React.MouseEventHandler<HTMLButtonElement> = () => {
+    //     console.log({initialCurrentIndices});
+        
+    //     dispatch(setIndices({
+    //         ...indices,
+    //         [selectedCountry]: initialCurrentIndices
+    //     }))
+    // }
 
     useEffect(() => {
         setInitialCurrentIndices(currentCountryIndicators)
@@ -76,14 +78,14 @@ function Table({ selectedCountry }: Props) {
 
     return (
         <div>
-            <button 
+            {/* <button 
                 title='Reset to original data'
                 className="btn btn-outline-secondary mb-3" 
                 onClick={handleReset}
                 disabled={!isSimulated}
             >
                 Reset
-            </button>
+            </button> */}
             <table className={combineClassNames(['table','table-bordered', styles.country_values])}>
                 <thead>
                     <tr>
@@ -108,6 +110,8 @@ function Table({ selectedCountry }: Props) {
                                             years.map(year => {
                                                 const { max, min } = indicators.byName[indicatorName]
                                                 const value = currentCountryIndicators?.byIndicator[indicatorName][year].original
+                                                console.log({currentCountryIndicators});
+                                                
                                                 const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName][year].original !== +value
                                                 return (
                                                     <td 
