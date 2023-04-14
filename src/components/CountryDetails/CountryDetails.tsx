@@ -76,7 +76,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                         </button>
                     </div>
                 }
-                <table className='table mt-3' style={{fontSize: 14}}>
+                <table className='table mt-3 align-middle' style={{fontSize: 14}}>
                     <thead>
                         <tr>
                             <th scope="col">Indicator Name</th>

@@ -10,6 +10,15 @@
     border: 3px solid white;
 }
 
+.link-secondary:hover {
+    color: #029191 !important;
+}
+
+.dropdown-item.active, 
+.dropdown-item:active {
+    background-color: #029191;
+}
+
 body {
     scrollbar-width: thin;
 }

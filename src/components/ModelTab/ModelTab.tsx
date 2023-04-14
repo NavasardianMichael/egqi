@@ -13,7 +13,7 @@ function ModelTab({}: Props) {
     const selectedState = useState<T_Country['name']>()
 
     if(!indicators.allNames.length) return (
-      <h5>Import data in the index tab to process the model</h5>
+      <h6>Import data in the index tab to process the model</h6>
     )
 
   return (

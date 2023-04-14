@@ -35,9 +35,13 @@ function Table({ selectedCountry }: Props) {
 
     const handleBlur: React.FocusEventHandler<HTMLInputElement> = (e) => {
         const { indicatorname: indicatorName, year } = e.target.dataset as DOMStringMap & T_InputDataset
-        const value = +e.target.value
+        const { min = -Infinity, max = Infinity } = indicators.byName[indicatorName]
+        const enteredValue = +e.target.value
+        const value = (min != null && max != null) ? Math.min(max, Math.max(min, enteredValue)) : enteredValue
+        
+        if(enteredValue > max || enteredValue < min) e.target.value = value.toString()
 
-        if(value === indices[selectedCountry].byIndicator[indicatorName][year].original) return;
+        if(value === +indices[selectedCountry].byIndicator[indicatorName][year].original.toFixed(2)) return;
 
         const res = processIndices({
             countries,
@@ -86,7 +90,7 @@ function Table({ selectedCountry }: Props) {
             >
                 Reset
             </button> */}
-            <table className={combineClassNames(['table','table-bordered', styles.country_values])}>
+            <table className={combineClassNames(['table','table-bordered', 'align-middle', styles.country_values])}>
                 <thead>
                     <tr>
                         <th scope="col">Indicator Name</th>
@@ -109,16 +113,15 @@ function Table({ selectedCountry }: Props) {
                                         {
                                             years.map(year => {
                                                 const { max, min } = indicators.byName[indicatorName]
-                                                const value = currentCountryIndicators?.byIndicator[indicatorName][year].original
-                                                console.log({currentCountryIndicators});
+                                                const value = currentCountryIndicators?.byIndicator[indicatorName][year].original.toFixed(2)
                                                 
-                                                const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName][year].original !== +value
+                                                const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName][year].original.toFixed(2) !== +value
                                                 return (
                                                     <td 
                                                         className='text-center p-0 align-middle' 
                                                         key={selectedCountry+indicatorName+year}
                                                         style={{
-                                                            backgroundColor: hasBeenSimulated ? 'darkcyan' : 'initial',
+                                                            backgroundColor: hasBeenSimulated ? '#029191' : 'initial',
                                                             color: hasBeenSimulated ? 'white' : 'initial'
                                                         }}
                                                     >
@@ -153,7 +156,7 @@ function Table({ selectedCountry }: Props) {
                                                         key={'average'+year} 
                                                         className='text-center'
                                                         style={{
-                                                            backgroundColor: hasBeenSimulated ? 'darkcyan' : 'initial',
+                                                            backgroundColor: hasBeenSimulated ? '#029191' : 'initial',
                                                             color: hasBeenSimulated ? 'white' : 'initial'
                                                         }}
                                                     >
