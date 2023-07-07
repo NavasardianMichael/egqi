@@ -1,8 +1,9 @@
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+
 import { INDICES_TYPES } from "helpers/constants.ts/indices"
 import { combineClassNames } from "helpers/functions/commons"
 import { processIndices } from "helpers/functions/decoders"
-import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
 import { selectCountriesState } from "store/countries/selectors"
 import { T_Country } from "store/countries/types"
 import { selectIndicators } from "store/indicators/selectors"
@@ -11,6 +12,7 @@ import { setIndices } from "store/indices/actionCreators"
 import { selectIndices } from "store/indices/selectors"
 import { selectYears } from "store/years/selectors"
 import { T_Year } from "store/years/types"
+
 import styles from './modelTab.module.css'
 
 type Props = {
@@ -127,6 +129,7 @@ function Table({ selectedCountry }: Props) {
                                                     >
                                                         <input 
                                                             type='number'
+                                                            title={`Please enter value in the corresponding valid range (${min ??  '&infin;'} - ${max ?? Infinity})`}
                                                             max={max}
                                                             min={min}
                                                             data-indicatorname={indicatorName}

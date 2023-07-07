@@ -1,3 +1,5 @@
+import XLSX from "xlsx";
+
 import { COUNTRY_CODES_BY_NAMES } from "helpers/constants.ts/countries";
 import { INDICES_INITIALS, SUBINDEX_TYPES } from "helpers/constants.ts/indices";
 import { T_Row, T_Sheets } from "helpers/types/processors";
@@ -8,7 +10,6 @@ import { initialIndicatorsState } from "store/indicators/reducer";
 import { T_Indicator, T_IndicatorsState } from "store/indicators/types";
 import { T_Indices, T_IndicesByIndicator, T_IndicesByYear, T_IndicesState } from "store/indices/types";
 import { T_YearsState } from "store/years/types";
-import XLSX from "xlsx";
 
 export const processWorkbookData = (workbook: XLSX.WorkBook) => {
     const { SheetNames: [ indicatorsSheetName, ...indicesSheetNames ], Sheets } = workbook
@@ -137,7 +138,7 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicato
                 ) / 3
             }
             if(i === arr.length - 1) {
-                indicesState.egqi = (indicesState.egqgi + indicesState.egqei) / 2
+                indicesState.egqi = Math.pow((indicesState.egqgi * indicesState.egqei), .5)
                 indicesState.egqemr =  indicesState.egqei / indicesState.egqgi
             }
             
