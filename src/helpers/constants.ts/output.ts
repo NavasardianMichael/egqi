@@ -30,6 +30,6 @@ export const DOWNLOAD_BUTTONS = [
 
 export const INDICATOR_COLORS = [
     '#b50800bf',
-    '#fff463',
-    '#7bee77'
+    '#ffc200',
+    '#029171'
 ]

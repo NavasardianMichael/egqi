@@ -1,6 +1,6 @@
 table.output {
-    width: 50%;
-    min-width: 400px;
+    width: 60%;
+    min-width: 600px;
     max-width: 1000px;
     vertical-align: middle;
 }
@@ -54,4 +54,13 @@ table.output .img_cell img {
 
 .actions button:hover {
     color: #029191;
+}
+
+td {
+    transition: .3s;
+}
+
+td:hover {
+    background-color: lightgray !important;
+    color: gray !important;
 }

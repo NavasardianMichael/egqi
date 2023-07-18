@@ -28,7 +28,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
     
     const generateColorByValue = (value: number, affect: T_Indicator['affect']) => {
         if(value == null) return ''
-        if(value == 100) return INDICATOR_COLORS[affect > 0 ? 2 : 0]
+        if(value === 100) return INDICATOR_COLORS[affect > 0 ? 2 : 0]
         return (affect > 0 ? INDICATOR_COLORS : [...INDICATOR_COLORS].reverse())[Math.floor(value / (100 / 3))]
     }
 
@@ -58,7 +58,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                 {
                     !!countryName &&
                     <div className={combineClassNames(['d-flex', styles.country_details_header])}>
-                        <img src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} />
+                        <img src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} alt={`flag of ${countryName}`} />
                         <h2 className={styles.country_details_name}>{countryName}</h2>
                         <button 
                             name={countryName}
@@ -109,21 +109,26 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                                     const color = generateColorByValue(+value, affect)
                                                     return (
                                                         <td 
-                                                            className='text-center' 
+                                                            className='text-center text-light' 
                                                             key={indicatorName+year} 
                                                             style={{backgroundColor: color}}
+                                                            title={`"${indicatorName}" value on ${year}`}
                                                         >
                                                             {value?.toFixed(2)}
                                                         </td>
                                                     )
                                                 })
                                             }
-                                            <td className='text-center' style={{backgroundColor: generateColorByValue(+averageForIndicator, affect)}}>
+                                            <td 
+                                                className='text-center text-light' 
+                                                style={{backgroundColor: generateColorByValue(+averageForIndicator, affect)}}
+                                                title={`Average value of "${indicatorName}" during the observed period`}
+                                            >
                                                 {
                                                     averageForIndicator
                                                     ?.toFixed(2)
                                                 }
-                                            </td>                                            
+                                            </td>                                    
                                         </tr>                                    
                                     )
                                 })
@@ -140,7 +145,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                                         return (
                                                             <Fragment key={type+year}>
                                                                 <td 
-                                                                    className='text-center' 
+                                                                    className='text-center text-light' 
                                                                     style={{backgroundColor: generateColorByValue(+value, 1)}}
                                                                 >
                                                                     {value?.toFixed(2)}

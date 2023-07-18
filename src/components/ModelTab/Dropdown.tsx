@@ -21,7 +21,7 @@ function Dropdown({selectedState}: Props) {
     return (
         <div className={combineClassNames(["dropdown", styles.countries_list])}>
             <button className="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {selectedCountryName && <img src={`https://flagcdn.com/${countries.byName[selectedCountryName].abbr}.svg`} />}
+                {selectedCountryName && <img src={`https://flagcdn.com/${countries.byName[selectedCountryName].abbr}.svg`} alt={`flag of ${selectedCountryName}`} />}
                 {selectedCountryName ?? 'Select Country to Simulate'}
             </button>
             <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -34,7 +34,10 @@ function Dropdown({selectedState}: Props) {
                                     onClick={handleClick} 
                                     className="dropdown-item"
                                 >
-                                    <img src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} />
+                                    <img 
+                                        src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} 
+                                        alt={`flag of ${countryName}`}
+                                    />
                                     {countryName}
                                 </button>
                                 <div className="dropdown-divider"></div>

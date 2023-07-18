@@ -87,7 +87,10 @@ const Rankings = () => {
                                     <tr key={countryName} className={styles.row}>
                                         <td>{i+1}</td>
                                         <td className={styles.img_cell}>
-                                            <img src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} />
+                                            <img 
+                                                src={`https://flagcdn.com/${countries.byName[countryName].abbr}.svg`} 
+                                                alt={`flag of ${countryName}`}
+                                            />
                                         </td>
                                         <td>{countryName}</td>
                                         <td>{indices[countryName].means.egqgi.toFixed(2)}</td>

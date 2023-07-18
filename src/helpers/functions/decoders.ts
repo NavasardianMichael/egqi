@@ -10,6 +10,7 @@ import { initialIndicatorsState } from "store/indicators/reducer";
 import { T_Indicator, T_IndicatorsState } from "store/indicators/types";
 import { T_Indices, T_IndicesByIndicator, T_IndicesByYear, T_IndicesState } from "store/indices/types";
 import { T_YearsState } from "store/years/types";
+import { geoMean } from "./commons";
 
 export const processWorkbookData = (workbook: XLSX.WorkBook) => {
     const { SheetNames: [ indicatorsSheetName, ...indicesSheetNames ], Sheets } = workbook
@@ -128,17 +129,20 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicato
         const indices = indicators.allNames.reduce((indicesState, indicatorName, i, arr) => {
             const { subindex, weight } = indicators.byName[indicatorName]
             if(subindex === SUBINDEX_TYPES[0]) {
-                indicesState.egqgi += countryIndicators[indicatorName][year].normalized * weight
+                const currentNormalizedValue = countryIndicators[indicatorName][year].normalized
+                indicesState.egqgi *= currentNormalizedValue ? Math.pow(currentNormalizedValue, weight) : 1
             } else {
-                // indicesState.egqei += countryIndicators[indicatorName][year] * weight
-                indicesState.egqei +=  weight * (
-                    countryIndicators[indicatorName][year + 1].normalized +
-                    countryIndicators[indicatorName][year + 2].normalized +
-                    countryIndicators[indicatorName][year + 3].normalized
-                ) / 3
+                indicesState.egqei *= Math.pow(
+                    geoMean(
+                        countryIndicators[indicatorName][year + 1].normalized,
+                        countryIndicators[indicatorName][year + 2].normalized,
+                        countryIndicators[indicatorName][year + 3].normalized
+                    ),
+                    weight
+                )
             }
             if(i === arr.length - 1) {
-                indicesState.egqi = Math.pow((indicesState.egqgi * indicesState.egqei), .5)
+                indicesState.egqi = geoMean(indicesState.egqgi, indicesState.egqei)
                 indicesState.egqemr =  indicesState.egqei / indicesState.egqgi
             }
             
@@ -155,15 +159,15 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicato
 const processIndicesMeans = (utils: Omit<RootState, 'indices'>, indicesByYears: T_IndicesByYear): T_Indices => {
     const { years } = utils
     return years.reduce((state, year, i, arr) => {
-        state.egqgi += indicesByYears[year].egqgi
-        state.egqei += indicesByYears[year].egqei
-        state.egqi += indicesByYears[year].egqi
-        state.egqemr += indicesByYears[year].egqemr
+        state.egqgi *= indicesByYears[year].egqgi
+        state.egqei *= indicesByYears[year].egqei
+        state.egqi *= indicesByYears[year].egqi
+        state.egqemr *= indicesByYears[year].egqemr
         if(i === arr.length - 1) {
-            state.egqgi /= years.length
-            state.egqei /= years.length
-            state.egqi /= years.length
-            state.egqemr /= years.length
+            state.egqgi = Math.pow(state.egqgi, 1/years.length)
+            state.egqei = Math.pow(state.egqei, 1/years.length)
+            state.egqi = Math.pow(state.egqi, 1/years.length)
+            state.egqemr = Math.pow(state.egqemr, 1/years.length)
         }
         return state
     }, {...INDICES_INITIALS})

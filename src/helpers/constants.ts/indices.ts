@@ -32,8 +32,8 @@ export const SUBINDEX_TYPES = {
 }
 
 export const INDICES_INITIALS = {
-    [COL_NAMES.egqgi]: 0,
-    [COL_NAMES.egqei]: 0,
-    [COL_NAMES.egqi]: 0,
-    [COL_NAMES.egqemr]: 0,
+    [COL_NAMES.egqgi]: 1,
+    [COL_NAMES.egqei]: 1,
+    [COL_NAMES.egqi]: 1,
+    [COL_NAMES.egqemr]: 1,
 }
