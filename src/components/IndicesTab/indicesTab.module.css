@@ -55,12 +55,3 @@ table.output .img_cell img {
 .actions button:hover {
     color: #029191;
 }
-
-td {
-    transition: .3s;
-}
-
-td:hover {
-    background-color: lightgray !important;
-    color: gray !important;
-}

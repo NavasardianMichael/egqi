@@ -74,7 +74,7 @@ const processInitialValues = (utils: Omit<RootState, 'indices'>, contentSheets: 
         
         contentSheets[indicator.abbr].forEach((row) => {
             const countryName = row['Country Name'];
-            [...years, +years[years.length-1] + 1, +years[years.length-1] + 2, +years[years.length-1] + 3 ].forEach(year => {
+            [...years, +years[years.length-1] + 1, +years[years.length-1] + 2 ].forEach(year => {
                 const value = +row[year]
     
                 if(isNaN(value)) return
@@ -128,15 +128,16 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicato
     const indicesByYears = years.reduce((state: T_IndicesByYear, year) => {
         const indices = indicators.allNames.reduce((indicesState, indicatorName, i, arr) => {
             const { subindex, weight } = indicators.byName[indicatorName]
+            const currentNormalizedValue = countryIndicators[indicatorName][year].normalized
+
             if(subindex === SUBINDEX_TYPES[0]) {
-                const currentNormalizedValue = countryIndicators[indicatorName][year].normalized
                 indicesState.egqgi *= currentNormalizedValue ? Math.pow(currentNormalizedValue, weight) : 1
             } else {
                 indicesState.egqei *= Math.pow(
-                    geoMean(
-                        countryIndicators[indicatorName][year + 1].normalized,
-                        countryIndicators[indicatorName][year + 2].normalized,
-                        countryIndicators[indicatorName][year + 3].normalized
+                    (
+                        (currentNormalizedValue * 0.582012172) +
+                        (countryIndicators[indicatorName][year + 1].normalized * 0.243084568) +
+                        (countryIndicators[indicatorName][year + 2].normalized * 0.174903259)
                     ),
                     weight
                 )
@@ -184,7 +185,7 @@ const normalizeValues = (utils: RootState): T_IndicesState => {
             
             const distance = max - min;
             
-            [...years, +years[years.length - 1] + 1, +years[years.length - 1] + 2, +years[years.length - 1] + 3].forEach((year) => {
+            [...years, +years[years.length - 1] + 1, +years[years.length - 1] + 2].forEach((year) => {
                 const value = +indices[countryName].byIndicator[indicatorName][year]?.original
                 
                 if(isNaN(value)) return
@@ -224,7 +225,7 @@ const getPercentiledCriticalValues = (utils: RootState, indicatorName: T_Indicat
     let allValues: number[] = []
             
     countries.allNames.forEach(countryName => {
-        [...years, +years[years.length - 1] + 1, +years[years.length - 1] + 2, +years[years.length - 1] + 3].forEach(year => {
+        [...years, +years[years.length - 1] + 1, +years[years.length - 1] + 2].forEach(year => {
             const value = indices[countryName].byIndicator[indicatorName][year]?.original;
             if(isNaN(value)) return;
             allValues.push(value)
