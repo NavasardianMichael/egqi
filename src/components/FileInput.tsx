@@ -6,6 +6,7 @@ import { setIndicators } from "store/indicators/actionCreators";
 import { setIndices } from "store/indices/actionCreators";
 import { setYears } from "store/years/actionCreators";
 import { selectIndicators } from "store/indicators/selectors";
+import { setAppState } from "store/app/actionCreators";
 
 function FileInput() {
   
@@ -17,21 +18,28 @@ function FileInput() {
   };
 
   const handleExcelFile = (file: File) => {
+    dispatch(setAppState({ isProcessing: true }))
     const reader = new FileReader();
 
     reader.onload = (e) => {
-      const data = e.target?.result;
-      const workbook = XLSX.read(data, {
-        type: 'binary',
-      });
       
-      const output = processWorkbookData(workbook)
+      // setTimeout(() => {
+        const data = e.target?.result;
+        const workbook = XLSX.read(data, {
+          type: 'binary',
+        });
+        
+        const output = processWorkbookData(workbook)
+        
+        const { countries, indicators, indices, years } = output
+        dispatch(setCountriesState(countries))
+        dispatch(setIndicators(indicators))
+        dispatch(setYears(years))
+        dispatch(setIndices(indices))
+        dispatch(setAppState({ isProcessing: false }))
       
-      const { countries, indicators, indices, years } = output
-      dispatch(setCountriesState(countries))
-      dispatch(setIndicators(indicators))
-      dispatch(setYears(years))
-      dispatch(setIndices(indices))
+      // }, 0)
+
     };
 
     reader.readAsBinaryString(file);

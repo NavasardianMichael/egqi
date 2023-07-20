@@ -62,14 +62,14 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                         <h2 className={styles.country_details_name}>{countryName}</h2>
                         <button 
                             name={countryName}
-                            className={styles.country_details_download_btn}
+                            className={combineClassNames([styles.country_details_download_btn, 'link-secondary'])}
                             onClick={handleDownloadIndicesBtnClick}
                         >
                             <i className='bi bi-download'></i> Indices by years
                         </button>
                         <button 
                             name={countryName}
-                            className={styles.country_details_download_btn}
+                            className={combineClassNames([styles.country_details_download_btn, 'link-secondary'])}
                             onClick={handleDownloadAllValuesBtnClick}
                         >
                             <i className='bi bi-download'></i> Normalized values

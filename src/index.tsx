@@ -7,6 +7,7 @@ import { indicatorsReducer } from "store/indicators/reducer";
 import indicesReducer from "store/indices/reducer";
 import { yearsReducer } from "store/years/reducer";
 import App from "./App";
+import appReducer from "store/app/reducer";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
@@ -15,7 +16,8 @@ const store = createStore(
     countries: countriesReducer,
     years: yearsReducer,
     indicators: indicatorsReducer,
-    indices: indicesReducer
+    indices: indicesReducer,
+    app: appReducer
 }))
 
 root.render(

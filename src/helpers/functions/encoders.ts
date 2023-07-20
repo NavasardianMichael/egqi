@@ -109,7 +109,7 @@ export const generateOriginalIndicatorsExcelFile = (data: RootState) => {
     generateExcelFile(processed, 'EGQI original indicators')
 }
 
-export const generateCountryIndicesByYearsExcelFile = (data: RootState & { countryName: T_Country['name'] }) => {
+export const generateCountryIndicesByYearsExcelFile = (data: Omit<RootState, 'app'> & { countryName: T_Country['name'] }) => {
     const { years, indices, countryName } = data
     const processed = INDICES_TYPES.map(type => {
         return {
@@ -125,7 +125,7 @@ export const generateCountryIndicesByYearsExcelFile = (data: RootState & { count
     generateExcelFile(processed, `${countryName} EGQI Details`)
 }
 
-export const generateCountryAllValuesExcelFile = (data: RootState & { countryName: T_Country['name'] }) => {
+export const generateCountryAllValuesExcelFile = (data: Omit<RootState, 'app'> & { countryName: T_Country['name'] }) => {
     const { years, indicators, indices, countryName } = data
     const processed = indicators.allNames.map(indicatorName => {
         return {

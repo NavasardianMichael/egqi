@@ -21,7 +21,7 @@ export const processWorkbookData = (workbook: XLSX.WorkBook) => {
     const years = processYears(workbookJsonSheet[indicesSheetNames[0]][0])
     const initialValues = processInitialValues({countries, indicators, years}, workbookJsonSheet)
 
-    const result: RootState = {
+    const result: Omit<RootState, 'app'> = {
         countries,
         indicators,
         years,
@@ -63,7 +63,7 @@ const processYears = (templateSheet: T_Row): T_YearsState => {
     return Object.keys(templateSheet).filter(value => !isNaN(+value)).map(year => +year)
 }
 
-const processInitialValues = (utils: Omit<RootState, 'indices'>, contentSheets: T_Sheets): T_IndicesState => {
+const processInitialValues = (utils: Omit<RootState, 'indices' | 'app'>, contentSheets: T_Sheets): T_IndicesState => {
     // const normalizedValues = normalizeValues(utils, contentSheets)
     const { indicators, years } = utils
     
@@ -101,7 +101,7 @@ const processInitialValues = (utils: Omit<RootState, 'indices'>, contentSheets: 
     
 } 
 
-export const processIndices = (utils: RootState): T_IndicesState => {
+export const processIndices = (utils: Omit<RootState, 'app'>): T_IndicesState => {
 
     const normalizedValues = normalizeValues(utils)
     const { countries } = utils
@@ -122,7 +122,7 @@ export const processIndices = (utils: RootState): T_IndicesState => {
     return result
 }
 
-const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicators: T_IndicesByIndicator): T_IndicesByYear => {
+const processIndicesByYear = (utils: Omit<RootState, 'indices' | 'app'>, countryIndicators: T_IndicesByIndicator): T_IndicesByYear => {
     const { indicators, years } = utils
     
     const indicesByYears = years.reduce((state: T_IndicesByYear, year) => {
@@ -131,13 +131,13 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicato
             const currentNormalizedValue = countryIndicators[indicatorName][year].normalized
 
             if(subindex === SUBINDEX_TYPES[0]) {
-                indicesState.egqgi *= currentNormalizedValue ? Math.pow(currentNormalizedValue, weight) : 1
+                indicesState.egqgi *= Math.pow(currentNormalizedValue, weight)
             } else {
                 indicesState.egqei *= Math.pow(
                     (
-                        (currentNormalizedValue * 0.582012172) +
-                        (countryIndicators[indicatorName][year + 1].normalized * 0.243084568) +
-                        (countryIndicators[indicatorName][year + 2].normalized * 0.174903259)
+                        (currentNormalizedValue * 0.635741365) +
+                        (countryIndicators[indicatorName][year + 1].normalized * 0.141558029) +
+                        (countryIndicators[indicatorName][year + 2].normalized * 0.222700606)
                     ),
                     weight
                 )
@@ -157,7 +157,7 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices'>, countryIndicato
     return indicesByYears
 }
 
-const processIndicesMeans = (utils: Omit<RootState, 'indices'>, indicesByYears: T_IndicesByYear): T_Indices => {
+const processIndicesMeans = (utils: Omit<RootState, 'indices' | 'app'>, indicesByYears: T_IndicesByYear): T_Indices => {
     const { years } = utils
     return years.reduce((state, year, i, arr) => {
         state.egqgi *= indicesByYears[year].egqgi
@@ -174,7 +174,7 @@ const processIndicesMeans = (utils: Omit<RootState, 'indices'>, indicesByYears: 
     }, {...INDICES_INITIALS})
 }
 
-const normalizeValues = (utils: RootState): T_IndicesState => { 
+const normalizeValues = (utils: Omit<RootState, 'app'>): T_IndicesState => { 
     const { countries, indicators, years, indices } = utils
     let result = indices
     
@@ -192,7 +192,7 @@ const normalizeValues = (utils: RootState): T_IndicesState => {
 
                 let normalizedValue = (indices[countryName].byIndicator[indicatorName][year].original - min) / distance * 100
                 if(indicator.affect === -1) normalizedValue = 100 - normalizedValue
-                result[countryName].byIndicator[indicator.name][year].normalized = Math.max(Math.min(normalizedValue, 100), 0)
+                result[countryName].byIndicator[indicator.name][year].normalized = Math.max(Math.min(normalizedValue, 100), 1)
             })
         })
     })
@@ -201,7 +201,7 @@ const normalizeValues = (utils: RootState): T_IndicesState => {
     return result
 }
 
-const getCriticalValues = (utils: RootState, indicatorName: T_Indicator['name']): { min: number, max: number } => {
+const getCriticalValues = (utils: Omit<RootState, 'app'>, indicatorName: T_Indicator['name']): { min: number, max: number } => {
     const { indicators } = utils
     const { max: givenMax, min: givenMin } = indicators.byName[indicatorName]
     if(givenMax != null) {
@@ -218,7 +218,7 @@ const getCriticalValues = (utils: RootState, indicatorName: T_Indicator['name'])
     }    
 }
 
-const getPercentiledCriticalValues = (utils: RootState, indicatorName: T_Indicator['name']): { percentiledMin: number, percentiledMax: number } => {
+const getPercentiledCriticalValues = (utils: Omit<RootState, 'app'>, indicatorName: T_Indicator['name']): { percentiledMin: number, percentiledMax: number } => {
     const { indicators, years, countries, indices } = utils
     const { percentile } = indicators.byName[indicatorName]
     
