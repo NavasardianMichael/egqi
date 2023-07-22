@@ -96,7 +96,7 @@ const Rankings = () => {
                                         <td>{indices[countryName].means.egqgi.toFixed(2)}</td>
                                         <td>{indices[countryName].means.egqei.toFixed(2)}</td>
                                         <td>{indices[countryName].means.egqi.toFixed(2)}</td>
-                                        <td>{indices[countryName].means.egqemr.toFixed(2)}</td>
+                                        <td>{indices[countryName].means.egqemr.toFixed(2) + '%'}</td>
                                         <td className={styles.actions}>
                                             <button 
                                                 title={`${countryName} Details`}

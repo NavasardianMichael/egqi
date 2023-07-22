@@ -144,13 +144,22 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices' | 'app'>, country
             }
             if(i === arr.length - 1) {
                 indicesState.egqi = geoMean(indicesState.egqgi, indicesState.egqei)
-                indicesState.egqemr =  indicesState.egqei / indicesState.egqgi
             }
             
             return indicesState
         }, {...INDICES_INITIALS})
         
         state[year] = {...indices}
+        // console.log('prev: ', state[year-1]?.egqi)
+        // console.log('current: ', state[year].egqi)
+        // console.log('ratio: ', state[year].egqi / state[year-1]?.egqi * 100)
+        state[year].egqemr = (
+            state[year - 1] ?
+            state[year].egqi / state[year - 1].egqi * 100 :
+            1
+        )
+        console.log(state[year]);
+        
         return state
     }, {})
 
@@ -168,7 +177,7 @@ const processIndicesMeans = (utils: Omit<RootState, 'indices' | 'app'>, indicesB
             state.egqgi = Math.pow(state.egqgi, 1/years.length)
             state.egqei = Math.pow(state.egqei, 1/years.length)
             state.egqi = Math.pow(state.egqi, 1/years.length)
-            state.egqemr = Math.pow(state.egqemr, 1/years.length)
+            state.egqemr = Math.pow(state.egqemr, 1/(years.length - 1)) - 100
         }
         return state
     }, {...INDICES_INITIALS})
