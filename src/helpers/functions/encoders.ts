@@ -1,4 +1,4 @@
-import { INDICES_TYPES } from 'helpers/constants.ts/indices';
+import { STATS_TYPES } from 'helpers/constants.ts/indices';
 import { RootState } from 'index';
 import { T_Country } from 'store/countries/types';
 import { T_Year } from 'store/years/types';
@@ -24,10 +24,14 @@ export const generateSummaryExcelFile = (data: RootState) => {
     const processed = countries.allNames.map(countryName => {
         return {
             'Country Name': countryName,
-            EGQGI: indices[countryName].means.egqgi, 
-            EGQEI: indices[countryName].means.egqei, 
-            EGGI: indices[countryName].means.egqi, 
-            EGQEMR: indices[countryName].means.egqemr, 
+            EGQGI: indices[countryName].means.egqgi.value, 
+            EGQEI: indices[countryName].means.egqei.value, 
+            EGGI: indices[countryName].means.egqi.value, 
+            ERQIGR: indices[countryName].means.erqigr.value, 
+            'EGQGI ranking': indices[countryName].means.egqgi.ranking, 
+            'EGQEI ranking': indices[countryName].means.egqei.ranking, 
+            'EGGI ranking': indices[countryName].means.egqi.ranking,
+            'ERQIGR ranking': indices[countryName].means.erqigr.ranking, 
         }
     })
     generateExcelFile(processed, 'EGQI Summary')
@@ -40,8 +44,12 @@ export const generateSummaryByYearsRowsExcelFile = (data: RootState) => {
             state.push({
                 'Country Name': countryName,
                 'Year': year,
-                ...INDICES_TYPES.reduce((state: any, type) => {
-                    state[type] = indices[countryName].byYear[year][type]
+                ...STATS_TYPES.reduce((state: any, type) => {
+                    state[type.toUpperCase()] = indices[countryName].byYear[year][type].value
+                    return state
+                }, {}),
+                ...STATS_TYPES.reduce((state: any, type) => {
+                    state[type.toUpperCase() + ' ranking'] = indices[countryName].byYear[year][type].ranking
                     return state
                 }, {})
             })
@@ -54,13 +62,17 @@ export const generateSummaryByYearsRowsExcelFile = (data: RootState) => {
 
 export const generateSummaryByYearsColumnsExcelFile = (data: RootState) => {
     const { countries, years, indices } = data
-    const processed = countries.allNames.reduce((state: any, countryName) => {
-        INDICES_TYPES.forEach(type => {
+    const processedValues = countries.allNames.reduce((state: any, countryName) => {
+        STATS_TYPES.forEach(type => {
             state.push({
                 'Country Name': countryName,
                 'Index Name': type.toUpperCase(),
                 ...years.reduce((state: any, year) => {
-                    state[year] = indices[countryName].byYear[year][type]
+                    state[year] = indices[countryName].byYear[year][type].value
+                    return state
+                }, {}),
+                ...years.reduce((state: any, year) => {
+                    state[year + ' rank'] = indices[countryName].byYear[year][type].ranking
                     return state
                 }, {})
             })
@@ -68,7 +80,7 @@ export const generateSummaryByYearsColumnsExcelFile = (data: RootState) => {
         return state
     }, [])
     
-    generateExcelFile(processed, 'EGQI Summary by Years (Columns)')
+    generateExcelFile(processedValues, 'EGQI Summary by Years (Columns)')
 }
 
 export const generateIndicatorsExcelFile = (data: RootState) => {
@@ -79,7 +91,7 @@ export const generateIndicatorsExcelFile = (data: RootState) => {
                 'Country Name': countryName,
                 'Indicator Name': indicatorName,
                 ...years.reduce((state: {[key: T_Year]: number}, year) => {
-                    state[year] = indices[countryName].byIndicator[indicatorName][year].normalized
+                    state[year] = indices[countryName].byIndicator[indicatorName][year].normalized.value
                     return state
                 }, {})
             })
@@ -98,7 +110,7 @@ export const generateOriginalIndicatorsExcelFile = (data: RootState) => {
                 'Country Name': countryName,
                 'Indicator Name': indicatorName,
                 ...years.reduce((state: {[key: T_Year]: number}, year) => {
-                    state[year] = indices[countryName].byIndicator[indicatorName][year].original
+                    state[year] = indices[countryName].byIndicator[indicatorName][year].original.value
                     return state
                 }, {})
             })
@@ -111,12 +123,16 @@ export const generateOriginalIndicatorsExcelFile = (data: RootState) => {
 
 export const generateCountryIndicesByYearsExcelFile = (data: Omit<RootState, 'app'> & { countryName: T_Country['name'] }) => {
     const { years, indices, countryName } = data
-    const processed = INDICES_TYPES.map(type => {
+    const processed = STATS_TYPES.map(type => {
         return {
             'Country': countryName,
             'Index Name': type.toUpperCase(),
             ...years.reduce((state: { [key: T_Year]: number }, year) => {
-                state[year] = indices[countryName].byYear[year].egqei
+                state[year] = indices[countryName].byYear[year][type].value
+                return state
+            }, {}),
+            ...years.reduce((state: { [key: string]: number }, year) => {
+                state[year + ' ranking'] = indices[countryName].byYear[year][type].ranking
                 return state
             }, {})
         }
@@ -132,9 +148,13 @@ export const generateCountryAllValuesExcelFile = (data: Omit<RootState, 'app'> &
             'Country': countryName,
             'Indicator': indicatorName, 
             ...years.reduce((state: { [key: T_Year]: number }, year) => {
-                state[year] = indices[countryName].byIndicator[indicatorName][year].normalized
+                state[year] = indices[countryName].byIndicator[indicatorName][year].normalized.value
                 return state
-            }, {})
+            }, {}),
+            ...years.reduce((state: { [key: string]: number }, year) => {
+                state[year + ' ranking'] = indices[countryName].byIndicator[indicatorName][year].normalized.ranking
+                return state
+            }, {}),
         }
     })
     

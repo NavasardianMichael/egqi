@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { INDICES_TYPES } from "helpers/constants.ts/indices"
+import { STATS_TYPES } from "helpers/constants.ts/indices"
 import { combineClassNames } from "helpers/functions/commons"
 import { processIndices } from "helpers/functions/decoders"
 import { selectCountriesState } from "store/countries/selectors"
@@ -43,7 +43,7 @@ function Table({ selectedCountry }: Props) {
         
         if(enteredValue > max || enteredValue < min) e.target.value = value.toString()
 
-        if(value === +indices[selectedCountry].byIndicator[indicatorName][year].original.toFixed(2)) return;
+        if(value === +indices[selectedCountry].byIndicator[indicatorName][year].original.value.toFixed(2)) return;
 
         const res = processIndices({
             countries,
@@ -59,7 +59,10 @@ function Table({ selectedCountry }: Props) {
                             ...indices[selectedCountry].byIndicator[indicatorName],
                             [year]: {
                                 ...indices[selectedCountry].byIndicator[indicatorName][year],
-                                original: value
+                                original: {
+                                    value,
+                                    ranking: 0
+                                }
                             }
                         }
                     }
@@ -115,9 +118,9 @@ function Table({ selectedCountry }: Props) {
                                         {
                                             years.map(year => {
                                                 const { max, min } = indicators.byName[indicatorName]
-                                                const value = currentCountryIndicators?.byIndicator[indicatorName][year].original.toFixed(2)
+                                                const value = currentCountryIndicators?.byIndicator[indicatorName][year].original.value.toFixed(2)
                                                 
-                                                const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName][year].original.toFixed(2) !== +value
+                                                const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName][year].original.value.toFixed(2) !== +value
                                                 return (
                                                     <td 
                                                         className='text-center p-0 align-middle' 
@@ -146,13 +149,13 @@ function Table({ selectedCountry }: Props) {
                             })
                         }
                         {
-                            INDICES_TYPES.map(type => {
+                            STATS_TYPES.map(type => {
                                 return (
                                     <tr key={type} className="fw-bold">
                                         <td>{type.toUpperCase()}</td>
                                         {
                                             years.map(year => {
-                                                const value = currentCountryIndicators.byYear[year][type]
+                                                const value = currentCountryIndicators.byYear[year][type]?.value
                                                 const hasBeenSimulated = +initialCurrentIndices.byYear[year][type] !== +value
                                                 return (
                                                     <td 

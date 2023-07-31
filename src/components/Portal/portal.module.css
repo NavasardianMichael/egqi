@@ -17,13 +17,12 @@
     transform: translate(-50%, -50%) scale(1);
 }
 
-.portal_content td {
+/* .portal_content td {
     transition: .3s;
-}
+} */
 
-.portal_content td:hover {
-    background-color: lightgray !important;
-    color: gray !important;
+.portal_content td {
+    user-select: none;
 }
 
 .portal_content.closed {

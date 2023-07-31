@@ -3,18 +3,23 @@ import { T_Indicator } from "store/indicators/types"
 import { T_Year } from "store/years/types"
 import { SET_INDICES } from "./actionTypes"
 
+export type T_Pair = {
+    value: number
+    ranking: number
+}
+
 export type T_Indices = {
-    egqi: number
-    egqgi: number
-    egqei: number
-    egqemr: number
+    egqi: T_Pair
+    egqgi: T_Pair
+    egqei: T_Pair
+    erqigr: T_Pair
 }
 
 export type T_IndicesByIndicator = {
     [key: T_Indicator['name']]: {
         [key: T_Year]: {
-            original: number
-            normalized: number
+            original: T_Pair
+            normalized: T_Pair
         }
     }
 }

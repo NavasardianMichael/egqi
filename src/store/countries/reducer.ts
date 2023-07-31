@@ -33,10 +33,10 @@ export function countriesReducer(state: T_CountriesState = initialCountriesState
             } else {
                 order !== COL_SORT_TYPES[1] ?
                 newNames.sort((a: T_Country['name'], b: T_Country['name']) => {
-                    return indices[a].means[col] - indices[b].means[col]
+                    return indices[a].means[col].value - indices[b].means[col].value
                 }) :
                 newNames.sort((a: T_Country['name'], b: T_Country['name']) => {
-                    return indices[b].means[col] - indices[a].means[col]
+                    return indices[b].means[col].value - indices[a].means[col].value
                 })
             }
             return {
