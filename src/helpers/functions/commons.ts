@@ -14,3 +14,13 @@ export const geoMean = (...list: number[]) => {
     const value = Math.pow(num, 1/list.length)
     return value
 }
+
+export const generateOrdinalNumber = (num: number): string => {
+    if(!num) return '';
+    
+    const numStr = num.toString()
+    if(numStr[numStr.length - 1] === '1') return num + 'st'
+    if(numStr[numStr.length - 1] === '2') return num + 'nd'
+    if(numStr[numStr.length - 1] === '3') return num + 'rd'
+    return num + 'th'
+}

@@ -100,8 +100,17 @@ const processInitialValues = (utils: Omit<RootState, 'indices' | 'app'>, content
                         },
                     }
                 }
-                if(!result[countryName].byIndicator[indicatorName]) result[countryName].byIndicator[indicatorName] = {}
-                result[countryName].byIndicator[indicatorName][year] = {
+                if(!result[countryName].byIndicator[indicatorName]) {
+                    result[countryName].byIndicator[indicatorName] = {
+                        byYear: {},
+                        average: {
+                            value: 1,
+                            ranking: 0
+                        }
+                    }
+                }
+                
+                result[countryName].byIndicator[indicatorName].byYear[year] = {
                     normalized: {
                         value: Infinity,
                         ranking: 0
@@ -170,20 +179,34 @@ export const processIndices = (utils: Omit<RootState, 'app'>): T_IndicesState =>
             countries.allNames.forEach(countryName => {
                 rankingUtil.push({
                     name: countryName,
-                    original: result[countryName].byIndicator[indicatorName][year].original.value,
-                    normalized: result[countryName].byIndicator[indicatorName][year].normalized.value,
+                    original: result[countryName].byIndicator[indicatorName].byYear[year].original.value,
+                    normalized: result[countryName].byIndicator[indicatorName].byYear[year].normalized.value,
                 })
             });
             
             rankingUtil.sort((a,b) => b.original - a.original)
             rankingUtil.forEach((data, i) => {
-                result[data.name].byIndicator[indicatorName][year].original.ranking = (i + 1)
+                result[data.name].byIndicator[indicatorName].byYear[year].original.ranking = (i + 1)
             })
 
             rankingUtil.sort((a,b) => b.normalized - a.normalized)
             rankingUtil.forEach((data, i) => {
-                result[data.name].byIndicator[indicatorName][year].normalized.ranking = (i + 1)
+                result[data.name].byIndicator[indicatorName].byYear[year].normalized.ranking = (i + 1)
             })
+        })
+    })
+
+    indicators.allNames.forEach(indicatorName => {
+        let rankingUtil: { name: T_Country['name'], value: T_Pair['value'] }[] = []
+        countries.allNames.forEach(countryName => {
+            rankingUtil.push({
+                name: countryName,
+                value: result[countryName].byIndicator[indicatorName].average.value
+            })
+        })
+        rankingUtil.sort((a,b) => b.value - a.value)
+        rankingUtil.forEach(({ name }, i) => {
+            result[name].byIndicator[indicatorName].average.ranking = (i + 1) 
         })
     })
 
@@ -229,13 +252,14 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices' | 'app'>, country
     const indicesByYears = years.reduce((state: T_IndicesByYear, year) => {
         const indices = indicators.allNames.reduce((indicesState, indicatorName, i, arr) => {
             const { subindex, weight } = indicators.byName[indicatorName]
-            const currentNormalizedValue = countryIndicators[indicatorName][year].normalized.value
+            const currentNormalizedValue = countryIndicators[indicatorName].byYear[year].normalized.value
 
             if(subindex === SUBINDEX_TYPES[0]) {
                 indicesState.egqgi.value *= Math.pow(currentNormalizedValue, weight)
             } else {
                 indicesState.egqei.value *= Math.pow(currentNormalizedValue, weight)
             }
+
             if(i === arr.length - 1) {
                 indicesState.egqi.value = geoMean(indicesState.egqgi.value, indicesState.egqei.value)
             }
@@ -249,7 +273,7 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices' | 'app'>, country
             state[year].egqi.value / state[year - 1].egqi.value * 100 :
             1
         )
-        
+
         return state
     }, {})
 
@@ -285,17 +309,19 @@ const normalizeValues = (utils: Omit<RootState, 'app'>): T_IndicesState => {
             const distance = max - min;
             
             years.forEach((year) => {
-                const value = +indices[countryName].byIndicator[indicatorName][year].original.value
+                const value = +indices[countryName].byIndicator[indicatorName].byYear[year].original.value
                 
                 if(isNaN(value)) return
 
-                let normalizedValue = (indices[countryName].byIndicator[indicatorName][year].original.value - min) / distance * 100
+                let normalizedValue = (indices[countryName].byIndicator[indicatorName].byYear[year].original.value - min) / distance * 100
                 
                 if(indicator.affect === -1) normalizedValue = 100 - normalizedValue
-                result[countryName].byIndicator[indicator.name][year].normalized.value = (
+                result[countryName].byIndicator[indicator.name].byYear[year].normalized.value = (
                     Math.max(Math.min(normalizedValue, 100), 0.00001)
                 )
+                result[countryName].byIndicator[indicator.name].average.value *= result[countryName].byIndicator[indicator.name].byYear[year].normalized.value
             })
+            result[countryName].byIndicator[indicator.name].average.value = Math.pow(result[countryName].byIndicator[indicator.name].average.value, 1/years.length)
         })
     })
 
@@ -328,7 +354,7 @@ const getPercentiledCriticalValues = (utils: Omit<RootState, 'app'>, indicatorNa
             
     countries.allNames.forEach(countryName => {
         years.forEach(year => {
-            const value = indices[countryName].byIndicator[indicatorName][year].original.value;
+            const value = indices[countryName].byIndicator[indicatorName].byYear[year].original.value;
             if(isNaN(value)) return;
             allValues.push(value)
         })

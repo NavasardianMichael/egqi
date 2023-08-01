@@ -17,10 +17,13 @@ export type T_Indices = {
 
 export type T_IndicesByIndicator = {
     [key: T_Indicator['name']]: {
-        [key: T_Year]: {
-            original: T_Pair
-            normalized: T_Pair
-        }
+        byYear: {
+            [key: T_Year]: {
+                original: T_Pair
+                normalized: T_Pair
+            }
+        },
+        average: T_Pair
     }
 }
 

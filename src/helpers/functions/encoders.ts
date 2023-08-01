@@ -91,9 +91,16 @@ export const generateIndicatorsExcelFile = (data: RootState) => {
                 'Country Name': countryName,
                 'Indicator Name': indicatorName,
                 ...years.reduce((state: {[key: T_Year]: number}, year) => {
-                    state[year] = indices[countryName].byIndicator[indicatorName][year].normalized.value
+                    state[year] = indices[countryName].byIndicator[indicatorName].byYear[year].normalized.value
                     return state
-                }, {})
+                }, {}),
+                'Average': indices[countryName].byIndicator[indicatorName].average.value,
+                '': null,
+                ...years.reduce((state: { [key: string]: number }, year) => {
+                    state[year + ' ranking'] = indices[countryName].byIndicator[indicatorName].byYear[year].normalized.ranking
+                    return state
+                }, {}),
+                'Average ranking': indices[countryName].byIndicator[indicatorName].average.ranking,
             })
         })
         return state
@@ -110,7 +117,7 @@ export const generateOriginalIndicatorsExcelFile = (data: RootState) => {
                 'Country Name': countryName,
                 'Indicator Name': indicatorName,
                 ...years.reduce((state: {[key: T_Year]: number}, year) => {
-                    state[year] = indices[countryName].byIndicator[indicatorName][year].original.value
+                    state[year] = indices[countryName].byIndicator[indicatorName].byYear[year].original.value
                     return state
                 }, {})
             })
@@ -131,10 +138,13 @@ export const generateCountryIndicesByYearsExcelFile = (data: Omit<RootState, 'ap
                 state[year] = indices[countryName].byYear[year][type].value
                 return state
             }, {}),
+            'Average': indices[countryName].means[type].value,
+            '': null,
             ...years.reduce((state: { [key: string]: number }, year) => {
                 state[year + ' ranking'] = indices[countryName].byYear[year][type].ranking
                 return state
-            }, {})
+            }, {}),
+            'Average ranking': indices[countryName].means[type].ranking,
         }
     })
     
@@ -146,15 +156,18 @@ export const generateCountryAllValuesExcelFile = (data: Omit<RootState, 'app'> &
     const processed = indicators.allNames.map(indicatorName => {
         return {
             'Country': countryName,
-            'Indicator': indicatorName, 
+            'Indicator': indicatorName,
             ...years.reduce((state: { [key: T_Year]: number }, year) => {
-                state[year] = indices[countryName].byIndicator[indicatorName][year].normalized.value
+                state[year] = indices[countryName].byIndicator[indicatorName].byYear[year].normalized.value
                 return state
             }, {}),
+            'Average': indices[countryName].byIndicator[indicatorName].average.value,
+            '': null,
             ...years.reduce((state: { [key: string]: number }, year) => {
-                state[year + ' ranking'] = indices[countryName].byIndicator[indicatorName][year].normalized.ranking
+                state[year + ' ranking'] = indices[countryName].byIndicator[indicatorName].byYear[year].normalized.ranking
                 return state
             }, {}),
+            'Average ranking': indices[countryName].byIndicator[indicatorName].average.ranking,
         }
     })
     

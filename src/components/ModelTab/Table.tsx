@@ -43,7 +43,7 @@ function Table({ selectedCountry }: Props) {
         
         if(enteredValue > max || enteredValue < min) e.target.value = value.toString()
 
-        if(value === +indices[selectedCountry].byIndicator[indicatorName][year].original.value.toFixed(2)) return;
+        if(value === +indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value.toFixed(2)) return;
 
         const res = processIndices({
             countries,
@@ -58,7 +58,7 @@ function Table({ selectedCountry }: Props) {
                         [indicatorName]: {
                             ...indices[selectedCountry].byIndicator[indicatorName],
                             [year]: {
-                                ...indices[selectedCountry].byIndicator[indicatorName][year],
+                                ...indices[selectedCountry].byIndicator[indicatorName].byYear[year],
                                 original: {
                                     value,
                                     ranking: 0
@@ -118,9 +118,9 @@ function Table({ selectedCountry }: Props) {
                                         {
                                             years.map(year => {
                                                 const { max, min } = indicators.byName[indicatorName]
-                                                const value = currentCountryIndicators?.byIndicator[indicatorName][year].original.value.toFixed(2)
+                                                const value = currentCountryIndicators?.byIndicator[indicatorName].byYear[year].original.value.toFixed(2)
                                                 
-                                                const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName][year].original.value.toFixed(2) !== +value
+                                                const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName].byYear[year].original.value.toFixed(2) !== +value
                                                 return (
                                                     <td 
                                                         className='text-center p-0 align-middle' 

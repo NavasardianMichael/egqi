@@ -3,7 +3,7 @@ import { useSelector } from "react-redux"
 import { Portal } from "components/Portal/Portal"
 import { COL_NAMES, STATS_TYPES } from "helpers/constants.ts/indices"
 import { INDICATOR_COLORS } from "helpers/constants.ts/output"
-import { combineClassNames } from "helpers/functions/commons"
+import { combineClassNames, generateOrdinalNumber } from "helpers/functions/commons"
 import { generateCountryAllValuesExcelFile, generateCountryIndicesByYearsExcelFile } from "helpers/functions/encoders"
 import { selectCountriesState } from "store/countries/selectors"
 import { T_Country } from "store/countries/types"
@@ -100,17 +100,16 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                         <>
                             {
                                 indicators.allNames.map(indicatorName => {
-                                    const averageForIndicator = ((years.reduce((value, year) => {
-                                        return value + indices?.[countryName]?.byIndicator[indicatorName][year].normalized.value
-                                    }, 0))
-                                    / years.length)
+                                    const pair = indices[countryName]?.byIndicator?.[indicatorName]?.average;
+                                    console.log({pair});
+                                    
                                     return (
                                         <tr key={indicatorName}>
                                             <td>{indicatorName}</td>
                                             {
                                                 years.map(year => {
                                                     
-                                                    const pair = indices?.[countryName]?.byIndicator[indicatorName][year].normalized
+                                                    const pair = indices?.[countryName]?.byIndicator[indicatorName].byYear[year].normalized
                                                     const color = generateColorByValue(+pair?.value)
                                                     return (
                                                         <td 
@@ -119,18 +118,18 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                                             style={{backgroundColor: color}}
                                                             title={`"${indicatorName}" value in ${year}`}
                                                         >
-                                                            {`${pair?.value?.toFixed(2)} (${pair?.ranking})`}
+                                                            {`${pair?.value?.toFixed(2)} (${generateOrdinalNumber(pair?.ranking)})`}
                                                         </td>
                                                     )
                                                 })
                                             }
                                             <td 
                                                 className='text-center text-light' 
-                                                style={{backgroundColor: generateColorByValue(+averageForIndicator)}}
+                                                style={{backgroundColor: generateColorByValue(+pair?.value)}}
                                                 title={`Average value of "${indicatorName}" during the observed period`}
                                             >
                                                 {
-                                                    averageForIndicator?.toFixed(2)
+                                                    `${pair?.value?.toFixed(2)} (${pair?.ranking})`
                                                 }
                                             </td>                                    
                                         </tr>                                    
@@ -148,17 +147,17 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                                 <td>{type.toUpperCase()}</td>
                                                 {
                                                     years.map(year => {
-                                                        const value = indices?.[countryName]?.byYear[year][type].value
+                                                        const pair = indices?.[countryName]?.byYear[year][type]
                                                         return (
                                                             <Fragment key={type+year}>
                                                                 <td 
                                                                     className='text-center text-light' 
-                                                                    style={{backgroundColor: (isGrowthRatio ? generateColorByGrowthRate : generateColorByValue)(+value)}}
+                                                                    style={{backgroundColor: (isGrowthRatio ? generateColorByGrowthRate : generateColorByValue)(+pair?.value)}}
                                                                 >
                                                                     {
                                                                         false ?
                                                                         '-' :
-                                                                        value?.toFixed(2)
+                                                                        `${pair?.value?.toFixed(2)} (${pair?.ranking})`
                                                                     }
                                                                 </td>
                                                             </Fragment>
@@ -169,7 +168,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                                     className='text-center text-light' 
                                                     style={{backgroundColor: (isGrowthRatio ? generateColorByGrowthRate : generateColorByValue)(+mean?.value)}}
                                                 >
-                                                    {mean?.value?.toFixed(2)}
+                                                    {`${mean?.value?.toFixed(2)} (${mean?.ranking})`}
                                                 </td>
                                             </>
                                         </tr>
