@@ -57,11 +57,14 @@ function Table({ selectedCountry }: Props) {
                         ...indices[selectedCountry].byIndicator,
                         [indicatorName]: {
                             ...indices[selectedCountry].byIndicator[indicatorName],
-                            [year]: {
-                                ...indices[selectedCountry].byIndicator[indicatorName].byYear[year],
-                                original: {
-                                    value,
-                                    ranking: 0
+                            byYear: {
+                                ...indices[selectedCountry].byIndicator[indicatorName].byYear,
+                                [year]: {
+                                    ...indices[selectedCountry].byIndicator[indicatorName].byYear[year],
+                                    original: {
+                                        value,
+                                        ranking: 0
+                                    }
                                 }
                             }
                         }
@@ -69,6 +72,7 @@ function Table({ selectedCountry }: Props) {
                 }
             }
         })
+        
         dispatch(setIndices(res))
     }
 
@@ -156,7 +160,7 @@ function Table({ selectedCountry }: Props) {
                                         {
                                             years.map(year => {
                                                 const value = currentCountryIndicators.byYear[year][type]?.value
-                                                const hasBeenSimulated = +initialCurrentIndices.byYear[year][type] !== +value
+                                                const hasBeenSimulated = +initialCurrentIndices.byYear[year][type].value !== +value
                                                 return (
                                                     <td 
                                                         key={'average'+year} 

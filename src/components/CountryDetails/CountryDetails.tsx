@@ -101,7 +101,6 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                             {
                                 indicators.allNames.map(indicatorName => {
                                     const pair = indices[countryName]?.byIndicator?.[indicatorName]?.average;
-                                    console.log({pair});
                                     
                                     return (
                                         <tr key={indicatorName}>
