@@ -39,7 +39,7 @@ function Table({ selectedCountry }: Props) {
         const { indicatorname: indicatorName, year } = e.target.dataset as DOMStringMap & T_InputDataset
         const { min = -Infinity, max = Infinity } = indicators.byName[indicatorName]
         const enteredValue = +e.target.value
-        const value = (min != null && max != null) ? Math.min(max, Math.max(min, enteredValue)) : enteredValue
+        const value = enteredValue
         
         if(enteredValue > max || enteredValue < min) e.target.value = value.toString()
 
@@ -72,18 +72,53 @@ function Table({ selectedCountry }: Props) {
                 }
             }
         })
+
+        const a1 = (indicators.allNames.filter(n => indicators.byName[n].subindex === indicators.byName[indicatorName].subindex).reduce((acc, name) => {
+            if(name === indicatorName) return acc;
+            const normalizedValue = (
+                ((indicators.byName[name].affect === -1 ? (indicators.byName[name].max - indices[selectedCountry].byIndicator[name].byYear[year].original.value) : indices[selectedCountry].byIndicator[name].byYear[year].original.value) - indicators.byName[name].min)/
+                (indicators.byName[name].max - indicators.byName[name].min)
+            ) * 100
+            const normalized = Math.max(Math.min(normalizedValue, 100), 0.00001)
+            acc *= Math.pow(
+                normalized,
+                indicators.byName[name].weight
+            )
+            return acc
+        }, 1))
+        // console.log({a1});
         
+        const old = indices[selectedCountry].byYear[year].egqgi.value,
+              newV = res[selectedCountry].byYear[year].egqgi.value
+console.log(indicators.byName[indicatorName]);
+const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[year].normalized.value
+        const calc = (
+            old *
+            (
+                Math.pow(
+                    (1+
+                    (
+                        100/
+                        (
+                            (max-min)*currentNorm
+                        )
+                    )),
+                    indicators.byName[indicatorName].weight
+                ) - 1
+            )
+        )
+              
+        console.log({
+            old, 
+            new: newV,
+            max,
+            min,
+            calc,
+            diff: newV - old,
+        });
+
         dispatch(setIndices(res))
     }
-
-    // const handleReset: React.MouseEventHandler<HTMLButtonElement> = () => {
-    //     console.log({initialCurrentIndices});
-        
-    //     dispatch(setIndices({
-    //         ...indices,
-    //         [selectedCountry]: initialCurrentIndices
-    //     }))
-    // }
 
     useEffect(() => {
         setInitialCurrentIndices(currentCountryIndicators)
@@ -122,9 +157,9 @@ function Table({ selectedCountry }: Props) {
                                         {
                                             years.map(year => {
                                                 const { max, min } = indicators.byName[indicatorName]
-                                                const value = currentCountryIndicators?.byIndicator[indicatorName].byYear[year].original.value.toFixed(2)
+                                                const value = currentCountryIndicators?.byIndicator[indicatorName].byYear[year].original.value
                                                 
-                                                const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName].byYear[year].original.value.toFixed(2) !== +value
+                                                const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName].byYear[year].original.value !== +value
                                                 return (
                                                     <td 
                                                         className='text-center p-0 align-middle' 
@@ -137,8 +172,8 @@ function Table({ selectedCountry }: Props) {
                                                         <input 
                                                             type='number'
                                                             title={`Please enter value in the corresponding valid range (${min ??  '&infin;'} - ${max ?? Infinity})`}
-                                                            max={max}
-                                                            min={min}
+                                                            // max={max}
+                                                            // min={min}
                                                             data-indicatorname={indicatorName}
                                                             data-year={year}
                                                             defaultValue={value}
@@ -170,7 +205,7 @@ function Table({ selectedCountry }: Props) {
                                                             color: hasBeenSimulated ? 'white' : 'initial'
                                                         }}
                                                     >
-                                                        {value.toFixed(2)}
+                                                        {value}
                                                     </td>
                                                 )
                                             })
