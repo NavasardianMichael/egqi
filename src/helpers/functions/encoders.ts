@@ -1,4 +1,4 @@
-import { STATS_TYPES } from 'helpers/constants.ts/indices';
+import { STATS_TYPES } from 'helpers/constants/indices';
 import { RootState } from 'index';
 import { T_Country } from 'store/countries/types';
 import { T_Year } from 'store/years/types';

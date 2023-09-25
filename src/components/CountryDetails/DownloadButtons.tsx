@@ -1,4 +1,4 @@
-import { DOWNLOAD_BUTTONS } from "helpers/constants.ts/output"
+import { DOWNLOAD_BUTTONS } from "helpers/constants/output"
 import { RootState } from "index"
 import { useSelector, useStore } from "react-redux"
 import { selectYears } from "store/years/selectors"

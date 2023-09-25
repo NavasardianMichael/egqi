@@ -6,7 +6,7 @@ import { selectIndices } from "store/indices/selectors";
 import { selectYears } from "store/years/selectors";
 import styles from './indicesTab.module.css'
 import { sortCountries } from 'store/countries/actionCreators';
-import { COL_FULL_NAMES, COL_NAMES, COL_SORT_TYPES } from 'helpers/constants.ts/indices';
+import { COL_FULL_NAMES, COL_NAMES, COL_SORT_TYPES } from 'helpers/constants/indices';
 import { CountryDetails } from 'components/CountryDetails/CountryDetails';
 import { T_Country } from 'store/countries/types';
 

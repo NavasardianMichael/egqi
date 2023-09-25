@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { STATS_TYPES } from "helpers/constants.ts/indices"
+import { STATS_TYPES } from "helpers/constants/indices"
 import { combineClassNames } from "helpers/functions/commons"
 import { processIndices } from "helpers/functions/decoders"
 import { selectCountriesState } from "store/countries/selectors"
@@ -75,11 +75,47 @@ function Table({ selectedCountry }: Props) {
 
         const a1 = (indicators.allNames.filter(n => indicators.byName[n].subindex === indicators.byName[indicatorName].subindex).reduce((acc, name) => {
             if(name === indicatorName) return acc;
+            const currMax = indicators.byName[name].max
+            const currMin = indicators.byName[name].min
             const normalizedValue = (
-                ((indicators.byName[name].affect === -1 ? (indicators.byName[name].max - indices[selectedCountry].byIndicator[name].byYear[year].original.value) : indices[selectedCountry].byIndicator[name].byYear[year].original.value) - indicators.byName[name].min)/
-                (indicators.byName[name].max - indicators.byName[name].min)
+                (indices[selectedCountry].byIndicator[name].byYear[year].original.value - currMin) /
+                (currMax-currMin)
             ) * 100
-            const normalized = Math.max(Math.min(normalizedValue, 100), 0.00001)
+            let normalized = indicators.byName[name].affect === -1 ? 100 - normalizedValue : normalizedValue;
+            console.log({
+                name,
+                value: indices[selectedCountry].byIndicator[name].byYear[year].original.value,
+                max,
+                min,
+                normalized,
+            });
+            
+            normalized = Math.max(Math.min(normalized, 100), 0.00001)
+            acc *= Math.pow(
+                normalized,
+                indicators.byName[name].weight
+            )
+            return acc
+        }, 1))
+
+        const a2 = (indicators.allNames.filter(n => indicators.byName[n].subindex === indicators.byName[indicatorName].subindex).reduce((acc, name) => {
+            // if(name === indicatorName) return acc;
+            const currMax = indicators.byName[name].max
+            const currMin = indicators.byName[name].min
+            const normalizedValue = (
+                (res[selectedCountry].byIndicator[name].byYear[year].original.value - currMin) /
+                (currMax-currMin)
+            ) * 100
+            let normalized = indicators.byName[name].affect === -1 ? 100 - normalizedValue : normalizedValue;
+            console.log({
+                name,
+                value: indices[selectedCountry].byIndicator[name].byYear[year].original.value,
+                max,
+                min,
+                normalized,
+            });
+            
+            normalized = Math.max(Math.min(normalized, 100), 0.00001)
             acc *= Math.pow(
                 normalized,
                 indicators.byName[name].weight
@@ -93,19 +129,26 @@ function Table({ selectedCountry }: Props) {
 console.log(indicators.byName[indicatorName]);
 const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[year].normalized.value
         const calc = (
-            old *
+            indicators.byName[indicatorName].weight *
+            (
+                100/
+                (max-min)
+            ) * 
             (
                 Math.pow(
-                    (1+
                     (
-                        100/
-                        (
-                            (max-min)*currentNorm
-                        )
-                    )),
-                    indicators.byName[indicatorName].weight
-                ) - 1
-            )
+                        (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) /
+                        (max-min) * 100
+                    ),
+                    indicators.byName[indicatorName].weight-1
+                )
+            ) * 
+            a1
+        //     indices[selectedCountry].byYear[year].egqgi.value *
+        //     (
+        //         /
+        //         (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min)
+        //     )
         )
               
         console.log({
@@ -115,6 +158,7 @@ const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[y
             min,
             calc,
             diff: newV - old,
+            a2,
         });
 
         dispatch(setIndices(res))

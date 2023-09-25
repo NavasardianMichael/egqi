@@ -1,7 +1,6 @@
 import XLSX from "xlsx";
 
-import { COUNTRY_CODES_BY_NAMES } from "helpers/constants.ts/countries";
-import { INDICES_INITIALS, STATS_TYPES, SUBINDEX_TYPES } from "helpers/constants.ts/indices";
+import { INDICES_INITIALS, STATS_TYPES, SUBINDEX_TYPES } from "helpers/constants/indices";
 import { T_Row, T_Sheets } from "helpers/types/processors";
 import { RootState } from "index";
 import { initialCountriesState } from "store/countries/reducer";
@@ -11,6 +10,7 @@ import { T_Indicator, T_IndicatorsState } from "store/indicators/types";
 import { T_Indices, T_IndicesByIndicator, T_IndicesByYear, T_IndicesState, T_Pair } from "store/indices/types";
 import { T_Year, T_YearsState } from "store/years/types";
 import { geoMean } from "./commons";
+import { COUNTRY_CODES_BY_NAMES } from 'helpers/constants/localization';
 
 export const processWorkbookData = (workbook: XLSX.WorkBook) => {
     const { SheetNames: [ indicatorsSheetName, ...indicesSheetNames ], Sheets } = workbook

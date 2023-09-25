@@ -1,4 +1,4 @@
-import { COL_NAMES, COL_SORT_TYPES } from "helpers/constants.ts/indices"
+import { COL_NAMES, COL_SORT_TYPES } from "helpers/constants/indices"
 import { SET_COUNTRIES, SORT_COUNTRIES } from "./actionTypes"
 import { T_CountriesActions, T_CountriesState, T_Country } from "./types"
 
