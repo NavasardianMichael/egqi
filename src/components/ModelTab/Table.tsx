@@ -40,6 +40,7 @@ function Table({ selectedCountry }: Props) {
         const { min = -Infinity, max = Infinity } = indicators.byName[indicatorName]
         const enteredValue = +e.target.value
         const value = enteredValue
+        console.log({value, toInc: value+1});
         
         if(enteredValue > max || enteredValue < min) e.target.value = value.toString()
 
@@ -82,13 +83,13 @@ function Table({ selectedCountry }: Props) {
                 (currMax-currMin)
             ) * 100
             let normalized = indicators.byName[name].affect === -1 ? 100 - normalizedValue : normalizedValue;
-            console.log({
-                name,
-                value: indices[selectedCountry].byIndicator[name].byYear[year].original.value,
-                max,
-                min,
-                normalized,
-            });
+            // console.log({
+            //     name,
+            //     value: indices[selectedCountry].byIndicator[name].byYear[year].original.value,
+            //     max,
+            //     min,
+            //     normalized,
+            // });
             
             normalized = Math.max(Math.min(normalized, 100), 0.00001)
             acc *= Math.pow(
@@ -107,13 +108,13 @@ function Table({ selectedCountry }: Props) {
                 (currMax-currMin)
             ) * 100
             let normalized = indicators.byName[name].affect === -1 ? 100 - normalizedValue : normalizedValue;
-            console.log({
-                name,
-                value: indices[selectedCountry].byIndicator[name].byYear[year].original.value,
-                max,
-                min,
-                normalized,
-            });
+            // console.log({
+            //     name,
+            //     value: indices[selectedCountry].byIndicator[name].byYear[year].original.value,
+            //     max,
+            //     min,
+            //     normalized,
+            // });
             
             normalized = Math.max(Math.min(normalized, 100), 0.00001)
             acc *= Math.pow(
@@ -126,7 +127,22 @@ function Table({ selectedCountry }: Props) {
         
         const old = indices[selectedCountry].byYear[year].egqgi.value,
               newV = res[selectedCountry].byYear[year].egqgi.value
-console.log(indicators.byName[indicatorName]);
+console.log(indicators.byName[indicatorName].weight,
+    (
+        100/
+        (max-min)
+    ),
+    (
+        Math.pow(
+            (
+                (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) /
+                (max-min) * 100
+            ),
+            indicators.byName[indicatorName].weight-1
+        )
+    ), 
+    a1,
+    {max,min});
 const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[year].normalized.value
         const calc = (
             indicators.byName[indicatorName].weight *
@@ -137,8 +153,8 @@ const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[y
             (
                 Math.pow(
                     (
-                        (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) /
-                        (max-min) * 100
+                        ((indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) /
+                        (max-min))* 100
                     ),
                     indicators.byName[indicatorName].weight-1
                 )
@@ -152,12 +168,16 @@ const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[y
         )
               
         console.log({
+            weight: indicators.byName[indicatorName].weight,
             old, 
             new: newV,
             max,
             min,
             calc,
+            indicatorName,
             diff: newV - old,
+            withoutNewNorm: Math.pow((newV / a1), 1/indicators.byName[indicatorName].weight),
+            a1,
             a2,
         });
 
