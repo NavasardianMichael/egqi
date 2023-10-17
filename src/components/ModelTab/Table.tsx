@@ -145,21 +145,14 @@ console.log(indicators.byName[indicatorName].weight,
     {max,min});
 const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[year].normalized.value
         const calc = (
-            indicators.byName[indicatorName].weight *
-            (
-                100/
-                (max-min)
-            ) * 
-            (
-                Math.pow(
-                    (
-                        ((indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) /
-                        (max-min))* 100
-                    ),
-                    indicators.byName[indicatorName].weight-1
-                )
-            ) * 
-            a1
+            Math.pow(
+                (
+                    (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value + 1 - min)/
+                    (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min)
+                ),
+                indicators.byName[indicatorName].weight/2
+            ) - 1
+
         //     indices[selectedCountry].byYear[year].egqgi.value *
         //     (
         //         /
@@ -168,17 +161,14 @@ const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[y
         )
               
         console.log({
-            weight: indicators.byName[indicatorName].weight,
             old, 
             new: newV,
-            max,
-            min,
-            calc,
-            indicatorName,
+            oldEGQI: indices[selectedCountry].byYear[year].egqi.value,
+            newEGQI: res[selectedCountry].byYear[year].egqi.value,
+            newDiff: res[selectedCountry].byYear[year].egqi.value-indices[selectedCountry].byYear[year].egqi.value,
+            newCalc: indices[selectedCountry].byYear[year].egqi.value*calc,
             diff: newV - old,
-            withoutNewNorm: Math.pow((newV / a1), 1/indicators.byName[indicatorName].weight),
-            a1,
-            a2,
+            calc: old*calc
         });
 
         dispatch(setIndices(res))
