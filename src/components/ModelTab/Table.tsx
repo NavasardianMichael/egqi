@@ -145,13 +145,11 @@ console.log(indicators.byName[indicatorName].weight,
     {max,min});
 const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[year].normalized.value
         const calc = (
-            Math.pow(
-                (
-                    (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value + 1 - min)/
-                    (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min)
-                ),
-                indicators.byName[indicatorName].weight/2
-            ) - 1
+            (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) *
+            (Math.pow(
+                ((old + 1) / old),
+                (2/indicators.byName[indicatorName].weight)
+            ) - 1)
 
         //     indices[selectedCountry].byYear[year].egqgi.value *
         //     (
@@ -163,12 +161,8 @@ const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[y
         console.log({
             old, 
             new: newV,
-            oldEGQI: indices[selectedCountry].byYear[year].egqi.value,
-            newEGQI: res[selectedCountry].byYear[year].egqi.value,
-            newDiff: res[selectedCountry].byYear[year].egqi.value-indices[selectedCountry].byYear[year].egqi.value,
-            newCalc: indices[selectedCountry].byYear[year].egqi.value*calc,
             diff: newV - old,
-            calc: old*calc
+            calc: calc
         });
 
         dispatch(setIndices(res))
