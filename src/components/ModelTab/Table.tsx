@@ -145,11 +145,17 @@ console.log(indicators.byName[indicatorName].weight,
     {max,min});
 const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[year].normalized.value
         const calc = (
+            // (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) *
+            // (Math.pow(
+            //     ((old + 1) / old),
+            //     (2/indicators.byName[indicatorName].weight)
+            // ) - 1)
+
             (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) *
             (Math.pow(
                 ((old + 1) / old),
                 (2/indicators.byName[indicatorName].weight)
-            ) - 1)
+            ) - 1)            
 
         //     indices[selectedCountry].byYear[year].egqgi.value *
         //     (
