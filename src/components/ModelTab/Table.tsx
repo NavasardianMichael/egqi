@@ -151,11 +151,16 @@ const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[y
             //     (2/indicators.byName[indicatorName].weight)
             // ) - 1)
 
-            (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) *
-            (Math.pow(
-                ((old + 1) / old),
-                (2/indicators.byName[indicatorName].weight)
-            ) - 1)            
+            (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) * 
+            (
+                Math.pow(
+                    (
+                        1+
+                        indices[selectedCountry].byYear[year].egqi.value + Math.pow(indices[selectedCountry].byYear[year].egqi.value, 2)
+                    ) / indices[selectedCountry].byYear[year].egqi.value,
+                    1/ indicators.byName[indicatorName].weight
+                ) - 1
+            )
 
         //     indices[selectedCountry].byYear[year].egqgi.value *
         //     (
