@@ -73,6 +73,12 @@ function Table({ selectedCountry }: Props) {
                 }
             }
         })
+console.log({
+    _oldValue: indices[selectedCountry].byYear[year].egqi.value,
+    _oldRanking: indices[selectedCountry].byYear[year].egqi.ranking,
+    value: res[selectedCountry].byYear[year].egqi.value,
+    ranking: res[selectedCountry].byYear[year].egqi.ranking,
+});
 
         const a1 = (indicators.allNames.filter(n => indicators.byName[n].subindex === indicators.byName[indicatorName].subindex).reduce((acc, name) => {
             if(name === indicatorName) return acc;
@@ -169,12 +175,12 @@ const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[y
         //     )
         )
               
-        console.log({
-            old, 
-            new: newV,
-            diff: newV - old,
-            calc: calc
-        });
+        // console.log({
+        //     old, 
+        //     new: newV,
+        //     diff: newV - old,
+        //     calc: calc
+        // });
 
         dispatch(setIndices(res))
     }
