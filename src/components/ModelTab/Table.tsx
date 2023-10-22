@@ -40,7 +40,6 @@ function Table({ selectedCountry }: Props) {
         const { min = -Infinity, max = Infinity } = indicators.byName[indicatorName]
         const enteredValue = +e.target.value
         const value = enteredValue
-        console.log({value, toInc: value+1});
         
         if(enteredValue > max || enteredValue < min) e.target.value = value.toString()
 
@@ -73,12 +72,14 @@ function Table({ selectedCountry }: Props) {
                 }
             }
         })
-console.log({
-    _oldValue: indices[selectedCountry].byYear[year].egqi.value,
-    _oldRanking: indices[selectedCountry].byYear[year].egqi.ranking,
-    value: res[selectedCountry].byYear[year].egqi.value,
-    ranking: res[selectedCountry].byYear[year].egqi.ranking,
-});
+// console.log({
+//     EGQI_value: res[selectedCountry].byYear[year].egqi.value,
+//     EGQI_ranking: res[selectedCountry].byYear[year].egqi.ranking,
+//     EGQGI_value: res[selectedCountry].byYear[year].egqgi.value,
+//     EGQGI_ranking: res[selectedCountry].byYear[year].egqgi.ranking,
+//     EGQEI_value: res[selectedCountry].byYear[year].egqei.value,
+//     EGQEI_ranking: res[selectedCountry].byYear[year].egqei.ranking,
+// });
 
         const a1 = (indicators.allNames.filter(n => indicators.byName[n].subindex === indicators.byName[indicatorName].subindex).reduce((acc, name) => {
             if(name === indicatorName) return acc;
@@ -157,16 +158,27 @@ const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[y
             //     (2/indicators.byName[indicatorName].weight)
             // ) - 1)
 
-            (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) * 
             (
                 Math.pow(
                     (
-                        1+
-                        indices[selectedCountry].byYear[year].egqi.value + Math.pow(indices[selectedCountry].byYear[year].egqi.value, 2)
-                    ) / indices[selectedCountry].byYear[year].egqi.value,
-                    1/ indicators.byName[indicatorName].weight
-                ) - 1
+                        (1+1/100) *
+                        (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value -min)
+                    ) /
+                    (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value -min),
+                    indicators.byName[indicatorName].weight/2
+                ) -
+                1
             )
+            // (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) * 
+            // (
+            //     Math.pow(
+            //         (
+            //             1+
+            //             indices[selectedCountry].byYear[year].egqi.value + Math.pow(indices[selectedCountry].byYear[year].egqi.value, 2)
+            //         ) / indices[selectedCountry].byYear[year].egqi.value,
+            //         1/ indicators.byName[indicatorName].weight
+            //     ) - 1
+            // )
 
         //     indices[selectedCountry].byYear[year].egqgi.value *
         //     (
@@ -175,12 +187,12 @@ const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[y
         //     )
         )
               
-        // console.log({
-        //     old, 
-        //     new: newV,
-        //     diff: newV - old,
-        //     calc: calc
-        // });
+        console.log({
+            old, 
+            new: newV,
+            diff: newV - old,
+            calc
+        });
 
         dispatch(setIndices(res))
     }
