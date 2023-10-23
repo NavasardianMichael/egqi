@@ -181,12 +181,23 @@ function Table({ selectedCountry }: Props) {
             new: newV,
             _xPercentDiff: res[selectedCountry].byIndicator[indicatorName].byYear[year].original.value/x*100-100,
             diff: newV - old,
+            ____toCompare: res[selectedCountry].byYear[year].egqi.value / indices[selectedCountry].byYear[year].egqi.value * 100 - 100,
             changeByPoints,
             changeByPercent,
             contribution,
             max,
             min
         });
+
+        console.log({
+            __pos_old_EGQI: indices[selectedCountry].byYear[year].egqi.ranking,
+            __pos_old_EGQGI: indices[selectedCountry].byYear[year].egqgi.ranking,
+            __pos_old_EGQEI: indices[selectedCountry].byYear[year].egqei.ranking,
+            __pos_new_EGQI: res[selectedCountry].byYear[year].egqi.ranking,
+            __pos_new_EGQGI: res[selectedCountry].byYear[year].egqgi.ranking,
+            __pos_new_EGQEI: res[selectedCountry].byYear[year].egqei.ranking,
+        });
+        
 
         dispatch(setIndices(res))
     }
