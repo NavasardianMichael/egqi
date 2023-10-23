@@ -106,92 +106,86 @@ function Table({ selectedCountry }: Props) {
             return acc
         }, 1))
 
-        const a2 = (indicators.allNames.filter(n => indicators.byName[n].subindex === indicators.byName[indicatorName].subindex).reduce((acc, name) => {
-            // if(name === indicatorName) return acc;
-            const currMax = indicators.byName[name].max
-            const currMin = indicators.byName[name].min
-            const normalizedValue = (
-                (res[selectedCountry].byIndicator[name].byYear[year].original.value - currMin) /
-                (currMax-currMin)
-            ) * 100
-            let normalized = indicators.byName[name].affect === -1 ? 100 - normalizedValue : normalizedValue;
-            // console.log({
-            //     name,
-            //     value: indices[selectedCountry].byIndicator[name].byYear[year].original.value,
-            //     max,
-            //     min,
-            //     normalized,
-            // });
-            
-            normalized = Math.max(Math.min(normalized, 100), 0.00001)
-            acc *= Math.pow(
-                normalized,
-                indicators.byName[name].weight
-            )
-            return acc
-        }, 1))
-        // console.log({a1});
+        const x = indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value
+        const weight = indicators.byName[indicatorName].weight
         
-        const old = indices[selectedCountry].byYear[year].egqgi.value,
-              newV = res[selectedCountry].byYear[year].egqgi.value
-console.log(indicators.byName[indicatorName].weight,
-    (
-        100/
-        (max-min)
-    ),
-    (
-        Math.pow(
-            (
-                (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) /
-                (max-min) * 100
-            ),
-            indicators.byName[indicatorName].weight-1
-        )
-    ), 
-    a1,
-    {max,min});
-const currentNorm = indices[selectedCountry].byIndicator[indicatorName].byYear[year].normalized.value
-        const calc = (
-            // (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) *
-            // (Math.pow(
-            //     ((old + 1) / old),
-            //     (2/indicators.byName[indicatorName].weight)
-            // ) - 1)
-
-            (
-                Math.pow(
+        const   old = indices[selectedCountry].byYear[year].egqi.value,
+                newV = res[selectedCountry].byYear[year].egqi.value,
+                changeByPoints = 
+                    indices[selectedCountry].byYear[year].egqi.value *
                     (
-                        (1+1/100) *
-                        (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value -min)
-                    ) /
-                    (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value -min),
-                    indicators.byName[indicatorName].weight/2
-                ) -
-                1
-            )
-            // (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min) * 
-            // (
-            //     Math.pow(
-            //         (
-            //             1+
-            //             indices[selectedCountry].byYear[year].egqi.value + Math.pow(indices[selectedCountry].byYear[year].egqi.value, 2)
-            //         ) / indices[selectedCountry].byYear[year].egqi.value,
-            //         1/ indicators.byName[indicatorName].weight
-            //     ) - 1
-            // )
+                        Math.pow(
+                            (
+                                (
+                                    (1+1/100) *
+                                    x
+                                ) -
+                                min
+                            ) /
+                            (x -min),
+                            weight/2
+                        ) -
+                        1
+                    ),
+                changeByPercent = 
+                    (
+                        Math.pow(
+                            (
+                                ((101/100)*x -min)
+                            ) /
+                            (x -min),
+                            (weight/2)
+                        )
+                    ) * 100 - 100,
+                contribution = 
+                    (
+                        (
+                            x-min
+                        ) *
+                        (
+                            Math.pow(
+                                (
+                                    (
+                                        Math.pow(indices[selectedCountry].byYear[year].egqgi.value*indices[selectedCountry].byYear[year].egqei.value, 1/2) + 1
+                                    ) /
+                                    (
+                                        indices[selectedCountry].byYear[year].egqgi.value*indices[selectedCountry].byYear[year].egqei.value
+                                    )
+                                ),
+                                1/weight
+                            ) - 1
+                        )
+                    )
+                    // (
+                    //     x-min
+                    // ) *
+                    // (
+                    //     Math.pow(
+                    //         (
+                    //             (indices[selectedCountry].byYear[year].egqi.value+1)
+                    //         ) /
+                    //         (
+                    //             Math.pow(
+                    //                 indices[selectedCountry].byYear[year].egqi.value,
+                    //                 2
+                    //             )
+                    //         ) + 1,
+                    //         1/weight
+                    //     ) -
+                    //     1
+                    // )
 
-        //     indices[selectedCountry].byYear[year].egqgi.value *
-        //     (
-        //         /
-        //         (indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value - min)
-        //     )
-        )
               
         console.log({
             old, 
             new: newV,
+            _xPercentDiff: res[selectedCountry].byIndicator[indicatorName].byYear[year].original.value/x*100-100,
             diff: newV - old,
-            calc
+            changeByPoints,
+            changeByPercent,
+            contribution,
+            max,
+            min
         });
 
         dispatch(setIndices(res))
