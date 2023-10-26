@@ -144,9 +144,10 @@ function Table({ selectedCountry }: Props) {
                         ) *
                         (
                             Math.pow(
+                                1+
                                 (
                                     (
-                                        Math.pow(indices[selectedCountry].byYear[year].egqgi.value*indices[selectedCountry].byYear[year].egqei.value, 1/2) + 1
+                                        4*Math.pow(indices[selectedCountry].byYear[year].egqgi.value*indices[selectedCountry].byYear[year].egqei.value, 1/2) + 4
                                     ) /
                                     (
                                         indices[selectedCountry].byYear[year].egqgi.value*indices[selectedCountry].byYear[year].egqei.value
