@@ -137,7 +137,7 @@ function Table({ selectedCountry }: Props) {
                             (weight/2)
                         )
                     ) * 100 - 100,
-                contribution = 
+                    contributionByPoint = 
                     (
                         (
                             x-min
@@ -147,16 +147,33 @@ function Table({ selectedCountry }: Props) {
                                 1+
                                 (
                                     (
-                                        4*Math.pow(indices[selectedCountry].byYear[year].egqgi.value*indices[selectedCountry].byYear[year].egqei.value, 1/2) + 4
+                                        6 * indices[selectedCountry].byYear[year].egqi.value + 9
                                     ) /
                                     (
-                                        indices[selectedCountry].byYear[year].egqgi.value*indices[selectedCountry].byYear[year].egqei.value
+                                        Math.pow(indices[selectedCountry].byYear[year].egqi.value, 2)
                                     )
                                 ),
                                 1/weight
                             ) - 1
                         )
-                    )
+                    ),
+                    contributionByPercent = 
+                    (
+                        (
+                            1 /
+                            (
+                                Math.pow(
+                                    1+1/100,
+                                    2/weight
+                                ) - 1
+                            )
+                        ) *
+                        (
+                            x/(x-min)
+                        )
+                    ) * 
+                    100
+
                     // (
                     //     x-min
                     // ) *
@@ -185,7 +202,8 @@ function Table({ selectedCountry }: Props) {
             ____toCompare: res[selectedCountry].byYear[year].egqi.value / indices[selectedCountry].byYear[year].egqi.value * 100 - 100,
             changeByPoints,
             changeByPercent,
-            contribution,
+            contributionByPoint,
+            contributionByPercent,
             max,
             min
         });
