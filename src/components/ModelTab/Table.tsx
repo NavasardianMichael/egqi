@@ -81,30 +81,6 @@ function Table({ selectedCountry }: Props) {
 //     EGQEI_ranking: res[selectedCountry].byYear[year].egqei.ranking,
 // });
 
-        const a1 = (indicators.allNames.filter(n => indicators.byName[n].subindex === indicators.byName[indicatorName].subindex).reduce((acc, name) => {
-            if(name === indicatorName) return acc;
-            const currMax = indicators.byName[name].max
-            const currMin = indicators.byName[name].min
-            const normalizedValue = (
-                (indices[selectedCountry].byIndicator[name].byYear[year].original.value - currMin) /
-                (currMax-currMin)
-            ) * 100
-            let normalized = indicators.byName[name].affect === -1 ? 100 - normalizedValue : normalizedValue;
-            // console.log({
-            //     name,
-            //     value: indices[selectedCountry].byIndicator[name].byYear[year].original.value,
-            //     max,
-            //     min,
-            //     normalized,
-            // });
-            
-            normalized = Math.max(Math.min(normalized, 100), 0.00001)
-            acc *= Math.pow(
-                normalized,
-                indicators.byName[name].weight
-            )
-            return acc
-        }, 1))
 
         const x = indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value
         const weight = indicators.byName[indicatorName].weight
@@ -160,12 +136,13 @@ function Table({ selectedCountry }: Props) {
                     contributionByPercent = 
                     (
                         (
-                            1 /
+                            1/
                             (
                                 Math.pow(
-                                    1+1/100,
-                                    2/weight
-                                ) - 1
+                                1+(1/100),
+                                2/weight
+                                ) *
+                                indices[selectedCountry].byYear[year].egqi.value
                             )
                         ) *
                         (
