@@ -135,21 +135,14 @@ function Table({ selectedCountry }: Props) {
                     ),
                     contributionByPercent = 
                     (
+                        (x-min) *
                         (
-                            1/
-                            (
-                                Math.pow(
-                                1+(1/100),
-                                2/weight
-                                ) *
-                                indices[selectedCountry].byYear[year].egqi.value
-                            )
-                        ) *
-                        (
-                            x/(x-min)
+                            Math.pow(
+                                2*indices[selectedCountry].byYear[year].egqi.value+1,
+                                1/(2*weight)
+                            ) - 1
                         )
-                    ) * 
-                    100
+                    ) / x * 100
 
                     // (
                     //     x-min
