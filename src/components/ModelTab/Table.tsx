@@ -43,7 +43,7 @@ function Table({ selectedCountry }: Props) {
         
         if(enteredValue > max || enteredValue < min) e.target.value = value.toString()
 
-        if(value === +indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value.toFixed(2)) return;
+        // if(value === +indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value.toFixed(2)) return;
 
         const res = processIndices({
             countries,
@@ -80,9 +80,10 @@ function Table({ selectedCountry }: Props) {
 //     EGQEI_value: res[selectedCountry].byYear[year].egqei.value,
 //     EGQEI_ranking: res[selectedCountry].byYear[year].egqei.ranking,
 // });
-
+        
 
         const x = indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value
+        const egqi = indices[selectedCountry].byYear[year].egqi.value
         const weight = indicators.byName[indicatorName].weight
         
         const   old = indices[selectedCountry].byYear[year].egqi.value,
@@ -123,7 +124,7 @@ function Table({ selectedCountry }: Props) {
                                 1+
                                 (
                                     (
-                                        6 * indices[selectedCountry].byYear[year].egqi.value + 9
+                                        2*(egqi/100) * indices[selectedCountry].byYear[year].egqi.value + Math.pow(egqi/100, 2)
                                     ) /
                                     (
                                         Math.pow(indices[selectedCountry].byYear[year].egqi.value, 2)
@@ -133,49 +134,51 @@ function Table({ selectedCountry }: Props) {
                             ) - 1
                         )
                     ),
-                    contributionByPercent = 
-                    (
-                        (x-min) *
+                    contributionByPercent = (
+                        (100-(100*min/x))*
+                        // (x-min)*
                         (
                             Math.pow(
-                                2*indices[selectedCountry].byYear[year].egqi.value+1,
-                                1/(2*weight)
+                                1 + 
+                                (
+                                    (200*1 + Math.pow(1, 2)) / 10000
+                                ),
+                                1/weight
                             ) - 1
                         )
-                    ) / x * 100
+                    )
+                    
+console.log({
+    change: Math.pow(
+        (
+            ((101/100)*x -min)
+        ) /
+        (x -min),
+        1
+    ),
+    contribution: Math.pow(
+        1 + 
+        (
+            (200*1 + Math.pow(1, 2)) / 10000
+        ),
+        11
+    )
+})
 
-                    // (
-                    //     x-min
-                    // ) *
-                    // (
-                    //     Math.pow(
-                    //         (
-                    //             (indices[selectedCountry].byYear[year].egqi.value+1)
-                    //         ) /
-                    //         (
-                    //             Math.pow(
-                    //                 indices[selectedCountry].byYear[year].egqi.value,
-                    //                 2
-                    //             )
-                    //         ) + 1,
-                    //         1/weight
-                    //     ) -
-                    //     1
-                    // )
-
-              
-        console.log({
-            old, 
-            new: newV,
-            _xPercentDiff: res[selectedCountry].byIndicator[indicatorName].byYear[year].original.value/x*100-100,
-            diff: newV - old,
-            ____toCompare: res[selectedCountry].byYear[year].egqi.value / indices[selectedCountry].byYear[year].egqi.value * 100 - 100,
+                    navigator.clipboard.writeText(changeByPercent.toString())
+        console.table({
+            // old, 
+            // new: newV,
+            // _xPercentDiff: res[selectedCountry].byIndicator[indicatorName].byYear[year].original.value/x*100-100,
+            // diff: newV - old,
+            // ____toCompare: res[selectedCountry].byYear[year].egqi.value / indices[selectedCountry].byYear[year].egqi.value * 100 - 100,
+            indicatorName,
             changeByPoints,
-            changeByPercent,
             contributionByPoint,
             contributionByPercent,
-            max,
-            min
+            changeByPercent,
+            // max,
+            // min
         });
 
         console.log({
@@ -210,7 +213,7 @@ function Table({ selectedCountry }: Props) {
                     <tr>
                         <th scope="col">Indicator Name</th>
                         {
-                            years.map(year => {
+                            years.filter((_, i, arr) =>  i === arr.length-1).map(year => {
                                 return (
                                     <th key={year} className='text-center' scope="col">{year}</th>
                                 )
@@ -226,7 +229,7 @@ function Table({ selectedCountry }: Props) {
                                     <tr key={indicatorName}>
                                         <td>{indicatorName}</td>
                                         {
-                                            years.map(year => {
+                                            years.filter((_, i, arr) =>  i === arr.length-1).map(year => {
                                                 const { max, min } = indicators.byName[indicatorName]
                                                 const value = currentCountryIndicators?.byIndicator[indicatorName].byYear[year].original.value
                                                 
@@ -264,7 +267,7 @@ function Table({ selectedCountry }: Props) {
                                     <tr key={type} className="fw-bold">
                                         <td>{type.toUpperCase()}</td>
                                         {
-                                            years.map(year => {
+                                            years.filter((_, i, arr) =>  i === arr.length-1).map(year => {
                                                 const value = currentCountryIndicators.byYear[year][type]?.value
                                                 const hasBeenSimulated = +initialCurrentIndices.byYear[year][type].value !== +value
                                                 return (
