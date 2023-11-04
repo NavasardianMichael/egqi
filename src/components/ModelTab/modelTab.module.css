@@ -9,11 +9,24 @@
 
 .country_values input {
     all: unset;
-    padding: 0;
     width: 70px;
+    padding: 0.5rem;
+    text-overflow: ellipsis;
 }
 
 .country_values input::-webkit-inner-spin-button, 
 .country_values input::-webkit-outer-spin-button {  
    opacity: 1;
+}
+
+.stats td {
+    width: 70px;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+}
+
+.primaryBtn:hover {
+    background-color: #029191;
+    border-color: #029191;
+    color: #fff;
 }
