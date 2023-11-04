@@ -148,37 +148,15 @@ function Table({ selectedCountry }: Props) {
                         )
                     )
                     
-console.log({
-    change: Math.pow(
-        (
-            ((101/100)*x -min)
-        ) /
-        (x -min),
-        1
-    ),
-    contribution: Math.pow(
-        1 + 
-        (
-            (200*1 + Math.pow(1, 2)) / 10000
-        ),
-        11
-    )
-})
+
 
                     navigator.clipboard.writeText(changeByPercent.toString())
         console.table({
-            // old, 
-            // new: newV,
-            // _xPercentDiff: res[selectedCountry].byIndicator[indicatorName].byYear[year].original.value/x*100-100,
-            // diff: newV - old,
-            // ____toCompare: res[selectedCountry].byYear[year].egqi.value / indices[selectedCountry].byYear[year].egqi.value * 100 - 100,
             indicatorName,
             changeByPoints,
             contributionByPoint,
             contributionByPercent,
             changeByPercent,
-            // max,
-            // min
         });
 
         console.log({
