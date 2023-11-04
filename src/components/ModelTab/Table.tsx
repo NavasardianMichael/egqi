@@ -12,6 +12,8 @@ import { setIndices } from "store/indices/actionCreators"
 import { selectIndices } from "store/indices/selectors"
 import { selectYears } from "store/years/selectors"
 import { T_Year } from "store/years/types"
+import {ReactComponent as CalculatorIcon} from 'assets/images/calculator.svg';
+
 
 import styles from './modelTab.module.css'
 
@@ -155,6 +157,9 @@ function Table({ selectedCountry }: Props) {
                                                             value={value}
                                                             onChange={handleChange}
                                                         />
+                                                        <button className={styles.options}>
+                                                            <CalculatorIcon />
+                                                        </button>
                                                     </td>
                                                 )
                                             })

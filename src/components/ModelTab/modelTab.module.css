@@ -5,6 +5,25 @@
 
 .country_values {
     font-size: 12px;
+
+    & td {
+        position: relative;
+    }
+
+    .options {
+        all: unset;
+        cursor: pointer;
+        position: absolute;
+        right: 6px;
+        top: 6px;
+
+        & svg {
+            width: 20px;
+            height: 20px;
+            fill: #029191;
+        }
+    }
+
 }
 
 .country_values input {
@@ -12,6 +31,7 @@
     width: 70px;
     padding: 0.5rem;
     text-overflow: ellipsis;
+    position: relative;
 }
 
 .country_values input::-webkit-inner-spin-button, 
