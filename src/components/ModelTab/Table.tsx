@@ -124,10 +124,10 @@ function Table({ selectedCountry }: Props) {
                                 1+
                                 (
                                     (
-                                        2*(egqi/100) * indices[selectedCountry].byYear[year].egqi.value + Math.pow(egqi/100, 2)
+                                        2*0.631020187774689 * egqi + Math.pow(0.631020187774689, 2)
                                     ) /
                                     (
-                                        Math.pow(indices[selectedCountry].byYear[year].egqi.value, 2)
+                                        Math.pow(egqi, 2)
                                     )
                                 ),
                                 1/weight
@@ -141,7 +141,7 @@ function Table({ selectedCountry }: Props) {
                             Math.pow(
                                 1 + 
                                 (
-                                    (200*1 + Math.pow(1, 2)) / 10000
+                                    (200*1.93517599 + Math.pow(1.93517599, 2)) / 10000
                                 ),
                                 1/weight
                             ) - 1
