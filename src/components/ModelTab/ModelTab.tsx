@@ -17,7 +17,7 @@ function ModelTab({}: Props) {
     )
 
   return (
-    <div className="d-flex flex-column" style={{gap: 30}}>
+    <div className="d-flex flex-column" style={{gap: '1rem'}}>
       <Dropdown selectedState={selectedState} />
       { selectedState[0] && <Table selectedCountry={selectedState[0]} /> }      
     </div>

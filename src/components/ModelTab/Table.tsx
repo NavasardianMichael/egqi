@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { ChangeEventHandler, MouseEventHandler, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { STATS_TYPES } from "helpers/constants.ts/indices"
@@ -31,40 +31,31 @@ function Table({ selectedCountry }: Props) {
     const countries = useSelector(selectCountriesState)
     const indicators = useSelector(selectIndicators)
     const indices = useSelector(selectIndices)
-    const currentCountryIndicators = indices[selectedCountry]
-    const [initialCurrentIndices, setInitialCurrentIndices] = useState(currentCountryIndicators)
-    // const isSimulated = initialCurrentIndices !== indices[selectedCountry]
+    const currentCountryStoredIndicators = indices[selectedCountry]
+    const [initialCurrentIndices, setInitialCurrentIndices] = useState(currentCountryStoredIndicators)
+    const [currentCountryIndicators, setCurrentCountryIndicators] = useState(currentCountryStoredIndicators)
+    const isSimulated = initialCurrentIndices !== currentCountryIndicators
 
-    const handleBlur: React.FocusEventHandler<HTMLInputElement> = (e) => {
+    const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
         const { indicatorname: indicatorName, year } = e.target.dataset as DOMStringMap & T_InputDataset
         const { min = -Infinity, max = Infinity } = indicators.byName[indicatorName]
         const enteredValue = +e.target.value
         const value = (min != null && max != null) ? Math.min(max, Math.max(min, enteredValue)) : enteredValue
         
-        if(enteredValue > max || enteredValue < min) e.target.value = value.toString()
-
-        if(value === +indices[selectedCountry].byIndicator[indicatorName].byYear[year].original.value.toFixed(2)) return;
-
-        const res = processIndices({
-            countries,
-            indicators,
-            years,
-            indices: {
-                ...indices,
-                [selectedCountry]: {
-                    ...indices[selectedCountry],
-                    byIndicator: {
-                        ...indices[selectedCountry].byIndicator,
-                        [indicatorName]: {
-                            ...indices[selectedCountry].byIndicator[indicatorName],
-                            byYear: {
-                                ...indices[selectedCountry].byIndicator[indicatorName].byYear,
-                                [year]: {
-                                    ...indices[selectedCountry].byIndicator[indicatorName].byYear[year],
-                                    original: {
-                                        value,
-                                        ranking: 0
-                                    }
+        setCurrentCountryIndicators(prev => {
+            return {
+                ...prev,
+                byIndicator: {
+                    ...prev.byIndicator,
+                    [indicatorName]: {
+                        ...prev.byIndicator[indicatorName],
+                        byYear: {
+                            ...prev.byIndicator[indicatorName].byYear,
+                            [year]: {
+                                ...prev.byIndicator[indicatorName].byYear[year],
+                                original: {
+                                    ...prev.byIndicator[indicatorName].byYear[year].original,
+                                    value,
                                 }
                             }
                         }
@@ -72,33 +63,53 @@ function Table({ selectedCountry }: Props) {
                 }
             }
         })
-        
-        dispatch(setIndices(res))
     }
 
-    // const handleReset: React.MouseEventHandler<HTMLButtonElement> = () => {
-    //     console.log({initialCurrentIndices});
+    const handleReset: React.MouseEventHandler<HTMLButtonElement> = () => {
+        setCurrentCountryIndicators(initialCurrentIndices)
         
-    //     dispatch(setIndices({
-    //         ...indices,
-    //         [selectedCountry]: initialCurrentIndices
-    //     }))
-    // }
+        dispatch(setIndices({
+            ...indices,
+            [selectedCountry]: initialCurrentIndices
+        }))
+    }
+
+    const handleSubmitSimulations: MouseEventHandler<HTMLButtonElement> = () => {
+        const processed = processIndices({
+            countries,
+            indicators,
+            years,
+            indices: {
+                ...indices,
+                [selectedCountry]: currentCountryIndicators
+            }
+        })
+
+        dispatch(setIndices(processed))
+    }
 
     useEffect(() => {
-        setInitialCurrentIndices(currentCountryIndicators)
+        setCurrentCountryIndicators(currentCountryStoredIndicators)
+        setInitialCurrentIndices(currentCountryStoredIndicators)
     }, [selectedCountry])
 
     return (
         <div>
-            {/* <button 
+            <button 
+                className={combineClassNames(["btn btn-outline-primary mb-3"])} 
+                onClick={handleSubmitSimulations}
+                disabled={currentCountryIndicators === currentCountryStoredIndicators}
+            >
+                Simulate with current changes
+            </button>
+            <button 
                 title='Reset to original data'
-                className="btn btn-outline-secondary mb-3" 
+                className="btn btn-outline-secondary mb-3 mx-3" 
                 onClick={handleReset}
                 disabled={!isSimulated}
             >
-                Reset
-            </button> */}
+                Reset changes
+            </button>
             <table className={combineClassNames(['table','table-bordered', 'align-middle', styles.country_values])}>
                 <thead>
                     <tr>
@@ -122,9 +133,9 @@ function Table({ selectedCountry }: Props) {
                                         {
                                             years.map(year => {
                                                 const { max, min } = indicators.byName[indicatorName]
-                                                const value = currentCountryIndicators?.byIndicator[indicatorName].byYear[year].original.value.toFixed(2)
+                                                const value = currentCountryIndicators?.byIndicator[indicatorName].byYear[year].original.value
                                                 
-                                                const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName].byYear[year].original.value.toFixed(2) !== +value
+                                                const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName].byYear[year].original.value !== +value
                                                 return (
                                                     <td 
                                                         className='text-center p-0 align-middle' 
@@ -136,13 +147,13 @@ function Table({ selectedCountry }: Props) {
                                                     >
                                                         <input 
                                                             type='number'
-                                                            title={`Please enter value in the corresponding valid range (${min ??  '&infin;'} - ${max ?? Infinity})`}
+                                                            title={`Please enter value in the corresponding valid range: from (${min ??  -Infinity} to ${max ?? Infinity})`}
                                                             max={max}
                                                             min={min}
                                                             data-indicatorname={indicatorName}
                                                             data-year={year}
-                                                            defaultValue={value}
-                                                            onBlur={handleBlur}
+                                                            value={value}
+                                                            onChange={handleChange}
                                                         />
                                                     </td>
                                                 )
@@ -155,11 +166,11 @@ function Table({ selectedCountry }: Props) {
                         {
                             STATS_TYPES.map(type => {
                                 return (
-                                    <tr key={type} className="fw-bold">
+                                    <tr key={type} className={combineClassNames(['fw-bold', styles.stats])}>
                                         <td>{type.toUpperCase()}</td>
                                         {
                                             years.map(year => {
-                                                const value = currentCountryIndicators.byYear[year][type]?.value
+                                                const value = currentCountryStoredIndicators.byYear[year][type]?.value
                                                 const hasBeenSimulated = +initialCurrentIndices.byYear[year][type].value !== +value
                                                 return (
                                                     <td 
@@ -170,7 +181,8 @@ function Table({ selectedCountry }: Props) {
                                                             color: hasBeenSimulated ? 'white' : 'initial'
                                                         }}
                                                     >
-                                                        {value.toFixed(2)}
+                                                        {value}
+                                                        <span>46854</span>
                                                     </td>
                                                 )
                                             })
