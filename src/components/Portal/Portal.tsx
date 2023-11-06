@@ -7,9 +7,10 @@ type T_Props = {
     children: JSX.Element
     opened: boolean
     close: () => void
+    wrapperClassName?: string 
 }
 
-export const Portal: FC<T_Props> = ({ children, opened, close }) => {
+export const Portal: FC<T_Props> = ({ children, opened, wrapperClassName, close }) => {
 
     const handleOverlayClick = useCallback(() => close(), [close])
 
@@ -21,7 +22,7 @@ export const Portal: FC<T_Props> = ({ children, opened, close }) => {
 
     return createPortal(
         <>
-            <div className={combineClassNames([styles.portal_content, opened ? undefined : styles.closed])}>
+            <div className={combineClassNames([styles.portal_content, opened ? undefined : styles.closed, wrapperClassName])}>
                 {children}
                 <button onClick={handleCloseBtnClick} className={styles.portal_close_btn}>
                     <i className="bi bi-x"></i>

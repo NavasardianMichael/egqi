@@ -1,3 +1,10 @@
+.countryDetailsPortalWrapper {
+    width: 92vw;
+    max-width: 1800px;
+    min-width: 800px;
+    height: 86vh;
+}
+
 .country_details_header {
     gap: 20px;
     align-items: center;

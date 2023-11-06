@@ -59,7 +59,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
     }
 
     return (
-        <Portal opened={!!countryName} close={close}>
+        <Portal opened={!!countryName} close={close} wrapperClassName={styles.countryDetailsPortalWrapper}>
             <>
                 {
                     !!countryName &&

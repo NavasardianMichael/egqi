@@ -1,3 +1,8 @@
+.simulationPortalWrapper {
+    width: 100%;
+    max-width: 600px;
+}
+
 .countries_list img {
     width: 30px;
     margin-right: 10px;
@@ -14,12 +19,12 @@
         all: unset;
         cursor: pointer;
         position: absolute;
-        right: 6px;
-        top: 6px;
+        right: 2px;
+        top: 0px;
 
-        & svg {
-            width: 20px;
-            height: 20px;
+        & svg  {
+            width: 14px;
+            height: 14px;
             fill: #029191;
         }
     }
@@ -29,7 +34,8 @@
 .country_values input {
     all: unset;
     width: 70px;
-    padding: 0.5rem;
+    margin: 1.5rem 0.75rem;
+    
     text-overflow: ellipsis;
     position: relative;
 }
@@ -40,7 +46,8 @@
 }
 
 .stats td {
-    width: 70px;
+    max-width: 70px;
+    overflow: hidden;
     text-overflow: ellipsis;
     box-sizing: border-box;
 }
