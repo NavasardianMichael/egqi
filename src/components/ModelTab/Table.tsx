@@ -17,6 +17,8 @@ import { ReactComponent as EditIcon } from 'assets/images/edit-icon.svg';
 
 import styles from './modelTab.module.css'
 import { Portal } from "components/Portal/Portal"
+import { T_IndicesState } from 'store/indices/types'
+// import { T_IndicesState } from 'store/indices/types'
 
 type Props = {
     selectedCountry: T_Country['name']
@@ -87,6 +89,62 @@ function Table({ selectedCountry }: Props) {
         })
     }
 
+    useEffect(() => {
+        // 2.73442081369032
+        let currentYear = years.at(-1) as number
+        const currentCountrySimulatedState: T_IndicesState[keyof T_IndicesState] = JSON.parse(JSON.stringify(indices[selectedCountry]))
+        const changeShares: {[key: T_Indicator['name']]: number} = {
+            "Government expenditure on education, total (% of GDP)": 0.919328051,
+            "Medium and high-tech manufacturing value added (% manufacturing value added)": 0.869634642,
+            "HH Market concentration index": 0.844787938,
+            "Research and development expenditure (% of GDP) ": 0.832364586,
+            "Gross fixed capital formation (constant 2015 US$) per labor unit": 0.79509453,
+            "CO2 emissions (kg per 2015 US$ of GDP)": 0.745401122,
+            "GDP per capita (constant 2015 US$)": 0.683284362,
+            "Happiness index": 0.683284362,
+            "Global Competitiveness Index": 0.633590954,
+            "Prosperity index": 0.509357433,
+            "Domestic credit to private sector (% of GDP)": 0.496934081,
+            "SFA-TFP": 0.198773633,
+            "Gini index": 0.173926928,
+
+        } 
+        indicators.allNames.forEach(indicatorName => {
+            const { min, weight, affect } = indicators.byName[indicatorName]
+            const x = indices[selectedCountry].byIndicator[indicatorName].byYear[currentYear].original.value
+            const egqi = indices[selectedCountry].byYear[currentYear].egqi.value
+
+            // if(!changeShares[indicatorName]) return
+            const args: T_GetContributionArgs = {
+                min,
+                ammount: changeShares[indicatorName],
+                egqi,
+                weight,
+                x
+            }
+            const simulatedValue = getContributionByPercent(args)
+            
+            currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value += (affect * simulatedValue * currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value / 100)
+            console.log({indicatorName, change: simulatedValue});
+            
+        })
+console.log({currentCountrySimulatedState});
+
+        const processed = processIndices({
+            countries,
+            indicators,
+            years,
+            indices: {
+                ...indices,
+                [selectedCountry]: currentCountrySimulatedState
+            }
+        })
+        console.log(processed[selectedCountry].byYear[currentYear].egqi.value -
+            indices[selectedCountry].byYear[currentYear].egqi.value);
+        
+        dispatch(setIndices(processed))
+    }, [])
+
     const handleEditCellClick: MouseEventHandler<HTMLButtonElement> = (e) => {
         const { year, indicatorName, value } = e.currentTarget.dataset as DOMStringMap & typeof simulatedCellDetails
          
@@ -139,8 +197,6 @@ function Table({ selectedCountry }: Props) {
     const getContributionByPoints = ({
         min, x, weight, egqi, ammount
     }: T_GetContributionArgs) => {
-        console.log({min, x, weight, egqi, ammount});
-        
         const contributionByPoint = 
         (
             (
@@ -288,8 +344,8 @@ function Table({ selectedCountry }: Props) {
                               title={`Please enter value in the corresponding valid range: from (${
                                 min ?? -Infinity
                               } to ${max ?? Infinity})`}
-                              max={max}
-                              min={min}
+                            //   max={max}
+                            //   min={min}
                               data-indicatorname={indicatorName}
                               data-year={year}
                               value={value}
