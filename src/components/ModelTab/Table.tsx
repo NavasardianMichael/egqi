@@ -40,7 +40,7 @@ const EDIT_CELL_DETAILS_INITIAL = {
     year: 0,
     indicatorName: '',
     changeType: 'absolute',
-    changeQuantity: 0,
+    changeQuantity: '',
     value: 0,
 }
 
@@ -136,30 +136,6 @@ function Table({ selectedCountry }: Props) {
         setInitialCurrentIndices(currentCountryStoredIndicators)
     }, [selectedCountry])
 
-    useEffect(() => {
-        if(!simulatedCellDetails.changeQuantity) return;
-        
-        setSimulatedCellDetails(prev => {
-            const { changeType, changeQuantity, indicatorName, year, value } = simulatedCellDetails
-            const { min = -Infinity } = indicators.byName[indicatorName]
-            console.log(indicators.byName[indicatorName]);
-            
-            const egqi = indices[selectedCountry].byYear[year].egqi.value
-            const weight = indicators.byName[indicatorName].weight
-            const args: T_GetContributionArgs = {
-                min,
-                ammount: changeQuantity,
-                egqi,
-                weight,
-                x: value
-            }
-            return {
-                ...prev,
-                value: changeType === 'percent' ? getContributionByPercent(args) : getContributionByPoints(args) 
-            }
-        })
-    }, [simulatedCellDetails.changeType, simulatedCellDetails.changeQuantity, simulatedCellDetails.value])
-
     const getContributionByPoints = ({
         min, x, weight, egqi, ammount
     }: T_GetContributionArgs) => {
@@ -206,138 +182,217 @@ function Table({ selectedCountry }: Props) {
         )
         return contributionByPercent
     }
+    
+    const handleEditValueByChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+        const currentValue = +e.target.value
+        setEditValueChanges(currentValue)
+    }
 
+    const handleEditTypeByChange: ChangeEventHandler<HTMLSelectElement> = (e) => {
+        const currentType = e.target.value
+        setSimulatedCellDetails(prev => ({...prev, changeType: currentType}))
+        setEditValueChanges(+simulatedCellDetails.changeQuantity)
+    }
+
+    const setEditValueChanges = (currentValue: typeof simulatedCellDetails.value) => {
+        setSimulatedCellDetails(prev => {
+            const { changeType, changeQuantity, indicatorName, year, value } = prev
+            const { min = -Infinity } = indicators.byName[indicatorName]
+            
+            const egqi = indices[selectedCountry].byYear[year].egqi.value
+            const weight = indicators.byName[indicatorName].weight
+            const args: T_GetContributionArgs = {
+                min,
+                ammount: +changeQuantity,
+                egqi,
+                weight,
+                x: value
+            }
+
+            return {
+                ...prev, 
+                changeQuantity: currentValue.toString(),
+                value: currentValue ? (changeType === 'percent' ? getContributionByPercent(args) : getContributionByPoints(args)) : prev.value
+            }
+        })
+    }
+    
     return (
-        <>
-            <div>
-                <button 
-                    className={combineClassNames(["btn btn-outline-primary mb-3"])} 
-                    onClick={handleSubmitSimulations}
-                    disabled={currentCountryIndicators === currentCountryStoredIndicators}
-                >
-                    Simulate with current changes
-                </button>
-                <button 
-                    title='Reset to original data'
-                    className="btn btn-outline-secondary mb-3 mx-3" 
-                    onClick={handleReset}
-                    disabled={!isSimulated}
-                >
-                    Reset changes
-                </button>
-                <table className={combineClassNames(['table','table-bordered', 'align-middle', styles.country_values])}>
-                    <thead>
-                        <tr>
-                            <th scope="col">Indicator Name</th>
-                            {
-                                years.map(year => {
-                                    return (
-                                        <th key={year} className='text-center' scope="col">{year}</th>
-                                    )
-                                })
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <>
-                            {
-                                indicators.allNames.map(indicatorName => {
-                                    return (
-                                        <tr key={indicatorName}>
-                                            <td>{indicatorName}</td>
-                                            {
-                                                years.map(year => {
-                                                    const { max, min } = indicators.byName[indicatorName]
-                                                    const value = currentCountryIndicators?.byIndicator[indicatorName].byYear[year].original.value
-                                                    
-                                                    const hasBeenSimulated = +initialCurrentIndices.byIndicator[indicatorName].byYear[year].original.value !== +value
-                                                    return (
-                                                        <td 
-                                                            className='text-center p-0 align-middle' 
-                                                            key={selectedCountry+indicatorName+year}
-                                                            style={{
-                                                                backgroundColor: hasBeenSimulated ? '#029191' : 'initial',
-                                                                color: hasBeenSimulated ? 'white' : 'initial'
-                                                            }}
-                                                        >
-                                                            <input 
-                                                                type='number'
-                                                                title={`Please enter value in the corresponding valid range: from (${min ??  -Infinity} to ${max ?? Infinity})`}
-                                                                max={max}
-                                                                min={min}
-                                                                data-indicatorname={indicatorName}
-                                                                data-year={year}
-                                                                value={value}
-                                                                onChange={handleChange}
-                                                            />
-                                                            <button 
-                                                                className={styles.options} 
-                                                                data-indicator-name={indicatorName}
-                                                                data-year={year}
-                                                                data-value={value}
-                                                                onClick={handleEditCellClick}
-                                                            >
-                                                                <EditIcon />
-                                                            </button>
-                                                        </td>
-                                                    )
-                                                })
-                                            }
-                                        </tr>
-                                    )
-                                })
-                            }
-                            {
-                                STATS_TYPES.map(type => {
-                                    return (
-                                        <tr key={type} className={combineClassNames(['fw-bold', styles.stats])}>
-                                            <td>{type.toUpperCase()}</td>
-                                            {
-                                                years.map(year => {
-                                                    const value = currentCountryStoredIndicators.byYear[year][type]?.value
-                                                    const hasBeenSimulated = +initialCurrentIndices.byYear[year][type].value !== +value
-                                                    return (
-                                                        <td 
-                                                            key={'average'+year} 
-                                                            className='text-center'
-                                                            style={{
-                                                                backgroundColor: hasBeenSimulated ? '#029191' : 'initial',
-                                                                color: hasBeenSimulated ? 'white' : 'initial'
-                                                            }}
-                                                        >
-                                                            {value}
-                                                        </td>
-                                                    )
-                                                })
-                                            }
-                                        </tr>
-                                    )
-                                })
-                            }
-                        </>
-                    </tbody>
-                </table>
+      <>
+        <div>
+          <button
+            className={combineClassNames(["btn btn-outline-primary mb-3"])}
+            onClick={handleSubmitSimulations}
+            disabled={
+              currentCountryIndicators === currentCountryStoredIndicators
+            }
+          >
+            Simulate with current changes
+          </button>
+          <button
+            title='Reset to original data'
+            className='btn btn-outline-secondary mb-3 mx-3'
+            onClick={handleReset}
+            disabled={!isSimulated}
+          >
+            Reset changes
+          </button>
+          <table
+            className={combineClassNames([
+              "table",
+              "table-bordered",
+              "align-middle",
+              styles.country_values,
+            ])}
+          >
+            <thead>
+              <tr>
+                <th scope='col'>Indicator Name</th>
+                {years.map((year) => {
+                  return (
+                    <th key={year} className='text-center' scope='col'>
+                      {year}
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              <>
+                {indicators.allNames.map((indicatorName) => {
+                  return (
+                    <tr key={indicatorName}>
+                      <td>{indicatorName}</td>
+                      {years.map((year) => {
+                        const { max, min } = indicators.byName[indicatorName];
+                        const value =
+                          currentCountryIndicators?.byIndicator[indicatorName]
+                            .byYear[year].original.value;
+
+                        const hasBeenSimulated =
+                          +initialCurrentIndices.byIndicator[indicatorName]
+                            .byYear[year].original.value !== +value;
+                        return (
+                          <td
+                            className='text-center p-0 align-middle'
+                            key={selectedCountry + indicatorName + year}
+                            style={{
+                              backgroundColor: hasBeenSimulated
+                                ? "#029191"
+                                : "initial",
+                              color: hasBeenSimulated ? "white" : "initial",
+                            }}
+                          >
+                            <input
+                              type='number'
+                              title={`Please enter value in the corresponding valid range: from (${
+                                min ?? -Infinity
+                              } to ${max ?? Infinity})`}
+                              max={max}
+                              min={min}
+                              data-indicatorname={indicatorName}
+                              data-year={year}
+                              value={value}
+                              onChange={handleChange}
+                            />
+                            <button
+                              className={styles.options}
+                              data-indicator-name={indicatorName}
+                              data-year={year}
+                              data-value={value}
+                              onClick={handleEditCellClick}
+                            >
+                              <EditIcon />
+                            </button>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+                {STATS_TYPES.map((type) => {
+                  return (
+                    <tr
+                      key={type}
+                      className={combineClassNames(["fw-bold", styles.stats])}
+                    >
+                      <td>{type.toUpperCase()}</td>
+                      {years.map((year) => {
+                        const value =
+                          currentCountryStoredIndicators.byYear[year][type]
+                            ?.value;
+                        const hasBeenSimulated =
+                          +initialCurrentIndices.byYear[year][type].value !==
+                          +value;
+                        return (
+                          <td
+                            key={"average" + year}
+                            className='text-center'
+                            style={{
+                              backgroundColor: hasBeenSimulated
+                                ? "#029191"
+                                : "initial",
+                              color: hasBeenSimulated ? "white" : "initial",
+                            }}
+                          >
+                            {value}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </>
+            </tbody>
+          </table>
+        </div>
+        <Portal
+          opened={!!simulatedCellDetails.indicatorName}
+          close={handleEditCellPortalClose}
+          wrapperClassName={styles.simulationPortalWrapper}
+        >
+          <div>
+            <div className='mb-3 input-group-sm'>
+              <label htmlFor='quantity' className='form-label'>
+                Change Quantity
+              </label>
+              <input
+                type='number'
+                className='form-control'
+                id='quantity'
+                aria-describedby='emailHelp'
+                max={indicators.byName[simulatedCellDetails?.indicatorName]?.max}
+                min={indicators.byName[simulatedCellDetails?.indicatorName]?.min}
+                value={simulatedCellDetails.changeQuantity}
+                onChange={handleEditValueByChange}
+              />
+              {/* <div id="emailHelp" className="form-text">Unit type</div> */}
             </div>
-            <Portal opened={!!simulatedCellDetails.indicatorName} close={handleEditCellPortalClose} wrapperClassName={styles.simulationPortalWrapper}>
-                <div>
-                    <div className="mb-3 input-group-sm">
-                        <label htmlFor="quantity" className="form-label">Change Quantity</label>
-                        <input type="number" className="form-control" id="quantity" aria-describedby="emailHelp" value={simulatedCellDetails.changeQuantity} onChange={e => setSimulatedCellDetails(prev => ({...prev, changeQuantity: +e.target.value}))} />
-                        {/* <div id="emailHelp" className="form-text">Unit type</div> */}
-                    </div>
-                    <div className="mb-3 input-group-sm">
-                        <label htmlFor="change-type" className="form-label">Change Type</label>
-                        <select className="form-select" id="change-type" aria-label="Default select example" value={simulatedCellDetails.changeType} onChange={e => setSimulatedCellDetails(prev => ({...prev, changeType: e.target.value}))}>
-                            <option value='absolute'>By Absolute Value</option>
-                            <option value='percent'>By Percent</option>
-                        </select>
-                    </div>
-                    <h6 className="mb-4">Current value is: {simulatedCellDetails.value}</h6>
-                    <button className="btn btn-outline-secondary w-25 mx-auto d-block">Apply</button>
-                </div>
-            </Portal>
-        </>
-    )
+            <div className='mb-3 input-group-sm'>
+              <label htmlFor='change-type' className='form-label'>
+                Change Type
+              </label>
+              <select
+                className='form-select'
+                id='change-type'
+                aria-label='Default select example'
+                value={simulatedCellDetails.changeType}
+                onChange={handleEditTypeByChange}
+              >
+                <option value='absolute'>By Absolute Value</option>
+                <option value='percent'>By Percent</option>
+              </select>
+            </div>
+            <h6 className='mb-4'>
+              Current value is: {simulatedCellDetails.value}
+            </h6>
+            <button className='btn btn-outline-secondary w-25 mx-auto d-block'>
+              Apply
+            </button>
+          </div>
+        </Portal>
+      </>
+    );
 }
 
 export default Table

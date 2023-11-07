@@ -305,6 +305,8 @@ const normalizeValues = (utils: Omit<RootState, 'app'>): T_IndicesState => {
         indicators.allNames.forEach((indicatorName) => {
             const indicator = indicators.byName[indicatorName]
             const { min, max } = getCriticalValues(utils, indicatorName)
+            indicators.byName[indicatorName].min = min
+            indicators.byName[indicatorName].max = max
             
             const distance = max - min;
             
