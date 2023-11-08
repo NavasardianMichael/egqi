@@ -109,6 +109,7 @@ function Table({ selectedCountry }: Props) {
             "Gini index": 0.173926928,
 
         } 
+        let logRes = {...changeShares}
         indicators.allNames.forEach(indicatorName => {
             const { min, weight, affect } = indicators.byName[indicatorName]
             const x = indices[selectedCountry].byIndicator[indicatorName].byYear[currentYear].original.value
@@ -122,13 +123,16 @@ function Table({ selectedCountry }: Props) {
                 weight,
                 x
             }
-            const simulatedValue = getContributionByPercent(args)
+            const simulatedPercentChange = getContributionByPercent(args)
+            // const simulatedPointChange = getContributionByPoints(args)
             
-            currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value += (affect * simulatedValue * currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value / 100)
-            console.log({indicatorName, change: simulatedValue});
+            logRes[indicatorName] = simulatedPercentChange
+            
+            currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value += (affect * simulatedPercentChange * currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value / 100)
+            
             
         })
-console.log({currentCountrySimulatedState});
+        console.table(logRes)
 
         const processed = processIndices({
             countries,
