@@ -148,7 +148,7 @@ function Table({ selectedCountry }: Props) {
                 
                 let logRes = JSON.parse(JSON.stringify(changeShares[iteration]))
                 indicators.allNames.forEach(indicatorName => {
-                    const { min, weight, affect } = indicators.byName[indicatorName]
+                    const { min, weight, affect, max } = indicators.byName[indicatorName]
                     const x = currentIndices[selectedCountry].byIndicator[indicatorName].byYear[currentYear].original.value
                     const egqi = currentIndices[selectedCountry].byYear[currentYear].egqi.value
         
@@ -161,11 +161,20 @@ function Table({ selectedCountry }: Props) {
                         x
                     }
                     const simulatedPercentChange = getContributionByPercent(args)
-                    // const simulatedPointChange = getContributionByPoints(args)
-                    
-                    logRes[indicatorName] = simulatedPercentChange
+                    const simulatedPointChange = getContributionByPoints(args)
                     
                     currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value += (affect * simulatedPercentChange * currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value / 100)
+
+                    logRes[indicatorName] = {
+                      percentChange: simulatedPercentChange,
+                      valueChange: simulatedPointChange,
+                      max,
+                      min,
+                      isInRange: (
+                        min <= currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value &&
+                        max >= currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value
+                      )
+                    }
                 })
                 console.log(`------------------------iteration: ${iteration} start----------------`) 
                 console.table(logRes)
