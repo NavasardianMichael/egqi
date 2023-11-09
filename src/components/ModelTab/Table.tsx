@@ -91,62 +91,123 @@ function Table({ selectedCountry }: Props) {
 
     useEffect(() => {
         // 2.73442081369032
-        let currentYear = years.at(-1) as number
-        const currentCountrySimulatedState: T_IndicesState[keyof T_IndicesState] = JSON.parse(JSON.stringify(indices[selectedCountry]))
-        const changeShares: {[key: T_Indicator['name']]: number} = {
-            "Government expenditure on education, total (% of GDP)": 0.919328051,
-            "Medium and high-tech manufacturing value added (% manufacturing value added)": 0.869634642,
-            "HH Market concentration index": 0.844787938,
-            "Research and development expenditure (% of GDP) ": 0.832364586,
-            "Gross fixed capital formation (constant 2015 US$) per labor unit": 0.79509453,
-            "CO2 emissions (kg per 2015 US$ of GDP)": 0.745401122,
-            "GDP per capita (constant 2015 US$)": 0.683284362,
-            "Happiness index": 0.683284362,
-            "Global Competitiveness Index": 0.633590954,
-            "Prosperity index": 0.509357433,
-            "Domestic credit to private sector (% of GDP)": 0.496934081,
-            "SFA-TFP": 0.198773633,
-            "Gini index": 0.173926928,
+            let iteration = 0
+            const currentYear = years.at(-1) as number
+            let currentIndices = JSON.parse(JSON.stringify(indices))
 
-        } 
-        let logRes = {...changeShares}
-        indicators.allNames.forEach(indicatorName => {
-            const { min, weight, affect } = indicators.byName[indicatorName]
-            const x = indices[selectedCountry].byIndicator[indicatorName].byYear[currentYear].original.value
-            const egqi = indices[selectedCountry].byYear[currentYear].egqi.value
-
-            // if(!changeShares[indicatorName]) return
-            const args: T_GetContributionArgs = {
-                min,
-                ammount: changeShares[indicatorName],
-                egqi,
-                weight,
-                x
-            }
-            const simulatedPercentChange = getContributionByPercent(args)
-            // const simulatedPointChange = getContributionByPoints(args)
-            
-            logRes[indicatorName] = simulatedPercentChange
-            
-            currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value += (affect * simulatedPercentChange * currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value / 100)
-            
-            
-        })
-        console.table(logRes)
-
-        const processed = processIndices({
-            countries,
-            indicators,
-            years,
-            indices: {
-                ...indices,
-                [selectedCountry]: currentCountrySimulatedState
-            }
-        })
-        console.log(processed[selectedCountry].byYear[currentYear].egqi.value -
-            indices[selectedCountry].byYear[currentYear].egqi.value);
+            while(iteration < 3) {
+                
+                const currentCountrySimulatedState: T_IndicesState[keyof T_IndicesState] = JSON.parse(JSON.stringify(currentIndices[selectedCountry]))
+                const changeShares: {[key: T_Indicator['name']]: number}[] = [
+                    {
+                        "Government expenditure on education, total (% of GDP)": 0.919328051,
+                        "Medium and high-tech manufacturing value added (% manufacturing value added)": 0.869634642,
+                        "HH Market concentration index": 0.844787938,
+                        "Research and development expenditure (% of GDP) ": 0.832364586,
+                        "Gross fixed capital formation (constant 2015 US$) per labor unit": 0.79509453,
+                        "CO2 emissions (kg per 2015 US$ of GDP)": 0.745401122,
+                        "GDP per capita (constant 2015 US$)": 0.683284362,
+                        "Happiness index": 0.683284362,
+                        "Global Competitiveness Index": 0.633590954,
+                        "Prosperity index": 0.509357433,
+                        "Domestic credit to private sector (% of GDP)": 0.496934081,
+                        "SFA-TFP": 0.198773633,
+                        "Gini index": 0.173926928,
+                    },
+                    {
+                        "Government expenditure on education, total (% of GDP)": 1.029675442,
+                        "Medium and high-tech manufacturing value added (% manufacturing value added)": 0.918359178,
+                        "Research and development expenditure (% of GDP) ": 0.904444645,
+                        "HH Market concentration index": 0.890530112,
+                        "Gross fixed capital formation (constant 2015 US$) per labor unit": 0.862701046,
+                        "GDP per capita (constant 2015 US$)": 0.751384782,
+                        "CO2 emissions (kg per 2015 US$ of GDP)": 0.640068518,
+                        "Happiness index": 0.584410386,
+                        "Prosperity index": 0.542666787,
+                        "Domestic credit to private sector (% of GDP)": 0.473094122,
+                        "Global Competitiveness Index": 0.473094122,
+                        "Gini index": 0.125230797,
+                        "SFA-TFP": 0.013914533,
+                    },
+                    {
+                        "CO2 emissions (kg per 2015 US$ of GDP)": 0.521338322,
+                        "Domestic credit to private sector (% of GDP)": 0.504520956,
+                        "GDP per capita (constant 2015 US$)": 0.840868261,
+                        "Gini index": 0.117721556,
+                        "Global Competitiveness Index": 0.437251495,
+                        "Government expenditure on education, total (% of GDP)": 1.143580834,
+                        "Gross fixed capital formation (constant 2015 US$) per labor unit": 1.042676643,
+                        "Happiness index": 0.403616765,
+                        "HH Market concentration index": 0.958589817,
+                        "Medium and high-tech manufacturing value added (% manufacturing value added)": 1.093128739,
+                        "Prosperity index": 0.622242513,
+                        "Research and development expenditure (% of GDP) ": 0.975407182,
+                        "SFA-TFP": 0.016817365,
+                    },
+                ] 
+                
+                let logRes = JSON.parse(JSON.stringify(changeShares[iteration]))
+                indicators.allNames.forEach(indicatorName => {
+                    const { min, weight, affect } = indicators.byName[indicatorName]
+                    const x = currentIndices[selectedCountry].byIndicator[indicatorName].byYear[currentYear].original.value
+                    const egqi = currentIndices[selectedCountry].byYear[currentYear].egqi.value
         
-        dispatch(setIndices(processed))
+                    // if(!changeShares[indicatorName]) return
+                    const args: T_GetContributionArgs = {
+                        min,
+                        ammount: changeShares[iteration][indicatorName],
+                        egqi,
+                        weight,
+                        x
+                    }
+                    const simulatedPercentChange = getContributionByPercent(args)
+                    // const simulatedPointChange = getContributionByPoints(args)
+                    
+                    logRes[indicatorName] = simulatedPercentChange
+                    
+                    currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value += (affect * simulatedPercentChange * currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value / 100)
+                })
+                console.log(`------------------------iteration: ${iteration} start----------------`) 
+                console.table(logRes)
+                console.log(`------------------------iteration: ${iteration} end----------------`) 
+        
+                const processed = processIndices({
+                    countries,
+                    indicators,
+                    years,
+                    indices: {
+                        ...currentIndices,
+                        [selectedCountry]: currentCountrySimulatedState
+                    }
+                })
+                console.table({
+                    "EGQI growth": (
+                        processed[selectedCountry].byYear[currentYear].egqi.value /
+                        currentIndices[selectedCountry].byYear[currentYear].egqi.value * 100 - 100
+                    ),
+                    "EGQI old value": currentIndices[selectedCountry].byYear[currentYear].egqi.value,
+                    "EGQI new value": processed[selectedCountry].byYear[currentYear].egqi.value,
+                })
+                // console.log(processed[selectedCountry].byYear[currentYear].egqi.value -
+                //     indices[selectedCountry].byYear[currentYear].egqi.value);
+                let summary = {} as any
+                indicators.allNames.forEach(indicatorName => {
+                    summary[indicatorName] = {
+                        indicatorName, 
+                        originalValue: processed[selectedCountry].byIndicator[indicatorName].byYear[currentYear].original.value,
+                        originalRanking: processed[selectedCountry].byIndicator[indicatorName].byYear[currentYear].original.ranking,
+                        normalizedRanking: processed[selectedCountry].byIndicator[indicatorName].byYear[currentYear].normalized.ranking
+                    }
+                })
+                console.log('------------------------summary start----------------')                
+                console.table(summary)                
+                console.log('------------------------summary end----------------')              
+
+                dispatch(setIndices(processed))   
+                currentIndices = JSON.parse(JSON.stringify(processed))         
+                iteration++
+        }
+        
     }, [])
 
     const handleEditCellClick: MouseEventHandler<HTMLButtonElement> = (e) => {

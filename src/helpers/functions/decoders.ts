@@ -174,6 +174,7 @@ export const processIndices = (utils: Omit<RootState, 'app'>): T_IndicesState =>
     })
 
     indicators.allNames.forEach(indicatorName => {
+        const { affect } = indicators.byName[indicatorName]
         years.forEach(year => {
             let rankingUtil: ({ name: T_Country['name'], normalized: number, original: number })[] = []
             countries.allNames.forEach(countryName => {
@@ -185,6 +186,8 @@ export const processIndices = (utils: Omit<RootState, 'app'>): T_IndicesState =>
             });
             
             rankingUtil.sort((a,b) => b.original - a.original)
+            
+            if(affect < 0) rankingUtil = rankingUtil.reverse()
             rankingUtil.forEach((data, i) => {
                 result[data.name].byIndicator[indicatorName].byYear[year].original.ranking = (i + 1)
             })
