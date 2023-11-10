@@ -161,13 +161,12 @@ function Table({ selectedCountry }: Props) {
                         x
                     }
                     const simulatedPercentChange = getContributionByPercent(args)
-                    const simulatedPointChange = getContributionByPoints(args)
+                    // const simulatedPointChange = getContributionByPoints(args)
                     
                     currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value += (affect * simulatedPercentChange * currentCountrySimulatedState.byIndicator[indicatorName].byYear[currentYear].original.value / 100)
 
                     logRes[indicatorName] = {
                       percentChange: simulatedPercentChange,
-                      valueChange: simulatedPointChange,
                       max,
                       min,
                       isInRange: (
@@ -196,6 +195,8 @@ function Table({ selectedCountry }: Props) {
                     ),
                     "EGQI old value": currentIndices[selectedCountry].byYear[currentYear].egqi.value,
                     "EGQI new value": processed[selectedCountry].byYear[currentYear].egqi.value,
+                    "EGQI old ranking": currentIndices[selectedCountry].byYear[currentYear].egqi.ranking,
+                    "EGQI new ranking": processed[selectedCountry].byYear[currentYear].egqi.ranking,
                 })
                 // console.log(processed[selectedCountry].byYear[currentYear].egqi.value -
                 //     indices[selectedCountry].byYear[currentYear].egqi.value);
