@@ -27,7 +27,6 @@ export const processWorkbookData = (workbook: XLSX.WorkBook) => {
         years,
         indices: processIndices({countries, indicators, years, indices: initialValues})
     }
-    console.log({result});
     
     return result
 }

@@ -7,10 +7,18 @@
     font-size: 12px;
 }
 
+.indicatorName {
+    width: 366px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .country_values input {
     all: unset;
-    width: 70px;
-    padding: 0.5rem;
+    width: 80px;
+    padding-left: 0.5rem;
     text-overflow: ellipsis;
 }
 
@@ -20,8 +28,6 @@
 }
 
 .stats td {
-    width: 70px;
-    text-overflow: ellipsis;
     box-sizing: border-box;
 }
 

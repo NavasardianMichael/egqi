@@ -96,7 +96,7 @@ function Table({ selectedCountry }: Props) {
     return (
         <div>
             <button 
-                className={combineClassNames(["btn btn-outline-primary mb-3"])} 
+                className={combineClassNames(["btn btn-outline-primary custom-btn mb-3"])}
                 onClick={handleSubmitSimulations}
                 disabled={currentCountryIndicators === currentCountryStoredIndicators}
             >
@@ -129,7 +129,7 @@ function Table({ selectedCountry }: Props) {
                             indicators.allNames.map(indicatorName => {
                                 return (
                                     <tr key={indicatorName}>
-                                        <td>{indicatorName}</td>
+                                        <td title={indicatorName} className={styles.indicatorName}>{indicatorName}</td>
                                         {
                                             years.map(year => {
                                                 const { max, min } = indicators.byName[indicatorName]
@@ -147,7 +147,7 @@ function Table({ selectedCountry }: Props) {
                                                     >
                                                         <input 
                                                             type='number'
-                                                            title={`Please enter value in the corresponding valid range: from (${min ??  -Infinity} to ${max ?? Infinity})`}
+                                                            // title={`Please enter value in the corresponding valid range: from (${min ??  -Infinity} to ${max ?? Infinity})`}
                                                             max={max}
                                                             min={min}
                                                             data-indicatorname={indicatorName}
@@ -164,7 +164,7 @@ function Table({ selectedCountry }: Props) {
                             })
                         }
                         {
-                            STATS_TYPES.map(type => {
+                            STATS_TYPES.filter(stat => stat !== 'erqigr').map(type => {
                                 return (
                                     <tr key={type} className={combineClassNames(['fw-bold', styles.stats])}>
                                         <td>{type.toUpperCase()}</td>
@@ -172,6 +172,7 @@ function Table({ selectedCountry }: Props) {
                                             years.map(year => {
                                                 const value = currentCountryStoredIndicators.byYear[year][type]?.value
                                                 const hasBeenSimulated = +initialCurrentIndices.byYear[year][type].value !== +value
+                                                
                                                 return (
                                                     <td 
                                                         key={'average'+year} 
@@ -181,8 +182,7 @@ function Table({ selectedCountry }: Props) {
                                                             color: hasBeenSimulated ? 'white' : 'initial'
                                                         }}
                                                     >
-                                                        {value}
-                                                        <span>46854</span>
+                                                        {value.toFixed(2)}
                                                     </td>
                                                 )
                                             })

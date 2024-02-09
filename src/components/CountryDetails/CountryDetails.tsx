@@ -82,7 +82,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                         </button>
                     </div>
                 }
-                <table className='table mt-3 align-middle' style={{fontSize: 14}}>
+                <table className={combineClassNames(['table mt-3 align-middle', styles.countryDetailsTable])} style={{fontSize: 14}}>
                     <thead>
                         <tr>
                             <th scope="col">Indicator Name</th>
@@ -104,7 +104,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                     
                                     return (
                                         <tr key={indicatorName}>
-                                            <td>{indicatorName}</td>
+                                            <td className={styles.indicatorName}>{indicatorName}</td>
                                             {
                                                 years.map(year => {
                                                     

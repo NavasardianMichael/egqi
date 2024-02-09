@@ -22,3 +22,13 @@
 body {
     scrollbar-width: thin;
 }
+
+.custom-btn {
+    color: #029191 !important;
+    border-color: #029191 !important;
+    
+    &:hover {
+        background-color: #029191;
+        color: #FFFF !important;
+    }
+}
