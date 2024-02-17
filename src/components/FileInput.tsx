@@ -66,7 +66,7 @@ function FileInput() {
           target="_blank"
           className="link-secondary"
         >
-          Download the Instructions File and Then Import it
+          Download the instructions file and then import (upload) it here
         </a>      
       </div>
     </div>
