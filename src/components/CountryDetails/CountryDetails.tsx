@@ -1,7 +1,7 @@
 import { FC, Fragment } from "react"
 import { useSelector } from "react-redux"
 import { Portal } from "components/Portal/Portal"
-import { COL_NAMES, STATS_TYPES } from "helpers/constants.ts/indices"
+import { STATS_TYPES } from "helpers/constants.ts/indices"
 import { INDICATOR_COLORS } from "helpers/constants.ts/output"
 import { combineClassNames, generateOrdinalNumber } from "helpers/functions/commons"
 import { generateCountryAllValuesExcelFile, generateCountryIndicesByYearsExcelFile } from "helpers/functions/encoders"
@@ -137,7 +137,6 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                             }
                             {
                                 STATS_TYPES.map(type => {
-                                    const isGrowthRatio = type === COL_NAMES.erqigr
                                     const mean = indices?.[countryName]?.means[type]
 
                                     return (
@@ -151,7 +150,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                                             <Fragment key={type+year}>
                                                                 <td 
                                                                     className='text-center text-light' 
-                                                                    style={{backgroundColor: (isGrowthRatio ? generateColorByGrowthRate : generateColorByValue)(+pair?.value)}}
+                                                                    style={{backgroundColor: (false ? generateColorByGrowthRate : generateColorByValue)(+pair?.value)}}
                                                                 >
                                                                     {
                                                                         false ?
@@ -165,7 +164,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                                 }
                                                 <td 
                                                     className='text-center text-light' 
-                                                    style={{backgroundColor: (isGrowthRatio ? generateColorByGrowthRate : generateColorByValue)(+mean?.value)}}
+                                                    style={{backgroundColor: (false ? generateColorByGrowthRate : generateColorByValue)(+mean?.value)}}
                                                 >
                                                     {`${mean?.value?.toFixed(2)} (${mean?.ranking})`}
                                                 </td>

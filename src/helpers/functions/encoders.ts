@@ -27,11 +27,9 @@ export const generateSummaryExcelFile = (data: RootState) => {
             EGQGI: indices[countryName].means.egqgi.value, 
             EGQEI: indices[countryName].means.egqei.value, 
             EGGI: indices[countryName].means.egqi.value, 
-            ERQIGR: indices[countryName].means.erqigr.value, 
             'EGQGI ranking': indices[countryName].means.egqgi.ranking, 
             'EGQEI ranking': indices[countryName].means.egqei.ranking, 
             'EGGI ranking': indices[countryName].means.egqi.ranking,
-            'ERQIGR ranking': indices[countryName].means.erqigr.ranking, 
         }
     })
     generateExcelFile(processed, 'EGQI Summary')

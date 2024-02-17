@@ -22,7 +22,6 @@ const Rankings = () => {
         [COL_NAMES.egqi]: 0,
         [COL_NAMES.egqgi]: 0,
         [COL_NAMES.egqei]: 0,
-        [COL_NAMES.erqigr]: 0,
     })
 
     const handletableHeaderClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
@@ -96,7 +95,6 @@ const Rankings = () => {
                                         <td title={`Average ${COL_FULL_NAMES.egqgi} in 2005-2021`} >{indices[countryName].means.egqgi.value.toFixed(2)+ ` (${indices[countryName].means.egqgi.ranking})`}</td>
                                         <td title={`Average ${COL_FULL_NAMES.egqei} in 2005-2021`} >{indices[countryName].means.egqei.value.toFixed(2)+ ` (${indices[countryName].means.egqei.ranking})`}</td>
                                         <td title={`Average ${COL_FULL_NAMES.egqi} in 2005-2021`} >{indices[countryName].means.egqi.value.toFixed(2)+ ` (${indices[countryName].means.egqi.ranking})`}</td>
-                                        <td title={`Average ${COL_FULL_NAMES.erqigr} in 2005-2021`} >{indices[countryName].means.erqigr.value.toFixed(2) + '%'+ ` (${indices[countryName].means.erqigr.ranking})`}</td>
                                         <td className={styles.actions}>
                                             <button 
                                                 title={`${countryName} Details`}

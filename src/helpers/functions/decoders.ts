@@ -93,10 +93,6 @@ const processInitialValues = (utils: Omit<RootState, 'indices' | 'app'>, content
                             value: Infinity,
                             ranking: 0
                         },
-                        erqigr: {
-                            value: Infinity,
-                            ranking: 0
-                        },
                     }
                 }
                 if(!result[countryName].byIndicator[indicatorName]) {
@@ -267,11 +263,6 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices' | 'app'>, country
         }, JSON.parse(JSON.stringify(INDICES_INITIALS)))
         
         state[year] = {...indices}
-        state[year].erqigr.value = (
-            state[year - 1] ?
-            state[year].egqi.value / state[year - 1].egqi.value * 100 :
-            1
-        )
 
         return state
     }, {})
@@ -285,12 +276,10 @@ const processIndicesMeans = (utils: Omit<RootState, 'indices' | 'app'>, indicesB
         state.egqgi.value *= indicesByYears[year].egqgi.value
         state.egqei.value *= indicesByYears[year].egqei.value
         state.egqi.value *= indicesByYears[year].egqi.value
-        state.erqigr.value *= indicesByYears[year].erqigr.value
         if(i === arr.length - 1) {
             state.egqgi.value = Math.pow(state.egqgi.value, 1/years.length)
             state.egqei.value = Math.pow(state.egqei.value, 1/years.length)
             state.egqi.value = Math.pow(state.egqi.value, 1/years.length)
-            state.erqigr.value = Math.pow(state.erqigr.value, 1/(years.length - 1))
         }
         return state
     }, JSON.parse(JSON.stringify(INDICES_INITIALS)))

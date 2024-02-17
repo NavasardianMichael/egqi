@@ -12,7 +12,6 @@ export type T_Indices = {
     egqi: T_Pair
     egqgi: T_Pair
     egqei: T_Pair
-    erqigr: T_Pair
 }
 
 export type T_IndicesByIndicator = {

@@ -164,7 +164,7 @@ function Table({ selectedCountry }: Props) {
                             })
                         }
                         {
-                            STATS_TYPES.filter(stat => stat !== 'erqigr').map(type => {
+                            STATS_TYPES.map(type => {
                                 return (
                                     <tr key={type} className={combineClassNames(['fw-bold', styles.stats])}>
                                         <td>{type.toUpperCase()}</td>

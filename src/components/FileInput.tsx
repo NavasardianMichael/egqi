@@ -17,7 +17,9 @@ function FileInput() {
     handleExcelFile(e.target.files?.[0] as File)
   };
 
-  const handleExcelFile = (file: File) => {
+  const handleExcelFile = async (file: File) => {
+    console.log({file});
+    
     dispatch(setAppState({ isProcessing: true }))
     const reader = new FileReader();
 
@@ -49,15 +51,23 @@ function FileInput() {
 
   return (
     <div data-testid='file'>
-      <div>
+      <div className="d-flex" style={{alignItems: 'center', gap: 16}}>
         <input
           onChange={handleChange}
-          className="form-control w-100"
+          className="form-control"
           style={{ maxWidth: 250 }}
           type="file"
           id="formFile"
           accept=".xlsx, .xls, .csv"
         />
+        <a 
+          href={`https://drive.google.com/uc?export=download&id=1nccYNkme6Yj_CBc16Jorw2-4eGc32Xfs`}
+          download
+          target="_blank"
+          className="link-secondary"
+        >
+          Download the Instructions File and Then Import it
+        </a>      
       </div>
     </div>
   );

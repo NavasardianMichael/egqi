@@ -3,15 +3,20 @@ export const COL_NAMES = {
     egqgi: 'egqgi',
     egqei: 'egqei',
     egqi: 'egqi',
-    erqigr: 'erqigr',
+} as const
+
+export const COL_NAMES_ORIGINAL = {
+    [COL_NAMES.country]: 'country',
+    [COL_NAMES.egqgi]: 'EOQGI',
+    [COL_NAMES.egqei]: 'EOQEI',
+    [COL_NAMES.egqi]: 'EOQI',
 } as const
 
 export const COL_FULL_NAMES = {
     [COL_NAMES.country]: 'Country Name',
-    [COL_NAMES.egqgi]: 'Economic Growth Quality Generation Index',
-    [COL_NAMES.egqei]: 'Economic Growth Quality Effect Index',
-    [COL_NAMES.egqi]: 'Economic Growth Quality Index',
-    [COL_NAMES.erqigr]: 'Economic Result Quality Index Growth Rate',
+    [COL_NAMES.egqgi]: 'Economic Output Quality Generation Index',
+    [COL_NAMES.egqei]: 'Economic Output Quality Effect Index',
+    [COL_NAMES.egqi]: 'Economic Output Quality Index',
 } as const
 
 export const INDICES_TYPES = [
@@ -24,7 +29,6 @@ export const STATS_TYPES = [
     COL_NAMES.egqgi,
     COL_NAMES.egqei,
     COL_NAMES.egqi,
-    COL_NAMES.erqigr,
 ] as const
 
 export const COL_SORT_TYPES = {
@@ -48,10 +52,6 @@ export const INDICES_INITIALS = {
         ranking: 0
     },
     [COL_NAMES.egqi]: {
-        value: 1,
-        ranking: 0
-    },
-    [COL_NAMES.erqigr]: {
         value: 1,
         ranking: 0
     },
