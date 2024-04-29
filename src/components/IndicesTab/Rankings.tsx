@@ -19,9 +19,9 @@ const Rankings = () => {
     const [openedCountryName, setOpenedCountryName] = useState<T_Country['name']>('')
     const [sortedStatuses, setSortedStatuses] = useState<{ [key in keyof typeof COL_NAMES]: 0 | 1 | 2 }>({
         [COL_NAMES.country]: 0,
-        [COL_NAMES.egqi]: 0,
-        [COL_NAMES.egqgi]: 0,
-        [COL_NAMES.egqei]: 0,
+        [COL_NAMES.eoqi]: 0,
+        [COL_NAMES.eoqgi]: 0,
+        [COL_NAMES.eoqei]: 0,
     })
 
     const handletableHeaderClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
@@ -92,9 +92,9 @@ const Rankings = () => {
                                             />
                                         </td>
                                         <td>{countryName}</td>
-                                        <td title={`Average ${COL_FULL_NAMES.egqgi} in 2005-2021`} >{indices[countryName].means.egqgi.value.toFixed(2)+ ` (${indices[countryName].means.egqgi.ranking})`}</td>
-                                        <td title={`Average ${COL_FULL_NAMES.egqei} in 2005-2021`} >{indices[countryName].means.egqei.value.toFixed(2)+ ` (${indices[countryName].means.egqei.ranking})`}</td>
-                                        <td title={`Average ${COL_FULL_NAMES.egqi} in 2005-2021`} >{indices[countryName].means.egqi.value.toFixed(2)+ ` (${indices[countryName].means.egqi.ranking})`}</td>
+                                        <td title={`Average ${COL_FULL_NAMES.eoqgi} in 2005-2021`} >{indices[countryName].means.eoqgi.value.toFixed(2)+ ` (${indices[countryName].means.eoqgi.ranking})`}</td>
+                                        <td title={`Average ${COL_FULL_NAMES.eoqei} in 2005-2021`} >{indices[countryName].means.eoqei.value.toFixed(2)+ ` (${indices[countryName].means.eoqei.ranking})`}</td>
+                                        <td title={`Average ${COL_FULL_NAMES.eoqi} in 2005-2021`} >{indices[countryName].means.eoqi.value.toFixed(2)+ ` (${indices[countryName].means.eoqi.ranking})`}</td>
                                         <td className={styles.actions}>
                                             <button 
                                                 title={`${countryName} Details`}

@@ -115,7 +115,7 @@ export const CountryDetails: FC<T_Props> = ({ countryName, close }) => {
                                                             className='text-center text-light' 
                                                             key={indicatorName+year} 
                                                             style={{backgroundColor: color}}
-                                                            title={`"${indicatorName}" value in ${year}`}
+                                                            title={`"${indicatorName}" value and ranking of ${countryName} in ${year}`}
                                                         >
                                                             {`${pair?.value?.toFixed(2)} (${generateOrdinalNumber(pair?.ranking)})`}
                                                         </td>

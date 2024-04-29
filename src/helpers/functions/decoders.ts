@@ -81,15 +81,15 @@ const processInitialValues = (utils: Omit<RootState, 'indices' | 'app'>, content
                     byIndicator: {},
                     byYear: {},
                     means: {
-                        egqei: {
+                        eoqei: {
                             value: Infinity,
                             ranking: 0
                         },
-                        egqgi: {
+                        eoqgi: {
                             value: Infinity,
                             ranking: 0
                         },
-                        egqi: {
+                        eoqi: {
                             value: Infinity,
                             ranking: 0
                         },
@@ -250,13 +250,13 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices' | 'app'>, country
             const currentNormalizedValue = countryIndicators[indicatorName].byYear[year].normalized.value
 
             if(subindex === SUBINDEX_TYPES[0]) {
-                indicesState.egqgi.value *= Math.pow(currentNormalizedValue, weight)
+                indicesState.eoqgi.value *= Math.pow(currentNormalizedValue, weight)
             } else {
-                indicesState.egqei.value *= Math.pow(currentNormalizedValue, weight)
+                indicesState.eoqei.value *= Math.pow(currentNormalizedValue, weight)
             }
 
             if(i === arr.length - 1) {
-                indicesState.egqi.value = geoMean(indicesState.egqgi.value, indicesState.egqei.value)
+                indicesState.eoqi.value = geoMean(indicesState.eoqgi.value, indicesState.eoqei.value)
             }
             
             return indicesState
@@ -273,13 +273,13 @@ const processIndicesByYear = (utils: Omit<RootState, 'indices' | 'app'>, country
 const processIndicesMeans = (utils: Omit<RootState, 'indices' | 'app'>, indicesByYears: T_IndicesByYear): T_Indices => {
     const { years } = utils
     return years.reduce((state, year, i, arr) => {
-        state.egqgi.value *= indicesByYears[year].egqgi.value
-        state.egqei.value *= indicesByYears[year].egqei.value
-        state.egqi.value *= indicesByYears[year].egqi.value
+        state.eoqgi.value *= indicesByYears[year].eoqgi.value
+        state.eoqei.value *= indicesByYears[year].eoqei.value
+        state.eoqi.value *= indicesByYears[year].eoqi.value
         if(i === arr.length - 1) {
-            state.egqgi.value = Math.pow(state.egqgi.value, 1/years.length)
-            state.egqei.value = Math.pow(state.egqei.value, 1/years.length)
-            state.egqi.value = Math.pow(state.egqi.value, 1/years.length)
+            state.eoqgi.value = Math.pow(state.eoqgi.value, 1/years.length)
+            state.eoqei.value = Math.pow(state.eoqei.value, 1/years.length)
+            state.eoqi.value = Math.pow(state.eoqi.value, 1/years.length)
         }
         return state
     }, JSON.parse(JSON.stringify(INDICES_INITIALS)))

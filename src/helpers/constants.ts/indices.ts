@@ -1,34 +1,34 @@
 export const COL_NAMES = {
     country: 'country',
-    egqgi: 'egqgi',
-    egqei: 'egqei',
-    egqi: 'egqi',
+    eoqgi: 'eoqgi',
+    eoqei: 'eoqei',
+    eoqi: 'eoqi',
 } as const
 
 export const COL_NAMES_ORIGINAL = {
     [COL_NAMES.country]: 'country',
-    [COL_NAMES.egqgi]: 'EOQGI',
-    [COL_NAMES.egqei]: 'EOQEI',
-    [COL_NAMES.egqi]: 'EOQI',
+    [COL_NAMES.eoqgi]: 'EOQGI',
+    [COL_NAMES.eoqei]: 'EOQEI',
+    [COL_NAMES.eoqi]: 'EOQI',
 } as const
 
 export const COL_FULL_NAMES = {
     [COL_NAMES.country]: 'Country Name',
-    [COL_NAMES.egqgi]: 'Economic Output Quality Generation Index',
-    [COL_NAMES.egqei]: 'Economic Output Quality Effect Index',
-    [COL_NAMES.egqi]: 'Economic Output Quality Index',
+    [COL_NAMES.eoqgi]: 'Economic Output Quality Generation Index',
+    [COL_NAMES.eoqei]: 'Economic Output Quality Effect Index',
+    [COL_NAMES.eoqi]: 'Economic Output Quality Index',
 } as const
 
 export const INDICES_TYPES = [
-    COL_NAMES.egqgi,
-    COL_NAMES.egqei,
-    COL_NAMES.egqi,
+    COL_NAMES.eoqgi,
+    COL_NAMES.eoqei,
+    COL_NAMES.eoqi,
 ] as const
 
 export const STATS_TYPES = [
-    COL_NAMES.egqgi,
-    COL_NAMES.egqei,
-    COL_NAMES.egqi,
+    COL_NAMES.eoqgi,
+    COL_NAMES.eoqei,
+    COL_NAMES.eoqi,
 ] as const
 
 export const COL_SORT_TYPES = {
@@ -43,15 +43,15 @@ export const SUBINDEX_TYPES = {
 }
 
 export const INDICES_INITIALS = {
-    [COL_NAMES.egqgi]: {
+    [COL_NAMES.eoqgi]: {
         value: 1,
         ranking: 0
     },
-    [COL_NAMES.egqei]: {
+    [COL_NAMES.eoqei]: {
         value: 1,
         ranking: 0
     },
-    [COL_NAMES.egqi]: {
+    [COL_NAMES.eoqi]: {
         value: 1,
         ranking: 0
     },

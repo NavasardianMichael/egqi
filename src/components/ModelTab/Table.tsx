@@ -116,6 +116,7 @@ function Table({ selectedCountry }: Props) {
                         <th scope="col">Indicator Name</th>
                         {
                             years.map(year => {
+                                if(+year === 2005) return null;
                                 return (
                                     <th key={year} className='text-center' scope="col">{year}</th>
                                 )

@@ -9,9 +9,9 @@ export type T_Pair = {
 }
 
 export type T_Indices = {
-    egqi: T_Pair
-    egqgi: T_Pair
-    egqei: T_Pair
+    eoqi: T_Pair
+    eoqgi: T_Pair
+    eoqei: T_Pair
 }
 
 export type T_IndicesByIndicator = {

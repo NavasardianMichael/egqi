@@ -24,12 +24,12 @@ export const generateSummaryExcelFile = (data: RootState) => {
     const processed = countries.allNames.map(countryName => {
         return {
             'Country Name': countryName,
-            EGQGI: indices[countryName].means.egqgi.value, 
-            EGQEI: indices[countryName].means.egqei.value, 
-            EGGI: indices[countryName].means.egqi.value, 
-            'EGQGI ranking': indices[countryName].means.egqgi.ranking, 
-            'EGQEI ranking': indices[countryName].means.egqei.ranking, 
-            'EGGI ranking': indices[countryName].means.egqi.ranking,
+            EOQGI: indices[countryName].means.eoqgi.value, 
+            EOQEI: indices[countryName].means.eoqei.value, 
+            EOQI: indices[countryName].means.eoqi.value, 
+            'EOQGI ranking': indices[countryName].means.eoqgi.ranking, 
+            'EOQEI ranking': indices[countryName].means.eoqei.ranking, 
+            'EOQI ranking': indices[countryName].means.eoqi.ranking,
         }
     })
     generateExcelFile(processed, 'EGQI Summary')
