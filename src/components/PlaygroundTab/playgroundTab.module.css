@@ -1,0 +1,21 @@
+.country {
+    transition: .2s;
+    border: 1px dashed lightgray;
+
+    .removeBtn {
+        outline: none;
+        border: none;
+        background-color: transparent;
+    }
+
+    &:hover {
+        background-color: #029191 !important;
+        border-color: #029191;
+        border-style: solid;
+
+        &,
+        .removeBtn {
+            color: #fff !important;
+        }
+    }
+}

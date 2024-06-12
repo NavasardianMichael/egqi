@@ -6,16 +6,18 @@ import styles from './modelTab.module.css'
 
 type Props = {
     selectedState: ReturnType<typeof useState<T_Country['name']>>
+    addCountry?: (name: T_Country['name']) => void
 }
 
-function Dropdown({selectedState}: Props) {
+function Dropdown({selectedState, addCountry}: Props) {
 
     const countries = useAscendingCountryNames()
     const [selectedCountryName, setSelectedCountryName] = selectedState
     
-    
     const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
-        setSelectedCountryName(e.currentTarget.name)
+        const { name } = e.currentTarget
+        setSelectedCountryName(name)
+        addCountry?.(name)
     }
 
     return (

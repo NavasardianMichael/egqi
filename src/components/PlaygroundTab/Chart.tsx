@@ -1,33 +1,40 @@
-import { BarChart } from "@mui/x-charts";
-import { FC } from "react";
+import { LineChart, LineChartProps, ScatterChart } from "@mui/x-charts";
+import { FC, useMemo } from "react";
+import { useSelector } from 'react-redux';
 import { T_Country } from "store/countries/types";
+import { selectIndices } from 'store/indices/selectors';
+import { selectYears } from 'store/years/selectors';
 
 type Props = {
-  selectedCountriesState: [
-    T_Country["name"][],
-    React.Dispatch<React.SetStateAction<T_Country["name"][]>>
-  ];
+  countries: T_Country["name"][]
 };
 
-const Chart: FC<Props> = ({ selectedCountriesState }) => {
-  const [selectedCountries, setSelectedCountries] = selectedCountriesState;
-  console.log({
-    selectedCountriesState,
-    selectedCountries,
-    setSelectedCountries,
-  });
+const Chart: FC<Props> = ({ countries }) => {
+  const CHART_COMPONENTS_BY_TYPE = {
+    line: LineChart,
+    scatter: ScatterChart
+  }
+  const selectedChartType = 'line'
+  const SelectedChart = CHART_COMPONENTS_BY_TYPE[selectedChartType]
+  const indices = useSelector(selectIndices)
+  const years = useSelector(selectYears)
 
+  const chartData: LineChartProps = useMemo(() => {
+    return {
+      series: countries.map(country => {
+        return {
+          data: years.map(year => indices[country].byYear[year].eoqi.value),
+          label: country,
+        }
+      }),
+      xAxis: [{ data: years }]
+    }
+  }, [countries, indices, years])
+  
   return (
-    <BarChart
-      series={[
-        { data: [35, 44, 24, 34] },
-        { data: [51, 6, 49, 30] },
-        { data: [15, 25, 30, 50] },
-        { data: [60, 50, 15, 25] },
-      ]}
-      height={290}
-      xAxis={[{ data: ["Q1", "Q2", "Q3", "Q4"], scaleType: "band" }]}
-      margin={{ top: 10, bottom: 30, left: 40, right: 10 }}
+    <SelectedChart
+      {...chartData}
+      height={500}
     />
   );
 };
