@@ -27,7 +27,7 @@ const Chart: FC<Props> = ({ countries }) => {
           label: country,
         }
       }),
-      xAxis: [{ data: years }]
+      xAxis: [{ data: years, valueFormatter: (v) => v.toString() }],
     }
   }, [countries, indices, years])
   
@@ -35,6 +35,12 @@ const Chart: FC<Props> = ({ countries }) => {
     <SelectedChart
       {...chartData}
       height={500}
+      slotProps={{
+        legend: {
+          itemMarkWidth: 50,
+          itemGap: 20,
+        },
+      }}
     />
   );
 };
