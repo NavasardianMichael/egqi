@@ -9,65 +9,57 @@ import { selectIndicators } from "store/indicators/selectors";
 import { setAppState } from "store/app/actionCreators";
 
 function FileInput() {
-  
-  const dispatch = useDispatch()
-  const indicators = useSelector(selectIndicators)
+  const dispatch = useDispatch();
+  const indicators = useSelector(selectIndicators);
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    handleExcelFile(e.target.files?.[0] as File)
+    handleExcelFile(e.target.files?.[0] as File);
   };
 
   const handleExcelFile = async (file: File) => {
-    console.log({file});
-    
-    dispatch(setAppState({ isProcessing: true }))
+    dispatch(setAppState({ isProcessing: true }));
     const reader = new FileReader();
 
     reader.onload = (e) => {
-      
-      // setTimeout(() => {
-        const data = e.target?.result;
-        const workbook = XLSX.read(data, {
-          type: 'binary',
-        });
-        
-        const output = processWorkbookData(workbook)
-        
-        const { countries, indicators, indices, years } = output
-        dispatch(setCountriesState(countries))
-        dispatch(setIndicators(indicators))
-        dispatch(setYears(years))
-        dispatch(setIndices(indices))
-        dispatch(setAppState({ isProcessing: false }))
-      
-      // }, 0)
+      const data = e.target?.result;
+      const workbook = XLSX.read(data, {
+        type: "binary",
+      });
 
+      const output = processWorkbookData(workbook);
+
+      const { countries, indicators, indices, years } = output;
+      dispatch(setCountriesState(countries));
+      dispatch(setIndicators(indicators));
+      dispatch(setYears(years));
+      dispatch(setIndices(indices));
+      dispatch(setAppState({ isProcessing: false }));
     };
 
     reader.readAsBinaryString(file);
-  }
+  };
 
-  if(indicators.allNames.length) return null
+  if (indicators.allNames.length) return null;
 
   return (
     <div data-testid='file'>
-      <div className="d-flex" style={{alignItems: 'center', gap: 16}}>
+      <div className='d-flex' style={{ alignItems: "center", gap: 16 }}>
         <input
           onChange={handleChange}
-          className="form-control"
+          className='form-control'
           style={{ maxWidth: 250 }}
-          type="file"
-          id="formFile"
-          accept=".xlsx, .xls, .csv"
+          type='file'
+          id='formFile'
+          accept='.xlsx, .xls, .csv'
         />
-        <a 
+        <a
           href={`https://drive.google.com/uc?export=download&id=1nccYNkme6Yj_CBc16Jorw2-4eGc32Xfs`}
           download
-          target="_blank"
-          className="link-secondary"
+          target='_blank'
+          className='link-secondary'
         >
           Download the instructions file and then import (upload) it here
-        </a>      
+        </a>
       </div>
     </div>
   );

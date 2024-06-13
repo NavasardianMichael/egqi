@@ -3,6 +3,8 @@ import IndicesTab from "components/IndicesTab/IndicesTab";
 import ModelTab from "./ModelTab/ModelTab";
 import { useSelector } from "react-redux";
 import { selectAppState } from "store/app/selectors";
+import { Spinner } from './Spinner/Spinner';
+import PlaygroundTab from './PlaygroundTab/PlaygroundTab';
 
 const Content = () => {
 
@@ -15,6 +17,9 @@ const Content = () => {
           <button disabled={isProcessing} className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Index</button>
         </li>
         <li className="nav-item" role="presentation">
+          <button disabled={isProcessing} className="nav-link" id="playground-tab" data-bs-toggle="tab" data-bs-target="#playground" type="button" role="tab" aria-controls="playground" aria-selected="false">Playground</button>
+        </li>
+        <li className="nav-item" role="presentation">
           <button disabled={isProcessing} className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Model</button>
         </li>
       </ul>
@@ -22,21 +27,18 @@ const Content = () => {
         <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
           {
             isProcessing ?
-            <div 
-              className="spinner-border d-block mx-auto mt-5" 
-              style={{
-                width: '4rem', 
-                height: '4rem',
-                borderColor: '#029191 transparent #029191 #029191',
-                borderWidth: '.4rem'
-              }} 
-              role="status"
-            >
-            </div> :
+            <Spinner /> :
             <>
               <FileInput />
               <IndicesTab />
             </>
+          }
+        </div>
+        <div className="tab-pane fade show" id="playground" role="tabpanel" aria-labelledby="playground-tab">
+          {
+            isProcessing ?
+            <Spinner /> :
+            <PlaygroundTab />
           }
         </div>
         <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
