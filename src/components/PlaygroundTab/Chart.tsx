@@ -1,36 +1,44 @@
 import { LineChart, LineChartProps, ScatterChart } from "@mui/x-charts";
-import { FC, useMemo } from "react";
-import { useSelector } from 'react-redux';
+import { INDICES_TYPES } from "helpers/constants.ts/indices";
+import { FC, memo, useMemo } from "react";
+import { useSelector } from "react-redux";
 import { T_Country } from "store/countries/types";
-import { selectIndices } from 'store/indices/selectors';
-import { selectYears } from 'store/years/selectors';
+import { selectIndices } from "store/indices/selectors";
+import { T_Indices } from "store/indices/types";
+import { selectYears } from "store/years/selectors";
 
 type Props = {
-  countries: T_Country["name"][]
+  countries: T_Country["name"][];
+  selectedIndexType: keyof T_Indices | null;
 };
 
-const Chart: FC<Props> = ({ countries }) => {
+const Chart: FC<Props> = ({ countries, selectedIndexType }) => {
   const CHART_COMPONENTS_BY_TYPE = {
     line: LineChart,
-    scatter: ScatterChart
-  }
-  const selectedChartType = 'line'
-  const SelectedChart = CHART_COMPONENTS_BY_TYPE[selectedChartType]
-  const indices = useSelector(selectIndices)
-  const years = useSelector(selectYears)
+    scatter: ScatterChart,
+  };
+  const selectedChartType = "line";
+  const SelectedChart = CHART_COMPONENTS_BY_TYPE[selectedChartType];
+  const indices = useSelector(selectIndices);
+  const years = useSelector(selectYears);
 
   const chartData: LineChartProps = useMemo(() => {
     return {
-      series: countries.map(country => {
+      series: countries.map((country) => {
         return {
-          data: years.map(year => indices[country].byYear[year].eoqi.value),
+          data: years.map(
+            (year) =>
+              indices[country].byYear[year][
+                selectedIndexType ?? INDICES_TYPES[0]
+              ].value
+          ),
           label: country,
-        }
+        };
       }),
       xAxis: [{ data: years, valueFormatter: (v) => v.toString() }],
-    }
-  }, [countries, indices, years])
-  
+    };
+  }, [countries, indices, selectedIndexType, years]);
+
   return (
     <SelectedChart
       {...chartData}
@@ -45,4 +53,4 @@ const Chart: FC<Props> = ({ countries }) => {
   );
 };
 
-export default Chart;
+export default memo(Chart);
