@@ -9,7 +9,7 @@ import { T_Indices } from "store/indices/types";
 import IndexTypes from "./IndexTypes";
 import { INDICES_TYPES } from "helpers/constants.ts/indices";
 
-const PlaygroundTab: FC = () => {
+const VisualizationTab: FC = () => {
   const indicators = useSelector(selectIndicators);
   const selectedState = useState<T_Country["name"]>();
   const selectedCountriesState = useState<T_Country["name"][]>([]);
@@ -33,7 +33,7 @@ const PlaygroundTab: FC = () => {
   );
 
   if (!indicators.allNames.length)
-    return <h6>Import data in the index tab to play with indices</h6>;
+    return <h6>Import data in the index tab to visualize indices</h6>;
 
   return (
     <div
@@ -62,4 +62,4 @@ const PlaygroundTab: FC = () => {
   );
 };
 
-export default PlaygroundTab;
+export default VisualizationTab;

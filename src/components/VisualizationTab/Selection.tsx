@@ -1,7 +1,7 @@
 import { combineClassNames } from "helpers/functions/commons";
 import { FC, memo } from "react";
 import { T_Country } from "store/countries/types";
-import styles from "./playgroundTab.module.css";
+import styles from "./visualizationTab.module.css";
 
 type Props = {
   removeCountry: (name: T_Country["name"]) => void;
