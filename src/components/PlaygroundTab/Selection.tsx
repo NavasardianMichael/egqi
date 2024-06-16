@@ -1,5 +1,5 @@
 import { combineClassNames } from "helpers/functions/commons";
-import { FC } from "react";
+import { FC, memo } from "react";
 import { T_Country } from "store/countries/types";
 import styles from "./playgroundTab.module.css";
 
@@ -10,7 +10,10 @@ type Props = {
 
 const Selection: FC<Props> = ({ selectedCountries, removeCountry }) => {
   return (
-    <div className='d-flex flex-wrap align-items-center' style={{ gap: ".5rem" }}>
+    <div
+      className="d-flex flex-wrap align-items-center"
+      style={{ gap: ".5rem" }}
+    >
       {selectedCountries?.map((country) => {
         return (
           <div
@@ -35,4 +38,4 @@ const Selection: FC<Props> = ({ selectedCountries, removeCountry }) => {
   );
 };
 
-export default Selection;
+export default memo(Selection);
