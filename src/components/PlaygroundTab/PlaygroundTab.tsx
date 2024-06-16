@@ -7,12 +7,13 @@ import Selection from "./Selection";
 import Chart from "./Chart";
 import { T_Indices } from "store/indices/types";
 import IndexTypes from "./IndexTypes";
+import { INDICES_TYPES } from "helpers/constants.ts/indices";
 
 const PlaygroundTab: FC = () => {
   const indicators = useSelector(selectIndicators);
   const selectedState = useState<T_Country["name"]>();
   const selectedCountriesState = useState<T_Country["name"][]>([]);
-  const selectedIndexTypeState = useState<keyof T_Indices | null>(null);
+  const selectedIndexTypeState = useState<keyof T_Indices>(INDICES_TYPES[2]);
 
   const addCountry = useCallback(
     (name: T_Country["name"]) => {
@@ -37,9 +38,9 @@ const PlaygroundTab: FC = () => {
   return (
     <div
       className="d-flex flex-column align-items-start"
-      style={{ gap: "1rem" }}
+      style={{ gap: "1.5rem" }}
     >
-      <div className="d-flex" style={{ gap: "5rem" }}>
+      <div className="d-flex" style={{ gap: "2rem" }}>
         <Dropdown
           selectedState={selectedState}
           addCountry={addCountry}

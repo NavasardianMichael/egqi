@@ -1,6 +1,6 @@
 import { combineClassNames } from "helpers/functions/commons";
 import { useAscendingCountryNames } from "hooks/useAscendingCountryNames";
-import { Fragment, MouseEventHandler, memo, useState } from "react";
+import { Fragment, MouseEventHandler, useState } from "react";
 import { T_Country } from "store/countries/types";
 import styles from "./modelTab.module.css";
 
@@ -66,4 +66,4 @@ function Dropdown({ selectedState, addCountry, noDataPlaceholder }: Props) {
   );
 }
 
-export default memo(Dropdown);
+export default Dropdown;

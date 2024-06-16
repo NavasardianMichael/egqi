@@ -1,6 +1,5 @@
 import { LineChart, LineChartProps, ScatterChart } from "@mui/x-charts";
-import { INDICES_TYPES } from "helpers/constants.ts/indices";
-import { FC, memo, useMemo } from "react";
+import { FC, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { T_Country } from "store/countries/types";
 import { selectIndices } from "store/indices/selectors";
@@ -9,7 +8,7 @@ import { selectYears } from "store/years/selectors";
 
 type Props = {
   countries: T_Country["name"][];
-  selectedIndexType: keyof T_Indices | null;
+  selectedIndexType: keyof T_Indices;
 };
 
 const Chart: FC<Props> = ({ countries, selectedIndexType }) => {
@@ -24,25 +23,32 @@ const Chart: FC<Props> = ({ countries, selectedIndexType }) => {
 
   const chartData: LineChartProps = useMemo(() => {
     return {
+      skipAnimation: true,
       series: countries.map((country) => {
         return {
-          data: years.map(
-            (year) =>
-              indices[country].byYear[year][
-                selectedIndexType ?? INDICES_TYPES[0]
-              ].value
-          ),
+          connectNulls: true,
+          data: years.map((year) => {
+            return indices[country].byYear[year][selectedIndexType].value;
+          }),
           label: country,
         };
       }),
-      xAxis: [{ data: years, valueFormatter: (v) => v.toString() }],
+      xAxis: [
+        {
+          data: years,
+          valueFormatter: (v) => v.toString(),
+          min: 2005,
+          max: 2022,
+          tickNumber: 18,
+        },
+      ],
     };
   }, [countries, indices, selectedIndexType, years]);
 
   return (
     <SelectedChart
       {...chartData}
-      height={500}
+      height={450}
       slotProps={{
         legend: {
           itemMarkWidth: 50,
@@ -53,4 +59,4 @@ const Chart: FC<Props> = ({ countries, selectedIndexType }) => {
   );
 };
 
-export default memo(Chart);
+export default Chart;
