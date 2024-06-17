@@ -36,3 +36,21 @@
     border-color: #029191;
     color: #fff;
 }
+
+.simulatedCell {
+    .imitationBadge {
+        top: 0;
+        right: 1px;
+        font-size: .65rem;
+        animation: leaves .6s ease 3;
+    }
+}
+
+@keyframes leaves {
+    0% {
+        opacity: 0.2;
+    }
+    100% {
+        opacity: 1;
+    }
+}
