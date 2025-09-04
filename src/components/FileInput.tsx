@@ -53,10 +53,11 @@ function FileInput() {
           accept='.xlsx, .xls, .csv'
         />
         <a
-          href={`https://drive.google.com/uc?export=download&id=1nccYNkme6Yj_CBc16Jorw2-4eGc32Xfs`}
+          href={`https://drive.google.com/uc?export=download&id=1fJgKg0pVeGPhcahlsrqXoEOCcveCMspN`}
           download
           target='_blank'
           className='link-secondary'
+          rel="noreferrer"
         >
           Download the instructions file and then import (upload) it here
         </a>
